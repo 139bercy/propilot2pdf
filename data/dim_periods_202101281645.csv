@@ -1,0 +1,5 @@
+"period_id";"period_date";"period_year";"period_month";"period_month_tri";"period_month_year";"period_month_year_tri";"period_quarter";"period_quarter_year";"period_year_in_time";"period_month_in_time";"period_quarter_in_time";"period_current_year_flag";"period_current_month_flag";"period_current_quarter_flag";"period_last_year_flag";"period_last_month_flag";"period_last_quarter_flag";"period_next_year_flag";"period_next_month_flag";"period_next_quarter_flag";"period_total_flag";"snapshot_date"
+"20201130";"2020-11-30 00:00:00";2020;November;Nov;November  2020;Nov-20;"44";"44 2020";Past;Past;Past;false;false;false;true;false;true;false;false;false;false;"2021-01-28 23:59:59"
+"20201231";"2020-12-31 00:00:00";2020;December;Dec;December  2020;Dec-20;"44";"44 2020";Past;Past;Past;false;false;false;true;true;true;false;false;false;false;"2021-01-28 23:59:59"
+"2020";"2020-12-31 23:59:59";2020;Year;Y;"0ear 2020";"0 2020";Y;"0 2020";;;;;;;;;;;;;true;"2021-01-28 23:59:59"
+"9999";"9999-12-31 23:59:59";9999;Total;Total;Total;Total;Total;Total;;;;;;;;;;;;;true;"2021-01-28 23:59:59"
