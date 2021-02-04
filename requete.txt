@@ -1,0 +1,14 @@
+select
+                dtn.tree_node_name,
+                ds2.structure_name,
+                de.effect_id,
+                ds.state_display_name,
+                dp.period_date,
+                ff.financials_cumulated_amount 
+from im.fact_financials ff 
+inner join im.dim_tree_nodes dtn on dtn.tree_node_id = ff.tree_node_id 
+inner join im.dim_effects de on de.effect_id = ff.effect_id 
+inner join im.dim_states ds on ds.state_id = ff.state_id 
+inner join im.dim_periods dp on dp.period_id = ff.period_id
+inner join im.dim_structures ds2 on ds2.structure_id = dtn.structure_id 
+where ds2.structure_name = 'Département' and de.effect_id = 'Nombre de TPE/PME/ETI bénéficiaires - APR'
