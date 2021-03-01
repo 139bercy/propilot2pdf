@@ -2,4 +2,6 @@ jupyterlab
 pandas
 plotly
 psutil
-#fpdf
+openpyxl
+seaborn
+fpdf
