@@ -1,13 +1,39 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
+---
 version: 2.1
-# Use a package of configuration called an orb.
-orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.4.1
-# Orchestrate or schedule a set of jobs
+jobs:
+    build-and-send:
+        docker:
+                - image: circleci/python:3.8
+        steps:
+            - run:
+                  name: Récupération du projet decp-augmenté
+                  command: |
+                      mkdir -p /home/circleci/project
+                      cd /home/circleci/project
+                      git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git
+                      cd /home/circleci/project/propilot2pdf
+                      if [ "$CIRCLE_BRANCH" != "master" ]; then
+                        git fetch origin pull/$CIRCLE_PR_NUMBER/head:pull_local
+                        git checkout pull_local
+                      fi
+            - run:
+                  name: Installation des requirements
+                  command: |
+                      cd /home/circleci/project/propilot2pdf
+                      pip3 install -r requirements.txt
 workflows:
-  # Name the workflow "welcome"
-  welcome:
-    # Run the welcome/run job in its own container
+  version: 2.1
+  main:
     jobs:
-      - welcome/run
+      - build-and-send
+
+  daily:
+    jobs:
+      - build-and-send
+    triggers:
+      - schedule:
+          cron: 0 6 * * 2,3,4,5,6
+          filters:
+            branches:
+              only:
+                - master
