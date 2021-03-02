@@ -5,6 +5,9 @@ jobs:
         docker:
                 - image: circleci/python:3.8
         steps:
+            - add_ssh_keys:
+                  fingerprints:
+                      - "14:47:52:a0:01:a8:ed:16:ad:36:67:c5:3c:55:66:10"
             - run:
                   name: Récupération du projet propilot2pdf
                   command: |
