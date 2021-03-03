@@ -3,14 +3,8 @@ version: 2.1
 jobs:
     build-and-send:
         docker:
-                - image: python:3.8-alpine
+                - image: python:3.8-slim
         steps:
-            - run:
-                  name: Installation logiciels
-                  command: |
-                      apk add git
-                      apk add openssh
-                      apk add make automake gcc g++ subversion python3-dev
             - run:
                   name: Récupération du projet propilot2pdf
                   command: |
