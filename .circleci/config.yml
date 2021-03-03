@@ -38,7 +38,8 @@ jobs:
                   no_output_timeout: 1h
                   command: |
                       cd /home/circleci/project/propilot2pdf
-                      jupyter nbconvert --to script --execute build_reports.ipynb --ExecutePreprocessor.timeout=3600
+                      jupyter nbconvert --to python --execute build_reports.ipynb
+                      python build_reports.py
             - run:
                   name: Export des données en format csv
                   no_output_timeout: 1h
