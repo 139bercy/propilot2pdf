@@ -8,7 +8,7 @@ jobs:
             - run:
                   name: Installation logiciels
                   command: |
-                      sudo apt install git
+                      apk add git
             - run:
                   name: Récupération du projet propilot2pdf
                   command: |
