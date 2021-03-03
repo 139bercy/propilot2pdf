@@ -38,14 +38,15 @@ jobs:
                   no_output_timeout: 1h
                   command: |
                       cd /home/circleci/project/propilot2pdf
-                      jupyter nbconvert --to python --execute build_reports.ipynb
+                      jupyter nbconvert --to python build_reports.ipynb
                       python build_reports.py
             - run:
                   name: Export des données en format csv
                   no_output_timeout: 1h
                   command: |
                       cd /home/circleci/project/propilot2pdf
-                      jupyter nbconvert --to script --execute export_csv.ipynb
+                      jupyter nbconvert --to python export_csv.ipynb
+                      python export_csv.py
                       FILE=export_20210131.csv
                       if test -f "$FILE"; then
                           echo "$FILE successfuly created."
