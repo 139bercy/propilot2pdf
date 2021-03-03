@@ -3,26 +3,20 @@ version: 2.1
 jobs:
     build-and-send:
         docker:
-                - image: python:3.8-slim
+                - image: python:3.8
         steps:
-            - run:
-                  name: Installation logiciels
-                  command: |
-                      apt install git
-                      apt install openssh
-                      apt install make automake gcc g++ subversion python3-dev
             - run:
                   name: Récupération du projet propilot2pdf
                   command: |
                       mkdir -p /home/circleci/project
                       cd /home/circleci/project
                       mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-                      git clone $CIRCLE_REPOSITORY_URL --branch $CIRCLE_BRANCH
+                      git clone $CIRCLE_REPOSITORY_URL #--branch $CIRCLE_BRANCH
                       cd /home/circleci/project/propilot2pdf
-                      if [ "$CIRCLE_BRANCH" != "master" ]; then
-                        git fetch origin pull/$CIRCLE_PR_NUMBER/head:pull_local
-                        git checkout pull_local
-                      fi
+                      #if [ "$CIRCLE_BRANCH" != "master" ]; then
+                      #  git fetch origin pull/$CIRCLE_PR_NUMBER/head:pull_local
+                      #  git checkout pull_local
+                      #fi
             - run:
                   name: Installation des requirements
                   command: |
@@ -45,13 +39,6 @@ jobs:
                   command: |
                       cd /home/circleci/project/propilot2pdf
                       jupyter nbconvert --to script --execute build_reports.ipynb
-                      FILE=./reports/pdf/Suivi_aides_entreprises_Ain.pdf
-                      if test -f "$FILE"; then
-                          echo "$FILE successfuly created."
-                      else
-                          echo "$FILE not found"
-                          ls ./reports/pdf
-                      fi
             - run:
                   name: Export des données en format csv
                   no_output_timeout: 1h
