@@ -10,6 +10,7 @@ jobs:
                   command: |
                       apk add git
                       apk add openssh
+                      apk add make automake gcc g++ subversion python3-dev
             - run:
                   name: Récupération du projet propilot2pdf
                   command: |
