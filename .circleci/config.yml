@@ -45,6 +45,10 @@ jobs:
                       if test -f "$FILE"; then
                           echo "$FILE successfuly created."
                       fi
+                      else
+                          echo "$FILE not found"
+                          ls ./reports/pdf
+                      fi
             - run:
                   name: Export des données en format csv
                   no_output_timeout: 1h
@@ -54,6 +58,10 @@ jobs:
                       FILE=export_20210131.csv
                       if test -f "$FILE"; then
                           echo "$FILE successfuly created."
+                      fi
+                      else
+                          echo "$FILE not found"
+                          ls .
                       fi
 workflows:
   version: 2.1
