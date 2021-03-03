@@ -44,7 +44,6 @@ jobs:
                       FILE=./reports/pdf/Suivi_aides_entreprises_Ain.pdf
                       if test -f "$FILE"; then
                           echo "$FILE successfuly created."
-                      fi
                       else
                           echo "$FILE not found"
                           ls ./reports/pdf
@@ -58,7 +57,6 @@ jobs:
                       FILE=export_20210131.csv
                       if test -f "$FILE"; then
                           echo "$FILE successfuly created."
-                      fi
                       else
                           echo "$FILE not found"
                           ls .
