@@ -6,6 +6,12 @@ jobs:
                 - image: python:3.8-slim
         steps:
             - run:
+                  name: Installation logiciels
+                  command: |
+                      apt install git
+                      apt install openssh
+                      apt install make automake gcc g++ subversion python3-dev
+            - run:
                   name: Récupération du projet propilot2pdf
                   command: |
                       mkdir -p /home/circleci/project
