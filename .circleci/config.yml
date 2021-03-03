@@ -3,7 +3,7 @@ version: 2.1
 jobs:
     build-and-send:
         docker:
-                - image: python:3.8-alpine
+                - image: python:3.8-slim
         steps:
             - add_ssh_keys:
                   fingerprints:
