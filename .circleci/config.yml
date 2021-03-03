@@ -9,6 +9,7 @@ jobs:
                   name: Installation logiciels
                   command: |
                       apk add git
+                      apk add ssh
             - run:
                   name: Récupération du projet propilot2pdf
                   command: |
