@@ -34,6 +34,24 @@ jobs:
                       if test -f "$FILE"; then
                           echo "$FILE successfuly created."
                       fi
+            - run:
+                  name: Prodution des fiches parlementaires
+                  command: |
+                      cd /home/circleci/project/propilot2pdf
+                      jupyter nbconvert --to script --execute build_reports.ipynb
+                      FILE=./reports/pdf/Suivi_aides_entreprises_Ain.pdf
+                      if test -f "$FILE"; then
+                          echo "$FILE successfuly created."
+                      fi
+            - run:
+                  name: Export des données en format csv
+                  command: |
+                      cd /home/circleci/project/propilot2pdf
+                      jupyter nbconvert --to script --execute export_csv.ipynb
+                      FILE=export_20210131.csv
+                      if test -f "$FILE"; then
+                          echo "$FILE successfuly created."
+                      fi
 workflows:
   version: 2.1
   main:
