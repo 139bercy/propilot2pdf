@@ -27,6 +27,7 @@ jobs:
                       pip3 install -r requirements.txt
             - run:
                   name: Chargement des données ProPilot
+                  no_output_timeout: 1h
                   command: |
                       cd /home/circleci/project/propilot2pdf
                       jupyter nbconvert --to script --execute chargement_propilot.ipynb
@@ -36,6 +37,7 @@ jobs:
                       fi
             - run:
                   name: Prodution des fiches parlementaires
+                  no_output_timeout: 1h
                   command: |
                       cd /home/circleci/project/propilot2pdf
                       jupyter nbconvert --to script --execute build_reports.ipynb
@@ -45,6 +47,7 @@ jobs:
                       fi
             - run:
                   name: Export des données en format csv
+                  no_output_timeout: 1h
                   command: |
                       cd /home/circleci/project/propilot2pdf
                       jupyter nbconvert --to script --execute export_csv.ipynb
