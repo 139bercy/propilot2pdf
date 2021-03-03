@@ -25,6 +25,15 @@ jobs:
                   command: |
                       cd /home/circleci/project/propilot2pdf
                       pip3 install -r requirements.txt
+            - run:
+                  name: Chargement des données ProPilot
+                  command: |
+                      cd /home/circleci/project/propilot2pdf
+                      jupyter nbconvert --to script --execute chargement_propilot.ipynb
+                      FILE=pp_dep.csv
+                      if test -f "$FILE"; then
+                          echo "$FILE successfuly created."
+                      fi
 workflows:
   version: 2.1
   main:
