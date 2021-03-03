@@ -3,7 +3,7 @@ version: 2.1
 jobs:
     build-and-send:
         docker:
-                - image: circleci/python:3.8
+                - image: circleci/python:3.8-alpine
         steps:
             - add_ssh_keys:
                   fingerprints:
