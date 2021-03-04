@@ -8,7 +8,8 @@ jobs:
             - run:
                   name: Installation des prérequis
                   command: |
-                      apt install zip
+                      apt-get update
+                      apt-get install -y zip
             - run:
                   name: Récupération du projet propilot2pdf
                   command: |
