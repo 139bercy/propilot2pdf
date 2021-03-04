@@ -12,8 +12,9 @@ jobs:
                       cd /home/circleci/project
                       mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
                       git clone $CIRCLE_REPOSITORY_URL
-                      git config user.email "$CIRCLE_USERMAIL"
-                      git config user.name "$CIRCLE_USERNAME" 
+                      git config --global -l
+                      git config --global  user.email circleci@circleci
+                      git config --global user.name CircleCI
             - run:
                   name: Installation des requirements
                   command: |
