@@ -40,6 +40,10 @@ jobs:
                       cd /home/circleci/project/propilot2pdf
                       jupyter nbconvert --to python build_reports.ipynb
                       python build_reports.py
+                      cd reports
+                      git add *.pdf
+                      git commit -m "add new reports"
+                      git push
             - run:
                   name: Export des données en format csv
                   no_output_timeout: 1h
