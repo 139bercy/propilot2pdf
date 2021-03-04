@@ -11,12 +11,9 @@ jobs:
                       mkdir -p /home/circleci/project
                       cd /home/circleci/project
                       mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-                      git clone $CIRCLE_REPOSITORY_URL #--branch $CIRCLE_BRANCH
-                      cd /home/circleci/project/propilot2pdf
-                      #if [ "$CIRCLE_BRANCH" != "master" ]; then
-                      #  git fetch origin pull/$CIRCLE_PR_NUMBER/head:pull_local
-                      #  git checkout pull_local
-                      #fi
+                      git config user.email $CIRCLE_USERMAIL
+                      git config user.name $CIRCLE_USERNAME
+                      git clone $CIRCLE_REPOSITORY_URL
             - run:
                   name: Installation des requirements
                   command: |
