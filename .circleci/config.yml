@@ -40,7 +40,7 @@ jobs:
                       python build_reports.py
                       cd reports
                       git add *.pdf
-                      git commit -m "add new reports"
+                      git commit -m "add new reports [ci skip]"
                       git push
             - run:
                   name: Export des données en format csv
