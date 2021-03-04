@@ -6,6 +6,10 @@ jobs:
                 - image: python:3.8
         steps:
             - run:
+                  name: Installation des prérequis
+                  command: |
+                      apt install zip
+            - run:
                   name: Récupération du projet propilot2pdf
                   command: |
                       mkdir -p /home/circleci/project
