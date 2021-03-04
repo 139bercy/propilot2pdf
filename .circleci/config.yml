@@ -39,6 +39,8 @@ jobs:
                       jupyter nbconvert --to python build_reports.ipynb
                       python build_reports.py
                       cd reports
+                      zip -9 archive.zip *.pdf
+                      git add archive.zip
                       git add *.pdf
                       git commit -m "add new reports [ci skip]"
                       git push
