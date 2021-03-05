@@ -9,7 +9,7 @@ jobs:
                   name: Installation des prérequis
                   command: |
                       apt-get update
-                      apt-get install -y zip
+                      apt-get install -y zip lftp
             - run:
                   name: Récupération du projet propilot2pdf
                   command: |
@@ -35,6 +35,10 @@ jobs:
                       FILE=pp_dep.csv
                       if test -f "$FILE"; then
                           echo "$FILE successfuly created."
+                      fi
+                      lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd propilot ; put $FILE ; quit"
+                      if [ $? -eq 0 ]; then
+                          echo "$FILE successfuly transfered."
                       fi
             - run:
                   name: Prodution des fiches parlementaires
