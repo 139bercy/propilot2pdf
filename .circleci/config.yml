@@ -36,10 +36,6 @@ jobs:
                       if test -f "$FILE"; then
                           echo "$FILE successfuly created."
                       fi
-                      lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd propilot ; put $FILE ; quit"
-                      if [ $? -eq 0 ]; then
-                          echo "$FILE successfuly transfered."
-                      fi
             - run:
                   name: Prodution des fiches parlementaires
                   no_output_timeout: 1h
@@ -66,6 +62,10 @@ jobs:
                       else
                           echo "$FILE not found"
                           ls .
+                      fi
+                      lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd propilot ; put $FILE ; quit"
+                      if [ $? -eq 0 ]; then
+                          echo "$FILE successfuly transfered."
                       fi
 workflows:
   version: 2.1
