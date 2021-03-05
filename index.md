@@ -9,6 +9,6 @@
     <ul>
         {% for image in site.static_files %}
             {% if image.path contains 'reports/' %}
-                <li><a href="{{ image.path }}">Télécharger {{ image.name }}<a/>
+                <li><a href="reports/{{ image.name }}">Télécharger {{ image.name }}<a/>
             {% endif %}
         {% endfor %}
