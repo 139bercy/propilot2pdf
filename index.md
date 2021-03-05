@@ -8,6 +8,6 @@
 
 {% for image in site.static_files %}
     {% if image.path contains 'reports/' %}
-        <a href="{{ site.baseurl }}{{ image.path }}">Télécharger {{ image }}<a/>
+        <a href="{{ image.path }}">Télécharger {{ image.name }}<a/>
     {% endif %}
 {% endfor %}
