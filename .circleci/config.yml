@@ -25,6 +25,7 @@ jobs:
                   command: |
                       echo "$DFAKTO_PK_BASE64" | base64 -d > dfakto.key
                       chmod 400 dfakto.key
+                      chmod 777 ssh_askpass.sh
                       DISPLAY=1 SSH_ASKPASS="./ssh_askpass.sh" ssh-add dfakto.key < /dev/null
                       sftp -P 2022 -i dfakto.key df2-frr@sftp.ditp.dfakto.com
             - run:
