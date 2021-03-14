@@ -28,7 +28,13 @@ jobs:
                       chmod 400 dfakto.key
                       chmod 777 ssh_askpass.sh
                       DISPLAY=1 SSH_ASKPASS="./ssh_askpass.sh" ssh-add dfakto.key < /dev/null
-                      sftp -P 2022 -i dfakto.key df2-frr@sftp.ditp.dfakto.com
+                      cd data
+                      rm -rf .
+                      sftp -P 2022 -i ../dfakto.key ${USER_NAME}@sftp.ditp.dfakto.com <<EOF
+                      cd files
+                      get *.csv
+                      exit
+                      EOF
             - run:
                   name: Installation des requirements Python
                   command: |
