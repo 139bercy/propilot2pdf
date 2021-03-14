@@ -30,7 +30,7 @@ jobs:
                       DISPLAY=1 SSH_ASKPASS="./ssh_askpass.sh" ssh-add dfakto.key < /dev/null
                       cd data
                       rm *.csv
-                      sftp -P 2022 -i ../dfakto.key ${USER_NAME}@sftp.ditp.dfakto.com
+                      sftp -P 2022 -i ../dfakto.key ${USER_NAME}@sftp.ditp.dfakto.com \<<EOF
                       cd files
                       get *.csv
                       exit
