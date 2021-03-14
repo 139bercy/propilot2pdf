@@ -23,7 +23,7 @@ jobs:
             - run:
                   name : Récupération des données ProPilot
                   command: |
-                      echo $DFAKTO_PK > dfakto.key
+                      echo "$DFAKTO_PK_BASE64" | base64 -d > dfakto.key
                       chmod 400 dfakto.key
                       DISPLAY=1 SSH_ASKPASS="./ssh_askpass.sh" ssh-add dfakto.key < /dev/null
                       sftp -P 2022 -i dfakto.key df2-frr@sftp.ditp.dfakto.com
