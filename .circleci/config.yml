@@ -21,7 +21,14 @@ jobs:
                       git config --global  user.email "circleci@circleci"
                       git config --global user.name "CircleCI"
             - run:
-                  name: Installation des requirements
+                  name : Récupération des données ProPilot
+                  command: |
+                      echo $DFAKTO_PK > dfakto.key
+                      chmod 400 dfakto.key
+                      DISPLAY=1 SSH_ASKPASS="./ssh_askpass.sh" ssh-add dfakto.key < /dev/null
+                      sftp -P 2022 -i dfakto.key df2-frr@sftp.ditp.dfakto.com
+            - run:
+                  name: Installation des requirements Python
                   command: |
                       cd /home/circleci/project/propilot2pdf
                       pip3 install -r requirements.txt
