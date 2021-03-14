@@ -23,6 +23,7 @@ jobs:
             - run:
                   name : Récupération des données ProPilot
                   command: |
+                      cd /home/circleci/project/propilot2pdf
                       echo "$DFAKTO_PK_BASE64" | base64 -d > dfakto.key
                       chmod 400 dfakto.key
                       chmod 777 ssh_askpass.sh
