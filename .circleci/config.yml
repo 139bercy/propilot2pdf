@@ -52,7 +52,7 @@ jobs:
                           echo "$FILE successfuly created."
                       fi
             - run:
-                  name: Prodution des fiches parlementaires
+                  name: Production des fiches parlementaires
                   no_output_timeout: 1h
                   command: |
                       cd /home/circleci/project/propilot2pdf
@@ -69,7 +69,6 @@ jobs:
                   no_output_timeout: 1h
                   command: |
                       cd /home/circleci/project/propilot2pdf
-                      rm export.csv
                       jupyter nbconvert --to python export_csv.ipynb
                       python export_csv.py
                       FILE=export.csv
