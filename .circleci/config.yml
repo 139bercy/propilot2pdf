@@ -28,10 +28,10 @@ jobs:
                       chmod 400 dfakto.key
                       chmod 777 ssh_askpass.sh
                       DISPLAY=1 SSH_ASKPASS="./ssh_askpass.sh" ssh-add dfakto.key < /dev/null
-                      #ssh-keyscan -H sftp.ditp.dfakto.com >> ~/.ssh/known_hosts
+                      #ssh-keyscan -H ${DFAKTO_URL} >> ~/.ssh/known_hosts
                       cd data
                       rm *.csv
-                      sftp -o StrictHostKeychecking=no -P 2022 -i ../dfakto.key ${USER_NAME}@sftp.ditp.dfakto.com \<<EOF
+                      sftp -o StrictHostKeychecking=no -P ${DFAKTO_PORT} -i ../dfakto.key ${USER_NAME}@${DFAKTO_URL} \<<EOF
                       cd files
                       get *.csv
                       exit
