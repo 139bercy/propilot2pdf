@@ -5,3 +5,5 @@ psutil
 openpyxl
 seaborn
 fpdf
+reportlab
+
