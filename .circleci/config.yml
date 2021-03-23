@@ -29,6 +29,7 @@ jobs:
                       chmod 777 ssh_askpass.sh
                       DISPLAY=1 SSH_ASKPASS="./ssh_askpass.sh" ssh-add dfakto.key < /dev/null
                       #ssh-keyscan -H ${DFAKTO_URL} >> ~/.ssh/known_hosts
+                      mkdir data
                       cd data
                       rm *.csv
                       sftp -o StrictHostKeychecking=no -P ${DFAKTO_PORT} -i ../dfakto.key ${USER_NAME}@${DFAKTO_URL} \<<EOF
