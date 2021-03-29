@@ -17,11 +17,6 @@ cheflieu,libelle,ncc,nccenr,reg,tncc
 69123,Auvergne-Rhône-Alpes,AUVERGNE RHONE ALPES,Auvergne-Rhône-Alpes,84,1
 13055,Provence-Alpes-Côte d'Azur,PROVENCE ALPES COTE D AZUR,Provence-Alpes-Côte d'Azur,93,0
 2A004,Corse,CORSE,Corse,94,0
-,Saint-Pierre-et-Miquelon,SAINT-PIERRE-ET-MIQUELON,Saint-Pierre-et-Miquelon,COM,
-,Saint-Barthélemy,SAINT-BARTHELEMY,Saint-Barthélemy,COM,
-,Saint-Martin,SAINT-MARTIN,Saint-Martin,COM,
-,Wallis-et-Futuna,WALLIS-ET-FUTUNA,Wallis-et-Futuna,COM,
-,Polynésie française,POLYNESIE FRANCAISE,Polynésie française,COM,
-,Terres australes et antarctiques françaises,TERRES AUSTRALES ET ANTARCTIQUES FRANCAISES,Terres australes et antarctiques françaises,COM,
 ,Nouvelle-Calédonie,NOUVELLE-CALEDONIE,Nouvelle-Calédonie,NC,
-,Île de Clipperton,ILE DE CLIPPERTON,Île de Clipperton,COM,
+,Collectivités d’outre-mer,COLLECTIVITES D’OUTRE-MER,Collectivités d’outre-mer,COM,
+,Etranger,ETRANGER,Etranger,ETR,
