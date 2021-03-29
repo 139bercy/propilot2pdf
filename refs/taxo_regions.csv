@@ -17,6 +17,8 @@ cheflieu,libelle,ncc,nccenr,reg,tncc
 69123,Auvergne-Rhône-Alpes,AUVERGNE RHONE ALPES,Auvergne-Rhône-Alpes,84,1
 13055,Provence-Alpes-Côte d'Azur,PROVENCE ALPES COTE D AZUR,Provence-Alpes-Côte d'Azur,93,0
 2A004,Corse,CORSE,Corse,94,0
-,Nouvelle-Calédonie,NOUVELLE-CALEDONIE,Nouvelle-Calédonie,NC,
+,Nouvelle-Calédonie,NOUVELLE-CALEDONIE,Nouvelle-Calédonie,988,
 ,Collectivités d’outre-mer,COLLECTIVITES D’OUTRE-MER,Collectivités d’outre-mer,COM,
-,Etranger,ETRANGER,Etranger,ETR,
+,Etranger,ETRANGER,Etranger,0,
+,Terres australes et antarctiques françaises,TERRES AUSTRALES ET ANTARCTIQUES FRANCAISES,Terres australes et antarctiques françaises,984,
+,Île de Clipperton,ILE DE CLIPPERTON,Île de Clipperton,989,

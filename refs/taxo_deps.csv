@@ -100,12 +100,12 @@ cheflieu,dep,libelle,ncc,nccenr,reg,tncc
 97302,973,Guyane,GUYANE,Guyane,3,3
 97411,974,La Réunion,LA REUNION,La Réunion,4,0
 97608,976,Mayotte,MAYOTTE,Mayotte,6,0
-,975,Saint-Pierre-et-Miquelon,SAINT-PIERRE-ET-MIQUELON,Saint-Pierre-et-Miquelon,COM,
-,977,Saint-Barthélemy,SAINT-BARTHELEMY,Saint-Barthélemy,COM,
-32389,978,Saint-Martin,SAINT-MARTIN,Saint-Martin,COM,
-,986,Wallis-et-Futuna,WALLIS-ET-FUTUNA,Wallis-et-Futuna,COM,
-,987,Polynésie française,POLYNESIE FRANCAISE,Polynésie française,COM,
-,984,Terres australes et antarctiques françaises,TERRES AUSTRALES ET ANTARCTIQUES FRANCAISES,Terres australes et antarctiques françaises,COM,
-,988,Nouvelle-Calédonie,NOUVELLE-CALEDONIE,Nouvelle-Calédonie,NC,
-,989,Île de Clipperton,ILE DE CLIPPERTON,Île de Clipperton,COM,
-,999,Etranger,ETRANGER,Etranger,ETR,
+97500,975,Saint-Pierre-et-Miquelon,SAINT-PIERRE-ET-MIQUELON,Saint-Pierre-et-Miquelon,COM,
+97700,977,Saint-Barthélemy,SAINT-BARTHELEMY,Saint-Barthélemy,COM,
+97800,978,Saint-Martin,SAINT-MARTIN,Saint-Martin,COM,
+98600,986,Wallis-et-Futuna,WALLIS-ET-FUTUNA,Wallis-et-Futuna,COM,
+98700,987,Polynésie française,POLYNESIE FRANCAISE,Polynésie française,COM,
+98400,984,Terres australes et antarctiques françaises,TERRES AUSTRALES ET ANTARCTIQUES FRANCAISES,Terres australes et antarctiques françaises,984,
+98800,988,Nouvelle-Calédonie,NOUVELLE-CALEDONIE,Nouvelle-Calédonie,988,
+98900,989,Île de Clipperton,ILE DE CLIPPERTON,Île de Clipperton,989,
+,0,Etranger,ETRANGER,Etranger,0,
