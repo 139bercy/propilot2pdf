@@ -1,5 +1,8 @@
 # Python
 .ipynb_checkpoints
 
-
-
+*.csv
+*.key
+data
+reports_word/*
+*.pkl
