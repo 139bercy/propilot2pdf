@@ -1,9 +1,15 @@
 # Python
 .ipynb_checkpoints
 
+# Ajout après le travail en local sur la génération word
 *.csv
 *.key
 data
 reports_word/*
 *.pkl
 .vscode
+reports_word/Generation_p2p/*
+!reports_word/Generation_p2p
+
+
+Conversion.py
