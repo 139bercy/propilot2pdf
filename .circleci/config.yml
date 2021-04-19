@@ -71,7 +71,8 @@ jobs:
                       cd /home/circleci/project/propilot2pdf
                       jupyter nbconvert --to python export_csv.ipynb
                       python export_csv.py
-                      for f in exports/*.csv
+                      FILES=exports/*.csv
+                      for f in $FILES
                         do
 
                         echo "Sending $f"
