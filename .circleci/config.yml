@@ -71,17 +71,23 @@ jobs:
                       cd /home/circleci/project/propilot2pdf
                       jupyter nbconvert --to python export_csv.ipynb
                       python export_csv.py
-                      FILE=export.csv
-                      if test -f "$FILE"; then
-                          echo "$FILE successfuly created."
-                      else
-                          echo "$FILE not found"
-                          ls .
-                      fi
-                      lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd propilot ; put $FILE ; quit"
-                      if [ $? -eq 0 ]; then
-                          echo "$FILE successfuly transfered."
-                      fi
+                      for f in exports/*.csv
+			do
+
+			 echo "Sending $f"
+
+			 if test -f "$f"; then
+			      echo "$f successfuly created."
+			  else
+			      echo "$f not found"
+			      ls .
+			  fi
+			  
+			  lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd propilot ; put $f ; quit"
+			  if [ $? -eq 0 ]; then
+			      echo "$f successfuly transfered."
+			  fi
+			done
 workflows:
   version: 2.1
   main:
