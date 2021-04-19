@@ -63,6 +63,8 @@ jobs:
                       #git add archive.zip
                       git add *.pdf
                       git commit -m "add new reports [ci skip]"
+                      git add *.docx
+                      git commit -m "add new docx reports [ci skip]"
                       git push
             - run:
                   name: Export des données en format csv
