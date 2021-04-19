@@ -71,7 +71,14 @@ jobs:
                       cd /home/circleci/project/propilot2pdf
                       jupyter nbconvert --to python export_csv.ipynb
                       python export_csv.py
-                      FILES=exports/*
+                      FILES="
+exports/2_renovation_batiment_etat.csv
+exports/3_bonus_ecologique.csv
+exports/4_soutien_industriel.csv
+exports/5_cheque_export_vie_sbf.csv
+exports/6_apprentissage.csv
+exports/7_embauche_jeunes.csv
+exports/8_cie_pec.csv"
                       for f in $FILES
                         do
 
