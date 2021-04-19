@@ -1,13 +1,13 @@
 cheflieu,dep,libelle,ncc,nccenr,reg,tncc
-1053,1,Ain,AIN,Ain,84,5
-2408,2,Aisne,AISNE,Aisne,32,5
-3190,3,Allier,ALLIER,Allier,84,5
-4070,4,Alpes-de-Haute-Provence,ALPES DE HAUTE PROVENCE,Alpes-de-Haute-Provence,93,4
-5061,5,Hautes-Alpes,HAUTES ALPES,Hautes-Alpes,93,4
-6088,6,Alpes-Maritimes,ALPES MARITIMES,Alpes-Maritimes,93,4
-7186,7,Ardèche,ARDECHE,Ardèche,84,5
-8105,8,Ardennes,ARDENNES,Ardennes,44,4
-9122,9,Ariège,ARIEGE,Ariège,76,5
+1053,01,Ain,AIN,Ain,84,5
+2408,02,Aisne,AISNE,Aisne,32,5
+3190,03,Allier,ALLIER,Allier,84,5
+4070,04,Alpes-de-Haute-Provence,ALPES DE HAUTE PROVENCE,Alpes-de-Haute-Provence,93,4
+5061,05,Hautes-Alpes,HAUTES ALPES,Hautes-Alpes,93,4
+6088,06,Alpes-Maritimes,ALPES MARITIMES,Alpes-Maritimes,93,4
+7186,07,Ardèche,ARDECHE,Ardèche,84,5
+8105,08,Ardennes,ARDENNES,Ardennes,44,4
+9122,09,Ariège,ARIEGE,Ariège,76,5
 10387,10,Aube,AUBE,Aube,44,5
 11069,11,Aude,AUDE,Aude,76,5
 12202,12,Aveyron,AVEYRON,Aveyron,76,5
@@ -95,11 +95,11 @@ cheflieu,dep,libelle,ncc,nccenr,reg,tncc
 93008,93,Seine-Saint-Denis,SEINE SAINT DENIS,Seine-Saint-Denis,11,3
 94028,94,Val-de-Marne,VAL DE MARNE,Val-de-Marne,11,2
 95500,95,Val-d'Oise,VAL D OISE,Val-d'Oise,11,2
-97105,971,Guadeloupe,GUADELOUPE,Guadeloupe,1,3
-97209,972,Martinique,MARTINIQUE,Martinique,2,3
-97302,973,Guyane,GUYANE,Guyane,3,3
-97411,974,La Réunion,LA REUNION,La Réunion,4,0
-97608,976,Mayotte,MAYOTTE,Mayotte,6,0
+97105,971,Guadeloupe,GUADELOUPE,Guadeloupe,01,3
+97209,972,Martinique,MARTINIQUE,Martinique,02,3
+97302,973,Guyane,GUYANE,Guyane,03,3
+97411,974,La Réunion,LA REUNION,La Réunion,04,0
+97608,976,Mayotte,MAYOTTE,Mayotte,06,0
 97500,975,Saint-Pierre-et-Miquelon,SAINT-PIERRE-ET-MIQUELON,Saint-Pierre-et-Miquelon,COM,
 97700,977,Saint-Barthélemy,SAINT-BARTHELEMY,Saint-Barthélemy,COM,
 97800,978,Saint-Martin,SAINT-MARTIN,Saint-Martin,COM,
