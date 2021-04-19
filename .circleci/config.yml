@@ -82,7 +82,7 @@ jobs:
                                 echo "$f not found"
                                 ls .
                         fi
-			  
+
                         lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd propilot ; put $f ; quit"
                         if [ $? -eq 0 ]; then
                                 echo "$f successfuly transfered."
