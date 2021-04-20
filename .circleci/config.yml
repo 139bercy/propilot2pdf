@@ -63,7 +63,8 @@ jobs:
                       #git add archive.zip
                       git add *.pdf
                       git commit -m "add new reports [ci skip]"
-                      git add *.docx
+                      cd ../reports_word
+                      git add Suivi*.docx
                       git commit -m "add new docx reports [ci skip]"
                       git push
             - run:
