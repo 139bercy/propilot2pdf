@@ -4,8 +4,6 @@ plotly
 psutil
 openpyxl
 seaborn
-fpdf
-reportlab
 python-docx
 docxtpl
 docxcompose
