@@ -58,12 +58,9 @@ jobs:
                       cd /home/circleci/project/propilot2pdf
                       jupyter nbconvert --to python build_reports.ipynb
                       python build_reports.py
-                      cd reports
                       #zip -9 archive.zip *.pdf
                       #git add archive.zip
-                      git add *.pdf
-                      git commit -m "add new reports [ci skip]"
-                      cd ../reports_word
+                      cd reports_word
                       git add Suivi*.docx
                       git commit -m "add new docx reports [ci skip]"
                       git push
