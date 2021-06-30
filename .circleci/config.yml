@@ -52,7 +52,7 @@ jobs:
                     git config --global  user.email "circleci@circleci"
                     git config --global user.name "CircleCI"
                     git commit -m "add new docx reports [ci skip]"
-                    git push
+                    git push --set-upstream origin {{ .Branch }}
           - run:
                 name: Export des données en format csv
                 no_output_timeout: 1h
