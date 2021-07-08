@@ -8,7 +8,10 @@ data
 *.pkl
 .vscode
 reports_word/Generation_p2p/*
+reports_word/transposed_reports/*
 !reports_word/Generation_p2p
+!reports_word/transposed_reports
 
 
 Conversion.py
+modified_reports/*
