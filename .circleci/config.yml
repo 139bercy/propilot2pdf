@@ -53,30 +53,30 @@ jobs:
                     git config --global user.name "CircleCI"
                     git commit -m "add new docx reports [ci skip]"
                     git push --set-upstream origin $CIRCLE_BRANCH
-          - run:
-                name: Export des données en format csv
-                no_output_timeout: 1h
-                command: |
-                    jupyter nbconvert --to python export_csv.ipynb
-                    python export_csv.py
-                    FILES=exports/*.csv
-                    for f in $FILES
-                      do
+          # - run:
+          #       name: Export des données en format csv
+          #       no_output_timeout: 1h
+          #       command: |
+          #           jupyter nbconvert --to python export_csv.ipynb
+          #           python export_csv.py
+          #           FILES=exports/*.csv
+          #           for f in $FILES
+          #             do
 
-                      echo "Sending $f"
+          #             echo "Sending $f"
 
-                      if test -f "$f"; then
-                              echo "$f successfuly created."
-                      else
-                              echo "$f not found"
-                              ls .
-                      fi
+          #             if test -f "$f"; then
+          #                     echo "$f successfuly created."
+          #             else
+          #                     echo "$f not found"
+          #                     ls .
+          #             fi
 
-                      lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd propilot ; put $f ; quit"
-                      if [ $? -eq 0 ]; then
-                              echo "$f successfuly transfered."
-                      fi
-                      done
+          #             lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd propilot ; put $f ; quit"
+          #             if [ $? -eq 0 ]; then
+          #                     echo "$f successfuly transfered."
+          #             fi
+          #             done
 workflows:
   version: 2.1
   main:
