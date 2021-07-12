@@ -11,6 +11,8 @@ reports_word/Generation_p2p/*
 !reports_word/Generation_p2p
 reports_word/transposed_reports/*
 modified_reports/*
-
 Conversion.py
+
+# Les fichiers temporaires par Libreoffice
+.~lock.*
 
