@@ -7,3 +7,4 @@ seaborn
 python-docx
 docxtpl
 docxcompose
+unidecode
