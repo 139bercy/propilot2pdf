@@ -8,10 +8,14 @@ data
 *.pkl
 .vscode
 reports_word/Generation_p2p/*
+reports_word/transposed_reports/*
 !reports_word/Generation_p2p
+
 reports_word/transposed_reports/*
 modified_reports/*
 Conversion.py
+
+#!reports_word/transposed_reports
 
 # Les fichiers temporaires par Libreoffice
 .~lock.*
