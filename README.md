@@ -19,6 +19,15 @@ Libreoffice (si pas installé par défaut)
 
 # Comment générer des fiches ?
 
+## Obtenir les données
+
+1. Demander au BercyHub la clé et l'URL du dépot de données.
+2. Créer un dossier data/ puis s'y rendre ```mkdir data; cd data```
+3. Lancer la commande ```sftp -P 2022 -i ../key url_sftp.com```
+4. Obtenir les fichiers csv ```get *.csv```
+
+
+
 ## Générer des fiches reprenant le commentaires des précédentes versions
 
 1. Lancer le notebook ```chargement_propilot.ipynb``` pour obtenir le fichier ```pp_dep.csv```.
