@@ -21,3 +21,5 @@ reports_word/reports_images
 # Les fichiers temporaires par Libreoffice
 .~lock.*
 
+# Les fichiers pdf 
+reports_pdf/*
