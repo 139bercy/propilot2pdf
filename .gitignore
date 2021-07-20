@@ -5,7 +5,6 @@
 # Ajout après le travail en local sur la génération word
 *.csv
 *.key
-data
 *.pkl
 .vscode
 
