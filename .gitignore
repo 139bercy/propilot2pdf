@@ -5,24 +5,23 @@
 # Ajout après le travail en local sur la génération word
 *.csv
 *.key
+data
 *.pkl
-.vscode
 
-# Dossier reports_word
-reports_word/Generation_p2p/*
-reports_word/reports_images
-reports_word/transposed_reports/*
-reports_word/transposed_reports/.gitkeep
-!reports_word/Generation_p2p
-reports_word/*.docx
-
-
-
-modified_reports/*
-!modified_reports/.gitkeep
+# Fichier .py 
 Conversion.py
 
-#!reports_word/transposed_reports
+# Travail sur les dossiers word
+# Dossier reports_word 
+reports_word/Generation_p2p/*
+!reports_word/Generation_p2p
+reports_word/reports_images/*
+!reports_word/reports_images/.gitkeep
+reports_word/transposed_reports/*
+!reports_word/transposed_reports/.gitkeep
+reports_word/*.docx
+modified_reports/*
+!modified_reports/.gitkeep
 
 # Les fichiers temporaires par Libreoffice
 .~lock.*
@@ -33,6 +32,3 @@ reports_pdf/*
 
 reports/*
 !reports/.gitkeep
-
-data/*
-!data/.gitkeep
