@@ -1,6 +1,6 @@
 # Python
 .ipynb_checkpoints
-
+.vscode
 # Ajout après le travail en local sur la génération word
 *.csv
 *.key
