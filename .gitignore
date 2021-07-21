@@ -1,6 +1,9 @@
 # Python
 .ipynb_checkpoints
 .vscode
+.Rhistory
+.idea/
+__pycache__/
 
 # Ajout après le travail en local sur la génération word
 *.csv
