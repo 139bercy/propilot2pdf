@@ -45,14 +45,14 @@ jobs:
                 command: |
                     jupyter nbconvert --to python build_reports.ipynb
                     python build_reports.py
-                    #zip -9 archive.zip *.pdf
-                    #git add archive.zip
-                    cd reports_word
-                    git add Suivi*.docx
-                    git config --global  user.email "circleci@circleci"
-                    git config --global user.name "CircleCI"
-                    git commit -m "add new docx reports [ci skip]"
-                    git push --set-upstream origin $CIRCLE_BRANCH
+          #          #zip -9 archive.zip *.pdf
+          #          #git add archive.zip
+          #          cd reports_word
+          #          git add Suivi*.docx
+          #          git config --global  user.email "circleci@circleci"
+          #          git config --global user.name "CircleCI"
+          #          git commit -m "add new docx reports [ci skip]"
+          #          git push --set-upstream origin $CIRCLE_BRANCH
           # - run:
           #       name: Export des données en format csv
           #       no_output_timeout: 1h
