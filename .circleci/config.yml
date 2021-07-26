@@ -1,48 +1,89 @@
 ---
 version: 2.1
 jobs:
-    build-and-send:
+    install-requirements:
+      docker:
+              - image: python:3.8
+      steps:
+        - checkout
+        - restore_cache:
+            keys:
+              - dependencies-{{ checksum "requirements.txt"}}
+        - run:
+              name: Installation des requirements Python
+              command: |
+                  python3 -m venv venv
+                  . venv/bin/activate
+                  pip3 install -r requirements.txt
+                  python -m ipykernel install
+        - save_cache:
+            key: dependencies-{{ checksum "requirements.txt"}}
+            paths:
+              - "venv"
+
+    get-daily-data:
+      docker:
+              - image: python:3.8
+      steps:
+        - checkout
+        - run: date +%F > date
+        - run:
+              name : Récupération des données ProPilot
+              command: |
+                  echo "$DFAKTO_PK_BASE64" | base64 -d > dfakto.key
+                  chmod 400 dfakto.key
+                  chmod 777 ssh_askpass.sh
+                  DISPLAY=1 SSH_ASKPASS="./ssh_askpass.sh" ssh-add dfakto.key < /dev/null
+                  #ssh-keyscan -H ${DFAKTO_URL} >> ~/.ssh/known_hosts
+                  mkdir data && cd data
+                  sftp -o StrictHostKeychecking=no -P ${DFAKTO_PORT} -i ../dfakto.key ${USER_NAME}@${DFAKTO_URL} \<<EOF
+                  cd files
+                  get *.csv
+                  exit
+        - save_cache:
+           key: data-input-daily-{{ checksum "date" }}
+           paths:
+             - "data"
+
+    build-pp_dep-and-fiches:
         docker:
                 - image: python:3.8
         steps:
           - checkout
+          - run: date +%F > date
           - run:
                 name: Installation des prérequis
                 command: |
                     apt-get update
                     apt-get install -y zip lftp
-          - run:
-                name : Récupération des données ProPilot
-                command: |
-                    echo "$DFAKTO_PK_BASE64" | base64 -d > dfakto.key
-                    chmod 400 dfakto.key
-                    chmod 777 ssh_askpass.sh
-                    DISPLAY=1 SSH_ASKPASS="./ssh_askpass.sh" ssh-add dfakto.key < /dev/null
-                    #ssh-keyscan -H ${DFAKTO_URL} >> ~/.ssh/known_hosts
-                    mkdir data && cd data
-                    sftp -o StrictHostKeychecking=no -P ${DFAKTO_PORT} -i ../dfakto.key ${USER_NAME}@${DFAKTO_URL} \<<EOF
-                    cd files
-                    get *.csv
-                    exit
-          - run:
-                name: Installation des requirements Python
-                command: |
-                    pip3 install -r requirements.txt
-                    python -m ipykernel install --user
+          - restore_cache:
+              keys:
+                - data-input-daily-{{ checksum "date" }}
+          - restore_cache:
+              keys:
+                - dependencies-{{ checksum "requirements.txt"}}
           - run:
                 name: Chargement des données ProPilot
                 no_output_timeout: 1h
                 command: |
+                    python3 -m venv venv
+                    . venv/bin/activate
                     jupyter nbconvert --to python chargement_propilot.ipynb
                     python chargement_propilot.py
                     FILE=pp_dep.csv
                     if test -f "$FILE"; then
                         echo "$FILE successfuly created."
                     fi
+          - persist_to_workspace:
+              root: ./
+              paths:
+                - pp_dep.csv
           - run:
                 name: Production des fiches parlementaires
                 no_output_timeout: 1h
                 command: |
+                    python3 -m venv venv
+                    . venv/bin/activate
                     jupyter nbconvert --to python build_reports.ipynb
                     python build_reports.py
           #          #zip -9 archive.zip *.pdf
@@ -77,18 +118,100 @@ jobs:
           #                     echo "$f successfuly transfered."
           #             fi
           #             done
+
+    convert-pp_dep-to-json-france-relance:
+        docker:
+          - image: python:3.8
+        steps:
+          - checkout
+          - run: date +%F > date
+          - restore_cache:
+              keys:
+                - dependencies-{{ checksum "requirements.txt"}}
+          - attach_workspace:
+              at: ./
+          - run:
+                name: Génération des documents JSON à publier sur data-economie pour le TDB France Relance
+                command: |
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    jupyter nbconvert --to python csvToJson.ipynb
+                    python csvToJson.py
+          - save_cache:
+             key: relance-tableau-de-bord-data-{{ checksum "date" }}
+             paths:
+               - "france-relance-data-tableau-de-bord.txt"
+
+    publish-json-france-relance:
+        docker:
+          - image: python:3.8
+        steps:
+          - checkout
+          - run: date +%F > date
+          - attach_workspace:
+              at: ./
+          - restore_cache:
+              keys:
+                - relance-tableau-de-bord-data-{{ checksum "date" }}
+          # - run:
+          #       name: Publication des documents JSON à publier sur data-economie pour le TDB France Relance
+          #       command: |
+          #         apt-get update
+          #         apt-get install -y zip lftp
+          #         lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd france-relance-tableau-de-bord ; put france-relance-data-tableau-de-bord.txt ; quit"
+          - store_artifacts:
+              path: ./pp_dep.csv
+              destination: pp_dep.csv
+          - store_artifacts:
+              path: ./france-relance-data-tableau-de-bord.txt
+              destination: france-relance-data-tableau-de-bord.txt
+
+
 workflows:
   version: 2.1
   main:
     jobs:
-      - build-and-send
+      - install-requirements
+      - build-pp_dep-and-fiches:
+            requires:
+              - install-requirements
+      - convert-pp_dep-to-json-france-relance:
+            requires:
+              - build-pp_dep-and-fiches
+      - publish-json-france-relance:
+            requires:
+              - convert-pp_dep-to-json-france-relance
+            # filters:
+            #   branches:
+            #     only:
+            #       - master
 
   daily:
     jobs:
-      - build-and-send
+      - install-requirements
+      - build-pp_dep-and-fiches:
+            requires:
+              - install-requirements
+      - convert-pp_dep-to-json-france-relance:
+            requires:
+              - build-pp_dep-and-fiches
+      - publish-json-france-relance:
+            requires:
+              - convert-pp_dep-to-json-france-relance
     triggers:
       - schedule:
           cron: 0 6 * * 2,3,4,5,6
+          filters:
+            branches:
+              only:
+                - master
+
+  daily-data:
+    jobs:
+      - get-daily-data
+    triggers:
+      - schedule:
+          cron: 0 5 * * 2,3,4,5,6
           filters:
             branches:
               only:
