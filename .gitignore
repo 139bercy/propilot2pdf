@@ -10,7 +10,7 @@ __pycache__/
 *.key
 data
 *.pkl
-
+*.zip
 # Fichier .py
 Conversion.py
 
@@ -26,12 +26,17 @@ reports_word/*.docx
 modified_reports/*
 !modified_reports/.gitkeep
 
+Fiche_Avant_Osmose/*.docx
+
+
 # Les fichiers temporaires par Libreoffice
 .~lock.*
 
 # Les fichiers pdf
 reports_pdf/*
 !reports_pdf/.gitkeep
+
+Fiche_Avant_Osmose_pdf/*.pdf
 
 reports/*
 !reports/.gitkeep
