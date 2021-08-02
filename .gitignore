@@ -8,7 +8,6 @@ __pycache__/
 # Ajout après le travail en local sur la génération word
 *.csv
 *.key
-data
 *.pkl
 *.zip
 # Fichier .py
