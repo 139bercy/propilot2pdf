@@ -171,7 +171,6 @@ workflows:
   version: 2.1
   main:
     jobs:
-      - get-daily-data
       - install-requirements
       - build-pp_dep-and-fiches:
             requires:
