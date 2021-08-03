@@ -35,13 +35,14 @@ jobs:
                   chmod 777 ssh_askpass.sh
                   DISPLAY=1 SSH_ASKPASS="./ssh_askpass.sh" ssh-add dfakto.key < /dev/null
                   #ssh-keyscan -H ${DFAKTO_URL} >> ~/.ssh/known_hosts
-                  mkdir data && cd data
+                  mkdir data || true
+                  cd data
                   sftp -o StrictHostKeychecking=no -P ${DFAKTO_PORT} -i ../dfakto.key ${USER_NAME}@${DFAKTO_URL} \<<EOF
                   cd files
                   get *.csv
                   exit
         - save_cache:
-           key: data-input-daily-{{ checksum "date" }}
+           key: data-input-{{ checksum "date" }}
            paths:
              - "data"
 
@@ -58,7 +59,7 @@ jobs:
                     apt-get install -y zip lftp
           - restore_cache:
               keys:
-                - data-input-daily-{{ checksum "date" }}
+                - data-input-{{ checksum "date" }}
           - restore_cache:
               keys:
                 - dependencies-{{ checksum "requirements.txt"}}
@@ -188,6 +189,7 @@ workflows:
 
   daily:
     jobs:
+      - get-daily-data
       - install-requirements
       - build-pp_dep-and-fiches:
             requires:
