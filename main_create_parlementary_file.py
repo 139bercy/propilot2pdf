@@ -42,8 +42,3 @@ def lancement_auto_notebook(notebook_filename):
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
