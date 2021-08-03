@@ -27,9 +27,8 @@ reports_word/*.docx
 modified_reports/*
 !modified_reports/.gitkeep
 
-Fiche_Avant_Osmose/*.docx
-
-
+parlementary_file_before_new_comment
+parlementary_file_before_new_comment_pdf
 # Les fichiers temporaires par Libreoffice
 .~lock.*
 
