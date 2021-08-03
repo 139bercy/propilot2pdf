@@ -26,10 +26,10 @@ def main():
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 
                 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
     today_str = f"{months[today.month-1]}_{today.year}"
-    name_zip = 'Fiche_Parlementaire_Avant_Commentaires_{}.zip'.format(today_str)
+    name_zip = 'parlementary_file_before_new_comment{}.zip'.format(today_str)
     f=zipfile.ZipFile(name_zip,'w',zipfile.ZIP_DEFLATED)
-    f.write("Fiche_Avant_Osmose_pdf")
-    f.write("Fiche_Avant_Osmose")
+    f.write("parlementary_file_before_new_comment_pdf")
+    f.write("parlementary_file_before_new_comment")
     f.close()  
     
 
