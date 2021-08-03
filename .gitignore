@@ -10,6 +10,8 @@ __pycache__/
 *.key
 *.pkl
 *.zip
+temp_docx
+reports_word/temp_transposition
 # Fichier .py
 Conversion.py
 
