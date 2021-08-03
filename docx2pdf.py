@@ -13,7 +13,7 @@ taxo_dep_df = pd.read_csv(os.path.join('refs', 'taxo_deps.csv'), dtype={'dep':st
 # Définition et création des dossiers
 DIR_TO_CONVERT = os.path.join(os.getcwd(), "modified_reports")
 OUTPUT_DIR = os.path.join(os.getcwd(), 'reports_pdf')
-avant_osmose_pdf = "Fiche_Avant_Osmose_pdf"
+avant_osmose_pdf = "parlementary_file_before_new_comment_pdf"
 DIR_COPY_DOCX = os.path.join(os.getcwd(), "temp_docx")
 
 # main
@@ -22,7 +22,7 @@ def main_docx2pdf_avant_osmose():
     mkdir_ifnotexist(OUTPUT_DIR)
     mkdir_ifnotexist(DIR_COPY_DOCX)
     mkdir_ifnotexist(avant_osmose_pdf) 
-    depname2num = creation_dico_dep2name(taxo_dep_df)
+    depname2num = create_dico_dep2name(taxo_dep_df)
     # Mapping docx -> nom pdf
     docx2pdf_filename, doc_odt = docxnames_to_pdfnames(DIR_TO_CONVERT, depname2num)
     check_duclicated_docx(docx2pdf_filename)
@@ -34,7 +34,7 @@ def main_docx2pdf_apres_osmose():
     mkdir_ifnotexist(OUTPUT_DIR)
     mkdir_ifnotexist(DIR_COPY_DOCX)
     mkdir_ifnotexist(avant_osmose_pdf)
-    depname2num = creation_dico_dep2name(taxo_dep_df)
+    depname2num = create_dico_dep2name(taxo_dep_df)
     # Mapping docx -> nom pdf
     docx2pdf_filename, doc_odt = docxnames_to_pdfnames(DIR_TO_CONVERT, depname2num)
     check_duclicated_docx(docx2pdf_filename)
@@ -47,7 +47,7 @@ def mkdir_ifnotexist(path) :
         os.mkdir(path)
         
 
-def creation_dico_dep2name(taxo_dep_df):
+def create_dico_dep2name(taxo_dep_df):
     depname2num = {}
     for i, row in taxo_dep_df.iterrows():
         if row['dep'] != '0':
@@ -137,7 +137,7 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
         os.rename(pdf_filename, os.path.join(OUTPUT_DIR, clean_pdf_filename))
 
     # Traitement des odt
-    #Creation du dictionnaire de renommage
+    #create du dictionnaire de renommage
     renommage_odt = {}
     for filename in doc_odt:
         if "plan relance" in filename.lower():
@@ -167,8 +167,8 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
 
 def export_to_pdf_avant_osmose(depname2num):
     # Pour les fiches avant le passage osmose
-    docx2pdf_filename, doc_odt = docxnames_to_pdfnames(os.path.join(os.getcwd(), "Fiche_Avant_Osmose"), depname2num)
-    output = "Fiche_Avant_Osmose_pdf"
+    docx2pdf_filename, doc_odt = docxnames_to_pdfnames(os.path.join(os.getcwd(), "parlementary_file_before_new_comment"), depname2num)
+    output = "parlementary_file_before_new_comment_pdf"
     # Conversion docx -> pdf - Peut prendre quelques minutes
     # CAVEAT : Fermer les applications Libreoffice ouverte avant de lancer cette cellule
     files_to_convert = list(docx2pdf_filename.keys())

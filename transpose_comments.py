@@ -34,7 +34,7 @@ template_dir = "reports_word"
 modified_docx_dir = "modified_reports"
 transposed_docx_dir = os.path.join("reports_word", "transposed_reports")
 image_folder = os.path.join("reports_word", "reports_images")
-avant_osmose = "Fiche_Avant_Osmose"
+avant_osmose = "parlementary_file_before_new_comment"
 temp_transpo = os.path.join('reports_word', 'temp_transposition')
 # Mesures des fiches V2 contenant des commentaires
 volet2mesures = {
@@ -370,7 +370,7 @@ def transpose_modification_to_new_reports(template2modified_docx):
         output_basename = template_path.split(os.sep)[-1]
         output_path = os.path.join(transposed_docx_dir, output_basename)
 
-        output_name = fill_template(template_path, os.path.join(os.getcwd(), 'Fiche_Avant_Osmose', output_basename), volet2mesures)
+        output_name = fill_template(template_path, os.path.join(os.getcwd(), 'parlementary_file_before_new_comment', output_basename), volet2mesures)
         
         if modified_docx_path is None:
             unhit += 1
