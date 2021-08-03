@@ -42,7 +42,7 @@ jobs:
                   get *.csv
                   exit
         - save_cache:
-           key: data-input-daily-{{ checksum "date" }}
+           key: data-input-{{ checksum "date" }}
            paths:
              - "data"
 
@@ -59,7 +59,7 @@ jobs:
                     apt-get install -y zip lftp
           - restore_cache:
               keys:
-                - data-input-daily-{{ checksum "date" }}
+                - data-input-{{ checksum "date" }}
           - restore_cache:
               keys:
                 - dependencies-{{ checksum "requirements.txt"}}
@@ -189,6 +189,7 @@ workflows:
 
   daily:
     jobs:
+      - get-daily-data
       - install-requirements
       - build-pp_dep-and-fiches:
             requires:
