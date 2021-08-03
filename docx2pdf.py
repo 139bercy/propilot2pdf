@@ -3,6 +3,7 @@ import re
 import pandas as pd
 from docx2python import docx2python
 from unidecode import unidecode
+from shutil import copyfile
 
 # Variable globale
 
@@ -12,11 +13,15 @@ taxo_dep_df = pd.read_csv(os.path.join('refs', 'taxo_deps.csv'), dtype={'dep':st
 # Définition et création des dossiers
 DIR_TO_CONVERT = os.path.join(os.getcwd(), "modified_reports")
 OUTPUT_DIR = os.path.join(os.getcwd(), 'reports_pdf')
+avant_osmose_pdf = "Fiche_Avant_Osmose_pdf"
+DIR_COPY_DOCX = os.path.join(os.getcwd(), "temp_docx")
 
 # main
 
 def main_docx2pdf_avant_osmose():
     mkdir_ifnotexist(OUTPUT_DIR)
+    mkdir_ifnotexist(DIR_COPY_DOCX)
+    mkdir_ifnotexist(avant_osmose_pdf) 
     depname2num = creation_dico_dep2name(taxo_dep_df)
     # Mapping docx -> nom pdf
     docx2pdf_filename, doc_odt = docxnames_to_pdfnames(DIR_TO_CONVERT, depname2num)
@@ -27,6 +32,8 @@ def main_docx2pdf_avant_osmose():
 
 def main_docx2pdf_apres_osmose():
     mkdir_ifnotexist(OUTPUT_DIR)
+    mkdir_ifnotexist(DIR_COPY_DOCX)
+    mkdir_ifnotexist(avant_osmose_pdf)
     depname2num = creation_dico_dep2name(taxo_dep_df)
     # Mapping docx -> nom pdf
     docx2pdf_filename, doc_odt = docxnames_to_pdfnames(DIR_TO_CONVERT, depname2num)
@@ -112,12 +119,18 @@ def check_duclicated_docx(docx2pdf_filename):
     
 
 def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2num):
-    files_to_convert = docx2pdf_filename.keys()
+    files_to_convert = list(docx2pdf_filename.keys())
     for filename in files_to_convert:
+        # Effectuer la copie : les noms de fichiers comportant un espace ou une apostrophe rencontrent
+        # font planter la conversion
+        clean_path = rename_docx_without_buggy_chars(filename)
+        # Renommage des clés docx2pdf_filename pour faire correspondre les nouveaux noms de docx
+        # vers les bons pdf
+        replace_key(docx2pdf_filename, filename, clean_path)
         # Conversion en pdf
-        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{filename}"')
+        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{clean_path}"')
         
-    for filename in files_to_convert:    
+    for filename in docx2pdf_filename:    
         clean_pdf_filename = docx2pdf_filename[filename]
         pdf_basename = re.sub('.'+filename.split('.')[-1], '.pdf', os.path.basename(filename))
         pdf_filename = os.path.join(OUTPUT_DIR, pdf_basename)
@@ -135,10 +148,17 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
         
 
     for filename in doc_odt:
+        # Effectuer la copie : les noms de fichiers comportant un espace ou une apostrophe rencontrent
+        # font planter la conversion
+        clean_path = rename_docx_without_buggy_chars(filename)
+        # Renommage des clés docx2pdf_filename pour faire correspondre les nouveaux noms de docx
+        # vers les bons pdf
+        renommage_odt[clean_path] = renommage_odt[filename]
+        del renommage_odt[filename]
         # Conversion en pdf
-        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{filename}"')
+        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{clean_path}"')
         
-    for filename in doc_odt:
+    for filename in renommage_odt:
         clean_pdf_filename = renommage_odt[filename]
         pdf_basename = re.sub('.'+filename.split('.')[-1], '.pdf', os.path.basename(filename))
         pdf_filename = os.path.join(OUTPUT_DIR, pdf_basename)
@@ -151,17 +171,35 @@ def export_to_pdf_avant_osmose(depname2num):
     output = "Fiche_Avant_Osmose_pdf"
     # Conversion docx -> pdf - Peut prendre quelques minutes
     # CAVEAT : Fermer les applications Libreoffice ouverte avant de lancer cette cellule
-    files_to_convert = docx2pdf_filename.keys()
+    files_to_convert = list(docx2pdf_filename.keys())
     for filename in files_to_convert:
-        # Conversion en pdf
-        print(filename)
-        os.system(f'libreoffice --headless -convert-to pdf --outdir "{output}" {filename}')
+        # Effectuer la copie : les noms de fichiers comportant un espace ou une apostrophe rencontrent
+        # font planter la conversion
+        clean_path = rename_docx_without_buggy_chars(filename)
+        # Renommage des clés docx2pdf_filename pour faire correspondre les nouveaux noms de docx
+        # vers les bons pdf
+        replace_key(docx2pdf_filename, filename, clean_path)
+        os.system(f'libreoffice --headless -convert-to pdf --outdir "{output}" {clean_path}')
         
-    for filename in files_to_convert:    
+    for filename in docx2pdf_filename:    
         clean_pdf_filename = docx2pdf_filename[filename]
         pdf_basename = re.sub('.'+filename.split('.')[-1], '.pdf', os.path.basename(filename))
         pdf_filename = os.path.join(output, pdf_basename)
         os.rename(pdf_filename, os.path.join(output, clean_pdf_filename))
+
+
+def replace_key(dictionary, old_key, new_key):
+    dictionary[new_key] = dictionary[old_key]
+    del dictionary[old_key]
+
+
+def rename_docx_without_buggy_chars(src_file):
+    clean_filename = re.sub("[ ']", "#", src_file)
+    clean_path = os.path.join(DIR_COPY_DOCX, clean_filename.split(os.sep)[-1]) # Mettre la copie dans un autre dossier
+    if os.path.exists(clean_path):
+        os.remove(clean_path)
+    copyfile(src_file, clean_path)
+    return clean_path
 
 
 if __name__ == "__main__":

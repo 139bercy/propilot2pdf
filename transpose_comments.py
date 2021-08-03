@@ -24,36 +24,45 @@ from docx2python import docx2python
 import html
 from collections import Counter
 
+# Ouvrir les docx en tant que zip pour remplacer manipuler son code XML
+import zipfile
+
 
 # Variable globale
-
+BR_TOKEN = '###BR###'  # Les retours à la ligne encodés dans les docx seront remplacés par ce token
 template_dir = "reports_word"
 modified_docx_dir = "modified_reports"
 transposed_docx_dir = os.path.join("reports_word", "transposed_reports")
 image_folder = os.path.join("reports_word", "reports_images")
 avant_osmose = "Fiche_Avant_Osmose"
-# Les mesures des fiches v2
-volet2mesures = {'Ecologie': ['Bonus écologique',
-  "MaPrimeRénov'",
-  'Modernisation des filières automobiles et aéronautiques',
-  'Prime à la conversion des agroéquipements',
-  'Prime à la conversion des véhicules légers',
-  'Réhabilitation Friches (urbaines et sites pollués)',
-  'Rénovation bâtiments Etat'],
-  'Compétitivité': ['AAP Industrie : Soutien aux projets industriels territoires',
-  'AAP Industrie : Sécurisation approvisionnements critiques',
-  'France Num : aide à la numérisation des TPE,PME,ETI',
-  'Industrie du futur',
-  'Renforcement subventions Business France',
-  'Soutien aux filières culturelles (cinéma, audiovisuel, musique, numérique, livre)'],
-  'Cohésion': ['Apprentissage',
-  'Contrats Initiatives Emploi (CIE) Jeunes',
-  'Contrats de professionnalisation',
-  'Garantie jeunes',
-  'Parcours emploi compétences (PEC) Jeunes',
-  "Prime à l'embauche des jeunes",
-  "Prime à l'embauche pour les travailleurs handicapés",
-  'Service civique']}
+temp_transpo = os.path.join('reports_word', 'temp_transposition')
+# Mesures des fiches V2 contenant des commentaires
+volet2mesures = {
+    'Ecologie': [#'Bonus écologique',
+                  #"MaPrimeRénov'",
+                  #'Modernisation des filières automobiles et aéronautiques',
+                  #'Prime à la conversion des agroéquipements',
+                  #'Prime à la conversion des véhicules légers',
+                  #'Réhabilitation Friches (urbaines et sites pollués)',
+                  'Rénovation bâtiments Etat'],
+ 'Compétitivité': ['AAP Industrie : Soutien aux projets industriels territoires',
+                  'AAP Industrie : Sécurisation approvisionnements critiques',
+                  'France Num : aide à la numérisation des TPE,PME,ETI',
+                  #'Industrie du futur',
+                  'Renforcement subventions Business France',
+                  #'Soutien aux filières culturelles (cinéma, audiovisuel, musique, numérique, livre)'
+                  ],
+ 'Cohésion': [
+             #    'Apprentissage',
+             #     'Contrats Initiatives Emploi (CIE) Jeunes',
+             #     'Contrats de professionnalisation',
+             #     'Garantie jeunes',
+             #     'Parcours emploi compétences (PEC) Jeunes',
+             #     "Prime à l'embauche des jeunes",
+             #     "Prime à l'embauche pour les travailleurs handicapés",
+             #     'Service civique'
+             ]
+}
 
 comment_prefixes = set(['Espace Commentaires\xa0:', 'Espace Commentaires :', 
                         'Exemples de lauréats :', 'Exemples de lauréats\xa0:', 
@@ -69,6 +78,7 @@ def main_transpose_comments():
     mkdir_ifnotexist(transposed_docx_dir)
     mkdir_ifnotexist(image_folder)
     mkdir_ifnotexist(modified_docx_dir)
+    mkdir_ifnotexist(temp_transpo)
     assert len(os.listdir(modified_docx_dir)) > 0, f"Le dossier {modified_docx_dir} est vide. Vous devez y placer les fichiers docx contenant les commentaires à déplacer."
 
     templates = [os.path.join(template_dir, filename) for filename in os.listdir(template_dir) if filename.endswith('docx')]
@@ -102,6 +112,7 @@ def flatten(L):
         
 
 def gen_unit_list(L):
+    # Générer 
     if (type(L) is list) and (len(L) > 0) and (type(L[0]) is not list):
         yield L
     else:
@@ -109,15 +120,10 @@ def gen_unit_list(L):
             yield from gen_unit_list(item)
 
 
-def count_occurence(texts):
-    counter = Counter()
-    for text in texts:
-        counter[text] += 1
-    return counter
-
-
 def reformat_bullet_point(text):
-    return re.sub('^--\t', '- ', text)
+    text = re.sub('--\t\t', '- ', text)
+    text = re.sub('^--\t-*', '- ', text)
+    return text
 
 
 def reformat_url(text):
@@ -127,32 +133,26 @@ def reformat_url(text):
     return text
 
 
-def extract_comment(textbox_content):
-    occurences = count_occurence(textbox_content)
-    text_to_keep = []
-    flag_text = None
-    for text in textbox_content:
-        if occurences[text] == 2 and flag_text == text:
-            # On rencontre le début du commentaire pour la deuxième fois.
-            break
-        elif occurences[text] == 2 and flag_text == None and not text.isdigit():
-            # On renconre le début du commentaire pour la première fois
-            flag_text = text
-        text_to_keep.append(text)
+def fix_vanishing_break_lines(text):
+    # On remplace les retours à la ligne transformé dans modify_docx_break_line
+    text = re.sub(BR_TOKEN, '\n', text)
+    return text
 
-    textbox_content = text_to_keep
     
+def extract_comment(textbox_content):    
     # Cleaning section
     texts = []
     for text in textbox_content:
         text = html.unescape(text)
         text = reformat_bullet_point(text)
         text = reformat_url(text)
+        text = fix_vanishing_break_lines(text)
+        text = text.strip()
         
         texts.append(text)
     textbox_content = texts
-    ###
 
+    # Concatenation
     textbox_content = [text.strip() for text in textbox_content]
     textbox_content = '\n'.join(textbox_content)
     textbox_content = textbox_content.strip()
@@ -178,13 +178,12 @@ def extract_comment(textbox_content):
     textbox_content = textbox_content.strip()
     # Carriage pour conserver les retours à la ligne
     textbox_content = re.sub("\n", "\r\n", textbox_content)
-    # Changer tous les "plan de relance" en "plan France Relance" ------------------------------------ !!!!!!!!!!!!!!!!!!!!
-    textbox_content = re.sub("plan de relance", "plan France Relance", textbox_content)
     return textbox_content
     
 
 def alternate_texts_and_images(doc, textbox_content):
-    r = re.compile("----media/(.*?)----")
+    # Renvoie une liste [{text:..., image:...}, {text:..., image:...}...]
+    r = re.compile("----media/(.*?)----")  # Pattern pour les images
     image_names = r.findall(textbox_content) + [None]
     texts = r.split(textbox_content)
     
@@ -195,66 +194,110 @@ def alternate_texts_and_images(doc, textbox_content):
             frameworks.append({'text': text, 'image': InlineImage(doc, image_path, height=Mm(40))})
         else:
             frameworks.append({'text': text, 'image': ''})
-        
-        if text.strip().isdigit():
-            print('---- Récupération ratée ! Probablement un numéro de page attrapé au lieu du texte')
     return frameworks
-
-
-def get_volet_to_comment(doc, content, volets2mesures):
-    volet2comment = {}
-    body = content.body
-    count_mesures = 0
-    for text_list in gen_unit_list(content.body):                
-        volet = None
-        for text in text_list:
-            clean_text = text.lower().strip()
-            clean_text = re.sub('\xa0', ' ', clean_text)
-            if clean_text.startswith('volet :'):
-                volet = clean_text.split(':')[-1].strip()
-                
-        if volet is not None:
-            # Filtrer des retours à la lignes
-            textbox_content = text_list
-            textbox_content = textbox_content[:-7]
-
-            # On extrait le commentaire
-            textbox_content = extract_comment(textbox_content)
-            frameworks = alternate_texts_and_images(doc, textbox_content)
-
-            # On associe volet et commentaire
-            encoded_volet = encode_name(volet)
-            volet2comment[encoded_volet] = frameworks
-    return volet2comment
 
 
 def get_mesure_to_comment(doc, content, volet2mesures):
     mesure2comment = {}
-    body = content.body
-    # Les mesures doivent apparaitre dans le même ordre que le document
-    ordered_mesures = [mesure for mesures in volet2mesures.values() for mesure in mesures]
-
-    for i in range(1, len(ordered_mesures)+1):
-        # On extrait la partie textuelle à copier
-        textbox_content = body[2 + 6 * i][0][0]
-
-        # Filtrer des retours à la lignes et potentiels num page
-        while len(textbox_content) > 0 and (textbox_content[0] == '' or textbox_content[0].strip().isdigit()):
-            textbox_content = textbox_content[1:]
-                
-        # On extrait le commentaire
-        textbox_content = extract_comment(textbox_content)
-        frameworks = alternate_texts_and_images(doc, textbox_content)
-        
-        # On associe la mesure au commentaire
-        encoded_mesure = encode_name(ordered_mesures[i-1])
-        mesure2comment[encoded_mesure] = frameworks  #textbox_content
-    assert len(mesure2comment) == len(ordered_mesures)
     
+    # Pattern regex pour attraper le nom des mesures
+    list_mesures = [mesure for mesures in volet2mesures.values() for mesure in mesures]
+    re_group_mesures = "("+ '|'.join(list_mesures) + ")"
+    re_title_mesure_pattern = f'(\d - <a href=.*>{re_group_mesures}</a>)'
+    
+    current_mesure = None
+    num_blocks_to_pass = 0
+    for text_list_block in content.body:
+        text_list = list(flatten(text_list_block))
+        if current_mesure is None:
+            # On veut le nom de la mesure
+            text_unit = " ".join(text_list)
+            title_mesures = re.findall(re_title_mesure_pattern, text_unit)
+            if len(title_mesures) > 0:
+                current_mesure = title_mesures[0][1]
+                num_blocks_to_pass = 6
+        else:
+            # On veut récupérer le commentaire
+            # il faudra passer 3 tableaux + 3 retours à la ligne
+            if num_blocks_to_pass == 0:
+                
+                # On extrait le commentaire
+                text_list = list(flatten(text_list_block))
+                textbox_content = extract_comment(text_list)
+                frameworks = alternate_texts_and_images(doc, textbox_content)
+
+                # On associe volet et commentaire
+                encoded_mesure = encode_name(current_mesure)
+                mesure2comment[encoded_mesure] = frameworks
+                
+                # Reinit la mesure courante pour récupérer la suivante
+                current_mesure = None
+            
+            num_blocks_to_pass -= 1
+    
+    assert len(mesure2comment) == len(list_mesures), f"{len(mesure2comment)} != {len(list_mesures)} attendues"
     return mesure2comment
 
 
+def get_volet_to_comment(doc, content, volet2mesures):
+    volet2comment = {}
+    body = content.body
+    volet = None
+    text_unit_generator = gen_unit_list(content.body)
+    volet_names_regex = "(" + '|'.join([volet for volet in volet2mesures]) + ")"  #-> (Ecologie|Compétitivité|Cohésion)
+
+    for text_list in text_unit_generator:
+        # On cherche à trouver le titre contenant le nom du volet (partie else)
+        # puis on saura que le texte suivant contiendra le commentaire
+        if volet is not None:
+            # On extrait le commentaire
+            textbox_content = extract_comment(text_list)
+            frameworks = alternate_texts_and_images(doc, textbox_content)
+            
+            # On associe volet et commentaire
+            encoded_volet = encode_name(volet)
+            volet2comment[encoded_volet] = frameworks
+            
+            # Reinitialise volet
+            volet = None            
+        else:
+            text_list = ' '.join(text_list)
+            patterns = re.findall(f'(Volet [1-3] : {volet_names_regex})', text_list)
+            if len(patterns) > 0:
+                # On attrape le titre du volet et récupère le nom du volet
+                volet = patterns[-1][-1]
+    assert len(volet2comment) == 3
+    return volet2comment
+
+
+def modify_docx_break_line(input_docx, output_docx):
+    # Remplacer les retours à la ligne codés en XML (balise <w:br/>)
+    # par un token dans un block de texte ce qui permettra d'être lu par docx2python
+    # Ce token sera remplacé par "\r\n"
+    with open(input_docx, 'rb') as f:
+        # Ouvrir le docx entrant en tant que zip et ouvrir le docx de sortie en tant que zip
+        with zipfile.ZipFile(f) as inzip, zipfile.ZipFile(output_docx, "w") as outzip:
+            # Itérer sur tous les fichiers du zip entrant
+            for inzipinfo in inzip.infolist():
+                # Ouvrir le fichier courant
+                with inzip.open(inzipinfo) as infile:
+                    # Si le fichier est celui qui contient le texte du document
+                    if inzipinfo.filename == "word/document.xml":  # word/document.xml will always contains the textual content
+                        xml_content = infile.read().decode()
+                        # Modify the content of the file by replacing a string
+                        xml_content = re.sub('<w:br/>', f'<w:t>{BR_TOKEN}</w:t>', xml_content)
+                        # Write content
+                        outzip.writestr(inzipinfo.filename, xml_content)
+                    else: # Si pas de texte, simple recopiage du contenu du fichier
+                        outzip.writestr(inzipinfo.filename, infile.read())
+
+
+
 def transpose_comments(src_filename, template_filename, output_filename, volet2mesures):
+    # Remplacer les retour à la ligne par un token spécial
+    tmp_docx = os.path.join(temp_transpo, 'temp.docx')
+    modify_docx_break_line(src_filename, tmp_docx)
+
     # Lecture du document
     content = docx2python(src_filename, image_folder=image_folder)
     doc_template = DocxTemplate(template_filename)
