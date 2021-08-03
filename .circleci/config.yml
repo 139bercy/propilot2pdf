@@ -64,13 +64,14 @@ jobs:
               keys:
                 - dependencies-{{ checksum "requirements.txt"}}
           - run:
-                name: Chargement des données ProPilot
+                name: Chargement des données ProPilot et génération des fiches
                 no_output_timeout: 1h
                 command: |
                     python3 -m venv venv
                     . venv/bin/activate
-                    jupyter nbconvert --to python chargement_propilot.ipynb
-                    python chargement_propilot.py
+                    python main_avant_osmose.py
+                  #  jupyter nbconvert --to python chargement_propilot.ipynb
+                  #  python chargement_propilot.py
                     FILE=pp_dep.csv
                     if test -f "$FILE"; then
                         echo "$FILE successfuly created."
@@ -79,14 +80,14 @@ jobs:
               root: ./
               paths:
                 - pp_dep.csv
-          - run:
-                name: Production des fiches parlementaires
-                no_output_timeout: 1h
-                command: |
-                    python3 -m venv venv
-                    . venv/bin/activate
+        #  - run:
+        #        name: Production des fiches parlementaires
+        #        no_output_timeout: 1h
+        #        command: |
+        #            python3 -m venv venv
+        #            . venv/bin/activate
           #          jupyter nbconvert --to python build_reports.ipynb
-                    python main_avant_osmose.py
+        #            python main_avant_osmose.py
           #          #zip -9 archive.zip *.pdf
           #          #git add archive.zip
           #          cd reports_word
