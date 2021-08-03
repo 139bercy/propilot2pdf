@@ -69,13 +69,13 @@ def main_build_reports():
     pp_dep['code_mesure'] = pp_dep.indicateur.apply(lambda x: x.split('-')[-1].strip())
 
     # Avoir le nom des mesures utilisé dans pp_dep séparés par volet
-    volet2mesures = creation_dictionnaire_volet2mesures(pp_dep)
+    volet2mesures = create_dictionnaire_volet2mesures(pp_dep)
      
     #Obtention des valeurs cumulées Régionales et Nationale
     pp_reg, pp_nat = add_cumulated_value(pp_dep, taxo_reg_df)
 
     # On veut relier mesure -> indicateurs
-    dict_mesure_indic = liaison_mesure2indic(pp_dep, volet2code_mesures)
+    dict_mesure_indic = create_dict_mesure_indic(pp_dep, volet2code_mesures)
 
 
     # On ne veut pas afficher les lignes de Prime Rénov nulles
@@ -122,7 +122,7 @@ def main_build_reports():
 
 # Fonction nécessaire
 
-def liaison_mesure2indic(pp_dep, volet2code_mesures):
+def create_dict_mesure_indic(pp_dep, volet2code_mesures):
     # Extraction des mesures-indicateurs à afficher dans les fiches
     code_mesures_to_keep = set([mesure for volet in volet2code_mesures for mesure in volet2code_mesures[volet]])
     mesure_indics = pp_dep.groupby(['code_mesure', 'short_mesure']).agg({'short_indic': list}).reset_index()
@@ -142,7 +142,7 @@ def liaison_mesure2indic(pp_dep, volet2code_mesures):
     return dict_mesure_indic
 
 
-def creation_dictionnaire_volet2mesures(pp_dep):
+def create_dictionnaire_volet2mesures(pp_dep):
     volet2mesures = {volet: [] for volet in volet2code_mesures}
     for volet in volet2code_mesures:
         # Trier les mesures par ordre alphabétique
@@ -444,7 +444,7 @@ def mesure_to_insert(pp_dep):
     return short_mesure2url, short_mesure2to_comment
 
 
-def creation_front_page(nom_departement):
+def create_front_page(nom_departement):
     doc = DocxTemplate("template/template_front_page.docx")
     today = datetime.datetime.today()
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 
@@ -467,7 +467,7 @@ def encode_name(name):
     return name
 
 
-def creation_volet_page(nom_volet, num_volet):
+def create_volet_page(nom_volet, num_volet):
     doc = DocxTemplate("template/template_volet.docx")
     context = {'volet': nom_volet, 
                'num_volet': num_volet, 
@@ -496,7 +496,7 @@ def fusion_word(word1, word2, dep):
     return name_fusion
 
 
-def creation_content_page(all_charts_as_df, departement, region, mesure, volet, dep_name, reg_name, num_mesure, short_mesure2to_comment, short_mesure2url, dict_mesure_indic):
+def create_content_page(all_charts_as_df, departement, region, mesure, volet, dep_name, reg_name, num_mesure, short_mesure2to_comment, short_mesure2url, dict_mesure_indic):
     # Ouverture de template
     if mesure in short_mesure2to_comment and short_mesure2to_comment[mesure]:
         doc = DocxTemplate("template/template_content_page.docx")
@@ -538,7 +538,7 @@ def creation_content_page(all_charts_as_df, departement, region, mesure, volet, 
     return name_file
 
 
-def creation_fiche(dep, taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, short_mesure2to_comment, short_mesure2url, dict_mesure_indic):
+def create_fiche(dep, taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, short_mesure2to_comment, short_mesure2url, dict_mesure_indic):
     #departement: code departement 01:
     #On a les variables volet2mesures, all_charts
     reg = taxo_dep_df[taxo_dep_df['dep'] == dep].iloc[0]['reg']  # Code region
@@ -547,14 +547,14 @@ def creation_fiche(dep, taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_d
     num_volet, num_mesure = 1, 1
     reg_name = taxo_reg_df[taxo_reg_df['reg'] == reg].iloc[0]['libelle']  # libelle
     dep_name = taxo_dep_df[taxo_dep_df['dep'] == dep].iloc[0]['libelle']
-    name_fusion = creation_front_page(dep_name)
+    name_fusion = create_front_page(dep_name)
     for volet in list(volet2mesures.keys()):  # 3 itérations, dep_name, reg_name
-        name_volet = creation_volet_page(volet, num_volet) ##
+        name_volet = create_volet_page(volet, num_volet) ##
         name_fusion = fusion_word(name_fusion, name_volet, dep_name) ##
         liste_mesure = volet2mesures[volet]
         num_volet += 1
         for mesure in liste_mesure:
-            name_content = creation_content_page(all_charts_as_df, dep, reg, mesure, volet, dep_name, reg_name, num_mesure, short_mesure2to_comment, short_mesure2url, dict_mesure_indic) ##
+            name_content = create_content_page(all_charts_as_df, dep, reg, mesure, volet, dep_name, reg_name, num_mesure, short_mesure2to_comment, short_mesure2url, dict_mesure_indic) ##
             name_fusion = fusion_word(name_fusion, name_content, dep_name) ##
             num_mesure += 1
     return name_fusion
@@ -564,7 +564,7 @@ def creation_fiche(dep, taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_d
 def create_all_dep(taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, short_mesure2to_comment, short_mesure2url, dict_mesure_indic):
     list_all_dep = taxo_dep_df[~taxo_dep_df["dep"].isin(L_dep_no_output)].dep
     for dep in list_all_dep:
-        docx_path = creation_fiche(dep, taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, short_mesure2to_comment, short_mesure2url, dict_mesure_indic)
+        docx_path = create_fiche(dep, taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, short_mesure2to_comment, short_mesure2url, dict_mesure_indic)
         print(dep + ' ' + docx_path)
         doc = Document(docx_path)
 

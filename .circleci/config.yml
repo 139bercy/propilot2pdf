@@ -67,15 +67,15 @@ jobs:
                 name: Chargement des données ProPilot
                 no_output_timeout: 1h
                 command: |
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    jupyter nbconvert --to python chargement_propilot.ipynb
-                    python chargement_propilot.py
-                  #  FILE=pp_dep.csv
-                  #  if test -f "$FILE"; then
-                  #      echo "$FILE successfuly created."
-                  #  fi
-                  #  done
+                  python3 -m venv venv
+                  . venv/bin/activate
+                  jupyter nbconvert --to python chargement_propilot.ipynb
+                  python chargement_propilot.py
+                #  FILE=pp_dep.csv
+                #  if test -f "$FILE"; then
+                #      echo "$FILE successfuly created."
+                #  fi
+                #  done
           - persist_to_workspace:
               root: ./
               paths:
