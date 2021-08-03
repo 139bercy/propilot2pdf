@@ -72,7 +72,7 @@ def main_build_reports():
     volet2mesures = creation_dictionnaire_volet2mesures(pp_dep)
      
     #Obtention des valeurs cumulées Régionales et Nationale
-    pp_reg, pp_nat = valeur_cumulee(pp_dep, taxo_reg_df)
+    pp_reg, pp_nat = add_cumulated_value(pp_dep, taxo_reg_df)
 
     # On veut relier mesure -> indicateurs
     dict_mesure_indic = liaison_mesure2indic(pp_dep, volet2code_mesures)
@@ -91,7 +91,7 @@ def main_build_reports():
     assert pp_reg.duplicated(subset=['mesure','short_indic', 'Date', 'reg']).sum() == 0
 
     # Calcul des poids dep/reg
-    pp_dep, pp_reg = calcul_poids(pp_dep, pp_reg, pp_nat)
+    pp_dep, pp_reg = add_weighted_value(pp_dep, pp_reg, pp_nat)
 
     # formatage de la variable valeur
     pp_dep.valeur = pp_dep.valeur.astype(str)
@@ -110,7 +110,7 @@ def main_build_reports():
                     "national": {'France': {}},
                     "regional": {reg: {} for reg in reg_list}}
     # Récuperer les 3 derniers mois à insérer dans les fiches
-    last_dates_to_keep = mois_to_insert(modulo=1)
+    last_dates_to_keep = months_to_insert(modulo=1)
 
     make_all_charts(dict_mesure_indic, pp_dep, pp_reg, pp_nat, taxo_dep_df, last_dates_to_keep, months, all_charts_as_df)
     check_charts_exhaustivity(all_charts_as_df, taxo_dep_df, taxo_reg_df, dict_mesure_indic)
@@ -151,7 +151,7 @@ def creation_dictionnaire_volet2mesures(pp_dep):
     return volet2mesures
 
 
-def valeur_cumulee(pp_dep, taxo_reg_df):
+def add_cumulated_value(pp_dep, taxo_reg_df):
     # Obtention des valeurs régionale par somme des valeurs départementales
     pp_reg = pd.pivot_table(pp_dep, index=["mesure","short_mesure", "reg","region", "Date", "period_date", "short_indic"], values="valeur", aggfunc=np.sum)
     pp_reg.rename(columns={"reg":"libelle"}, inplace=True)
@@ -165,7 +165,7 @@ def valeur_cumulee(pp_dep, taxo_reg_df):
     return pp_reg, pp_nat
 
 
-def mois_to_insert(modulo = 0, months=months, nb_mois=3):
+def months_to_insert(modulo = 0, months=months, nb_mois=3):
     # modulo: Mois en cours - Modulo = dernier mois présent sur la fiche
     # months: couple de mois, variable globale définie en début de script
     # nb_mois: Combien de mois apparaitront sur la fiche 3 par défaut
@@ -178,7 +178,7 @@ def mois_to_insert(modulo = 0, months=months, nb_mois=3):
     return last_dates_to_keep
 
 
-def calcul_poids(pp_dep, pp_reg, pp_nat):
+def add_weighted_value(pp_dep, pp_reg, pp_nat):
     # Calcul des poids dep/reg
     pp_dep = pp_dep.merge(pp_reg[['mesure','short_indic', 'Date', 'reg', 'valeur']], 
                         on=['mesure','short_indic', 'Date', 'reg'], 
