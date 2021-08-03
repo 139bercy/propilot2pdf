@@ -72,10 +72,10 @@ jobs:
                     python main_avant_osmose.py
                   #  jupyter nbconvert --to python chargement_propilot.ipynb
                   #  python chargement_propilot.py
-                    FILE=pp_dep.csv
-                    if test -f "$FILE"; then
-                        echo "$FILE successfuly created."
-                    fi
+                  #  FILE=pp_dep.csv
+                  #  if test -f "$FILE"; then
+                  #      echo "$FILE successfuly created."
+                  #  fi
           - persist_to_workspace:
               root: ./
               paths:
