@@ -12,6 +12,7 @@ __pycache__/
 *.zip
 temp_docx
 reports_word/temp_transposition
+archive
 # Fichier .py
 Conversion.py
 
