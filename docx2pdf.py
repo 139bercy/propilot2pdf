@@ -4,6 +4,8 @@ import pandas as pd
 import shutil
 from docx2python import docx2python
 from unidecode import unidecode
+# Barre de progression
+from tqdm import tqdm
 
 
 # Variable globale
@@ -122,7 +124,7 @@ def check_duclicated_docx(docx2pdf_filename):
 
 def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2num):
     files_to_convert = list(docx2pdf_filename.keys())
-    for filename in files_to_convert:
+    for filename in tqdm(files_to_convert, desc="Conversion PDF des fiches docx"):
         # Effectuer la copie : les noms de fichiers comportant un espace ou une apostrophe rencontrent
         # font planter la conversion
         clean_path = rename_docx_without_buggy_chars(filename)
@@ -130,7 +132,8 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
         # vers les bons pdf
         replace_key(docx2pdf_filename, filename, clean_path)
         # Conversion en pdf
-        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{clean_path}"')
+        # > test.log 2> warning.log permet de rediriger la sortie vers test.log et les warning vers warning.log
+        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{clean_path}" > test.log 2> warning.log')
         
     for filename in docx2pdf_filename:    
         clean_pdf_filename = docx2pdf_filename[filename]
@@ -149,7 +152,7 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
             renommage_odt[filename] = str(dep) + " - Suivi Territorial plan France relance " + str(dep_name) + ".pdf"
         
 
-    for filename in doc_odt:
+    for filename in tqdm(doc_odt, desc="Conversion PDF des fiches odt"):
         # Effectuer la copie : les noms de fichiers comportant un espace ou une apostrophe rencontrent
         # font planter la conversion
         clean_path = rename_docx_without_buggy_chars(filename)
@@ -158,7 +161,7 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
         renommage_odt[clean_path] = renommage_odt[filename]
         del renommage_odt[filename]
         # Conversion en pdf
-        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{clean_path}"')
+        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{clean_path}" > test.log 2> warning.log')
         
     for filename in renommage_odt:
         clean_pdf_filename = renommage_odt[filename]
@@ -174,16 +177,17 @@ def export_to_pdf_avant_osmose(depname2num):
     # Conversion docx -> pdf - Peut prendre quelques minutes
     # CAVEAT : Fermer les applications Libreoffice ouverte avant de lancer cette cellule
     files_to_convert = list(docx2pdf_filename.keys())
-    for filename in files_to_convert:
+    for filename in tqdm(files_to_convert, desc= "Conversion des fiches docx"):
         # Effectuer la copie : les noms de fichiers comportant un espace ou une apostrophe rencontrent
         # font planter la conversion
         clean_path = rename_docx_without_buggy_chars(filename)
         # Renommage des clés docx2pdf_filename pour faire correspondre les nouveaux noms de docx
         # vers les bons pdf
         replace_key(docx2pdf_filename, filename, clean_path)
-        os.system(f'libreoffice --headless -convert-to pdf --outdir "{output}" {clean_path}')
+        os.system(f'libreoffice --headless -convert-to pdf --outdir "{output}" {clean_path} > test.log 2> warning.log')
+
         
-    for filename in docx2pdf_filename:    
+    for filename in tqdm(docx2pdf_filename):    
         clean_pdf_filename = docx2pdf_filename[filename]
         pdf_basename = re.sub('.'+filename.split('.')[-1], '.pdf', os.path.basename(filename))
         pdf_filename = os.path.join(output, pdf_basename)
