@@ -17,22 +17,27 @@ def main():
     print("Génération des fiches")
     build_reports.main_build_reports()
     print("Récupération des commentaires")
-    transpose_comments.main_transpose_comments()
-    print("Conversion en pdf")
-    docx2pdf.main_docx2pdf_avant_osmose()
-    print("Création des archives zip")
-    # Obtention du mois de génération des fiches
-    today = datetime.datetime.today()
-    months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 
-                'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
-    today_str = f"{months[today.month-1]}_{today.year}"
-    mkdir_ifnotexist("archive")
-    path = os.path.join("archive", "{}".format(today_str))
-    mkdir_ifnotexist(path)
-    name_zip = os.path.join(path, 'reports_before_new_comment_{}.zip'.format(today_str))
-    folder_pdf = "reports_before_new_comment_pdf"
-    folder_docx = "reports_before_new_comment"
-    create_zip_for_archive(name_zip, folder_pdf, folder_docx)
+    modified_docx_dir = "modified_reports"
+    mkdir_ifnotexist(modified_docx_dir)
+    if len(os.listdir(modified_docx_dir)) > 0:
+        transpose_comments.main_transpose_comments()
+        print("Conversion en pdf")
+        docx2pdf.main_docx2pdf_avant_osmose()
+        print("Création des archives zip")
+        # Obtention du mois de génération des fiches
+        today = datetime.datetime.today()
+        months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 
+                    'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
+        today_str = f"{months[today.month-1]}_{today.year}"
+        mkdir_ifnotexist("archive")
+        path = os.path.join("archive", "{}".format(today_str))
+        mkdir_ifnotexist(path)
+        name_zip = os.path.join(path, 'reports_before_new_comment_{}.zip'.format(today_str))
+        folder_pdf = "reports_before_new_comment_pdf"
+        folder_docx = "reports_before_new_comment"
+        create_zip_for_archive(name_zip, folder_pdf, folder_docx)
+    else:
+        print("Le dossier modified_reports est vide. Arrêt du traitement")
     
 
 def lancement_auto_notebook(notebook_filename):
