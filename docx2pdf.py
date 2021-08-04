@@ -1,9 +1,10 @@
 import os
 import re
 import pandas as pd
+import shutil
 from docx2python import docx2python
 from unidecode import unidecode
-from shutil import copyfile
+
 
 # Variable globale
 
@@ -13,7 +14,7 @@ taxo_dep_df = pd.read_csv(os.path.join('refs', 'taxo_deps.csv'), dtype={'dep':st
 # Définition et création des dossiers
 DIR_TO_CONVERT = os.path.join(os.getcwd(), "modified_reports")
 OUTPUT_DIR = os.path.join(os.getcwd(), 'reports_pdf')
-avant_osmose_pdf = "parlementary_file_before_new_comment_pdf"
+avant_osmose_pdf = "reports_before_new_comment_pdf"
 DIR_COPY_DOCX = os.path.join(os.getcwd(), "temp_docx")
 
 # main
@@ -28,6 +29,7 @@ def main_docx2pdf_avant_osmose():
     check_duclicated_docx(docx2pdf_filename)
     #Archivage a faire ici des docx
     export_to_pdf_avant_osmose(depname2num)
+    shutil.rmtree("temp_docx")
 
 
 def main_docx2pdf_apres_osmose():
@@ -167,8 +169,8 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
 
 def export_to_pdf_avant_osmose(depname2num):
     # Pour les fiches avant le passage osmose
-    docx2pdf_filename, doc_odt = docxnames_to_pdfnames(os.path.join(os.getcwd(), "parlementary_file_before_new_comment"), depname2num)
-    output = "parlementary_file_before_new_comment_pdf"
+    docx2pdf_filename, doc_odt = docxnames_to_pdfnames(os.path.join(os.getcwd(), "reports_before_new_comment"), depname2num)
+    output = "reports_before_new_comment_pdf"
     # Conversion docx -> pdf - Peut prendre quelques minutes
     # CAVEAT : Fermer les applications Libreoffice ouverte avant de lancer cette cellule
     files_to_convert = list(docx2pdf_filename.keys())
@@ -198,7 +200,7 @@ def rename_docx_without_buggy_chars(src_file):
     clean_path = os.path.join(DIR_COPY_DOCX, clean_filename.split(os.sep)[-1]) # Mettre la copie dans un autre dossier
     if os.path.exists(clean_path):
         os.remove(clean_path)
-    copyfile(src_file, clean_path)
+    shutil.copyfile(src_file, clean_path)
     return clean_path
 
 
