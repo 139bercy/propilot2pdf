@@ -12,3 +12,4 @@ pytz
 docx2python
 nbformat
 docx
+tqdm

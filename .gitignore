@@ -10,6 +10,7 @@ __pycache__/
 *.key
 *.pkl
 *.zip
+*.log
 temp_docx
 reports_word/temp_transposition
 archive
