@@ -10,6 +10,10 @@ __pycache__/
 *.key
 *.pkl
 *.zip
+*.log
+temp_docx
+reports_word/temp_transposition
+archive
 # Fichier .py
 Conversion.py
 
@@ -25,9 +29,8 @@ reports_word/*.docx
 modified_reports/*
 !modified_reports/.gitkeep
 
-Fiche_Avant_Osmose/*.docx
-
-
+reports_before_new_comment
+reports_before_new_comment_pdf
 # Les fichiers temporaires par Libreoffice
 .~lock.*
 
