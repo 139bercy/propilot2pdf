@@ -75,6 +75,7 @@ jobs:
                     if test -f "$FILE"; then
                         echo "$FILE successfuly created."
                     fi
+                
           - persist_to_workspace:
               root: ./
               paths:
@@ -85,8 +86,7 @@ jobs:
                 command: |
                     python3 -m venv venv
                     . venv/bin/activate
-                    jupyter nbconvert --to python build_reports.ipynb
-                    python build_reports.py
+                    python3 build_reports.py
           #          #zip -9 archive.zip *.pdf
           #          #git add archive.zip
           #          cd reports_word

@@ -28,19 +28,18 @@ Libreoffice (si pas installé par défaut)
 
 
 
-## Générer des fiches reprenant le commentaires des précédentes versions
+## Générer des fiches reprenant le commentaires des précédentes versions. 
 
-1. Lancer le notebook ```chargement_propilot.ipynb``` pour obtenir le fichier ```pp_dep.csv```.
-2. Lancer le notebook ```build_reports.ipynb``` pour générer les documents Word (.docx) dans un dossier ```reports_words```. Ces fiches contiennent des inscriptions ```Jinja``` dans les zones de commentaires qui seront remplacées par les commentaires récupérées depuis la précédente version des fiches. 
-3. Télécharger toutes les fiches d'Osmose dans un dossier ```modified_reports``` (créé après avoir lancé ```transpose_comments.ipynb``` s'il n'existe pas) à la racine du projet.
-4. Lancer le notebook ```transpose_comments.ipynb``` pour une transposition des commentaires de ```modified_reports``` -> ```reports_word/transposed_reports``` qui réutilise les nouvelles fiches-templates générées dans ```reports_words```.
-5. Il est possible de déposer les fiches contenues dans ```reports_word/transposed_reports``` sur Osmose.
+1. Si vous disposez d'anciennes fiches avec des commentaires, déposez le format modifiable (.docx / .odt) dans un dossier ```modified_reports```
+2. Lancer le script ```main_create_parlementary_file.py```
+3. Les fiches seront générées dans le dossier Fiche_Avant_Osmose (pour le format .docx) et dans le dossier Fiche_Avant_Osmose_pdf (pour le format pdf)
+4. Il est possible de déposer les fiches contenues de ```reports_word/transposed_reports``` sur Osmose.
 
+## Après le passage Osmose
 
-## Obtenir le format final et immuable des fiches (conversion en PDF)
+Dans le cas où vous disposez juste de fiches avec des commentaires, et que vous souhaitez les convertir en .pdf
 
-La conversion n'accepte que le format ```.docx```.
+1. Déposer le format modifiable (.docx / .odt) dans un dossier ```modified_reports```
+2. Lancer le script ```main_convert_parlementary_file_with_new_comment.py```
+3. Le format final est contenu dans le dossier ```reports_pdf```
 
-6. Télécharger les fiches (modifiées ou non) dans le dossier ```modified_reports```, ce qui remplace les anciennes versions. Les fiches n'auront pas de commentaire ou contiendront les commentaires d'une version autérieure si elles n'ont pas été modifiées le mois courant.
-7. Lancer le notebook ```docx2pdf.ipynb``` pour convertir les fiches de ```modified_reports``` en pdf dans un dossier ```reports_pdf``` automatiquement créé (si ce n'était pas le cas). Il est possible que certaines fiches soient dupliquées, un test du notebook l'indiquera. Il faudra alors retirer manuellement les fiches en trop. Enfin, relancer la cellule et vérifier que ce même test passe.
-8. Le format final est contenu dans le dossier ```reports_pdf```.
