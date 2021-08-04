@@ -26,7 +26,10 @@ def main():
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 
                 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
     today_str = f"{months[today.month-1]}_{today.year}"
-    name_zip = 'parlementary_file_before_new_comment{}.zip'.format(today_str)
+    mkdir_ifnotexist("archive")
+    path = os.path.join("archive", "{}".format(today_str))
+    mkdir_ifnotexist(path)
+    name_zip = os.path.join(path, 'parlementary_file_before_new_comment{}.zip'.format(today_str))
     f=zipfile.ZipFile(name_zip,'w',zipfile.ZIP_DEFLATED)
     f.write("parlementary_file_before_new_comment_pdf")
     f.write("parlementary_file_before_new_comment")
@@ -39,6 +42,9 @@ def lancement_auto_notebook(notebook_filename):
     ep = ExecutePreprocessor(timeout=1000, kernel_name='python3') # Configuration pour l'execution
     ep.preprocess(nb, {'metadata': {'path': os.getcwd()}}) # Execution du notebook présent dans 'path
 
+def mkdir_ifnotexist(path) :
+    if not os.path.isdir(path) :
+        os.mkdir(path)
 
 if __name__ == "__main__":
     main()
