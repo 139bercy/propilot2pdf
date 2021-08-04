@@ -28,8 +28,8 @@ reports_word/*.docx
 modified_reports/*
 !modified_reports/.gitkeep
 
-parlementary_file_before_new_comment
-parlementary_file_before_new_comment_pdf
+reports_before_new_comment
+reports_before_new_comment_pdf
 # Les fichiers temporaires par Libreoffice
 .~lock.*
 
