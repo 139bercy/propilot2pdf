@@ -154,12 +154,12 @@ jobs:
           - restore_cache:
               keys:
                 - relance-tableau-de-bord-data-{{ checksum "date" }}
-          # - run:
-          #       name: Publication des documents JSON à publier sur data-economie pour le TDB France Relance
-          #       command: |
-          #         apt-get update
-          #         apt-get install -y zip lftp
-          #         lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd france-relance-tableau-de-bord ; put france-relance-data-tableau-de-bord.txt ; quit"
+           - run:
+                 name: Publication des documents JSON à publier sur data-economie pour le TDB France Relance
+                 command: |
+                   apt-get update
+                   apt-get install -y zip lftp
+                   lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd france-relance-tableau-de-bord ; put france-relance-data-tableau-de-bord.txt ; quit"
           - store_artifacts:
               path: ./pp_dep.csv
               destination: pp_dep.csv
