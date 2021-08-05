@@ -31,8 +31,10 @@ def mkdir_ifnotexist(path: str):
     if not os.path.isdir(path):
         os.mkdir(path)
 
-def create_zip_for_archive(name_zip, folder_pdf, folder_docx):
-    #Code permettant de créer un zip avec l'arborescence du fichier source
+def create_zip_for_archive(name_zip: str, folder_pdf: str, folder_docx: str):
+    """
+    Create a zip in archive/Month_Year with 2 folders: folder_pdf and forlder_docx
+    """
     with zipfile.ZipFile(name_zip, "w", zipfile.ZIP_DEFLATED) as zfile:
             for root, _, files in os.walk(folder_pdf):
                 for file in files:
