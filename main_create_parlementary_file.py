@@ -46,8 +46,12 @@ def lancement_auto_notebook(notebook_filename):
     ep = ExecutePreprocessor(timeout=1000, kernel_name='python3') # Configuration pour l'execution
     ep.preprocess(nb, {'metadata': {'path': os.getcwd()}}) # Execution du notebook présent dans 'path
 
-def mkdir_ifnotexist(path) :
-    if not os.path.isdir(path) :
+
+def mkdir_ifnotexist(path: str):
+    """
+    Create a folder if it's doesn't exist
+    """
+    if not os.path.isdir(path):
         os.mkdir(path)
 
 def create_zip_for_archive(name_zip, folder_pdf, folder_docx):

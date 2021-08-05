@@ -46,8 +46,11 @@ def main_docx2pdf_apres_osmose():
     export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2num)
 
 
-def mkdir_ifnotexist(path) :
-    if not os.path.isdir(path) :
+def mkdir_ifnotexist(path: str):
+    """
+    Create a folder if it's doesn't exist
+    """
+    if not os.path.isdir(path):
         os.mkdir(path)
         
 
