@@ -1,14 +1,12 @@
 import os
-import urllib.request
 import json
 import datetime
 
 import re
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-from pprint import pprint
 from unidecode import unidecode
+import docx
 
 # Permet la génération de word
 from docx import Document
@@ -77,7 +75,6 @@ def main_build_reports():
     # On veut relier mesure -> indicateurs
     dict_mesure_indic = create_dict_mesure_indic(pp_dep, volet2code_mesures)
 
-
     # On ne veut pas afficher les lignes de Prime Rénov nulles
     pp_dep = pp_dep.loc[(pp_dep.short_mesure != "Ma Prime Rénov'") | (pp_dep.valeur != 0) ]
     pp_reg = pp_reg.loc[(pp_reg.short_mesure != "Ma Prime Rénov'") | (pp_reg.valeur != 0) ]
@@ -122,7 +119,8 @@ def main_build_reports():
 
 # Fonction nécessaire
 
-def create_dict_mesure_indic(pp_dep, volet2code_mesures):
+def create_dict_mesure_indic(pp_dep: pd.DataFrame, volet2code_mesures: dict) -> dict:
+    """ Create crossing dictionnary between Mesure (key) and Indicateur (value) """
     # Extraction des mesures-indicateurs à afficher dans les fiches
     code_mesures_to_keep = set([mesure for volet in volet2code_mesures for mesure in volet2code_mesures[volet]])
     mesure_indics = pp_dep.groupby(['code_mesure', 'short_mesure']).agg({'short_indic': list}).reset_index()
@@ -142,7 +140,8 @@ def create_dict_mesure_indic(pp_dep, volet2code_mesures):
     return dict_mesure_indic
 
 
-def create_dictionnaire_volet2mesures(pp_dep):
+def create_dictionnaire_volet2mesures(pp_dep: pd.DataFrame) -> dict:
+    """ Create crossing dictionnary between Mesure (key) and Indicateur (value) """
     volet2mesures = {volet: [] for volet in volet2code_mesures}
     for volet in volet2code_mesures:
         # Trier les mesures par ordre alphabétique
@@ -151,7 +150,12 @@ def create_dictionnaire_volet2mesures(pp_dep):
     return volet2mesures
 
 
-def add_cumulated_value(pp_dep, taxo_reg_df):
+def add_cumulated_value(pp_dep: pd.DataFrame, taxo_reg_df: pd.DataFrame) -> list: 
+    """ Create 2 new dataframe: pp_reg and pp_nat with cumulated value into valeur
+    
+    Returns:
+        list[0]: pp_reg
+        list[1]: pp_nat"""
     # Obtention des valeurs régionale par somme des valeurs départementales
     pp_reg = pd.pivot_table(pp_dep, index=["mesure","short_mesure", "reg","region", "Date", "period_date", "short_indic"], values="valeur", aggfunc=np.sum)
     pp_reg.rename(columns={"reg":"libelle"}, inplace=True)
@@ -165,7 +169,8 @@ def add_cumulated_value(pp_dep, taxo_reg_df):
     return pp_reg, pp_nat
 
 
-def months_to_insert(modulo = 0, months=months, nb_mois=3):
+def months_to_insert(modulo: int = 0, months: tuple = months, nb_mois: int = 3) -> list:
+    """ Collect the 3 months to insert in the parlementary files """
     # modulo: Mois en cours - Modulo = dernier mois présent sur la fiche
     # months: couple de mois, variable globale définie en début de script
     # nb_mois: Combien de mois apparaitront sur la fiche 3 par défaut
@@ -178,7 +183,12 @@ def months_to_insert(modulo = 0, months=months, nb_mois=3):
     return last_dates_to_keep
 
 
-def add_weighted_value(pp_dep, pp_reg, pp_nat):
+def add_weighted_value(pp_dep: pd.DataFrame, pp_reg: pd.DataFrame, pp_nat: pd.DataFrame) -> list:
+    """ Add weigted_value dep/reg into pp_dep and reg/nat into pp_reg 
+    
+    Returns:
+        list[0]: pp_dep
+        list[1]: pp_reg"""
     # Calcul des poids dep/reg
     pp_dep = pp_dep.merge(pp_reg[['mesure','short_indic', 'Date', 'reg', 'valeur']], 
                         on=['mesure','short_indic', 'Date', 'reg'], 
@@ -201,19 +211,14 @@ def add_weighted_value(pp_dep, pp_reg, pp_nat):
     return pp_dep, pp_reg
 
 
-def import_json_to_dict(url) :
-    response = urllib.request.urlopen(url)
-    my_dict = json.loads(response.read())
-    return my_dict
-
-
-def mkdir_ifnotexist(path) :
-    if not os.path.isdir(path) :
+def mkdir_ifnotexist(path: str):
+    """ Create a folder if is not exist"""
+    if not os.path.isdir(path):
         os.mkdir(path)
 
 
-def format_thousands(s):
-    # Transforme : 1000 -> 1 000
+def format_thousands(s: str) -> str: 
+    """ Format a number like 1000 into 1 000"""
     new_str = ''
     for i, ch in enumerate(s[::-1], start=1):
         new_str = ch + new_str
@@ -222,7 +227,8 @@ def format_thousands(s):
     return new_str.strip()
 
 
-def format_amount(indic, valeur):
+def format_amount(indic: str, valeur: str) -> str:
+    """ Add unite after amount """
     if "Montant" in indic:
         f_valeur = float(valeur)
         if f_valeur > 1000000:
@@ -238,19 +244,22 @@ def format_amount(indic, valeur):
             print(f"L'indicateur {indic} possède des valeurs invalides : {err}")
 
 
-def check_pp_reg(pp_reg, taxo_reg_df, pp_dep):
+def check_pp_reg(pp_reg: pd.DataFrame, taxo_reg_df: pd.DataFrame, pp_dep: pd.DataFrame):
+    """ Check if in pp_reg we have all regions and measures """
     assert sorted(pp_reg['reg'].unique()) == sorted(taxo_reg_df['reg'])
     assert sorted(pp_reg['region'].unique()) == sorted(taxo_reg_df['libelle'])
     assert sorted(pp_reg['mesure'].unique()) == sorted(pp_dep['mesure'].unique())
     assert sorted(pp_reg['short_mesure'].unique()) == sorted(pp_dep['short_mesure'].unique())
     
 
-def check_pp_nat(pp_nat):
+def check_pp_nat(pp_nat: pd.DataFrame):
+    """ Check if in pp_nat we have all measures"""
     assert sorted(pp_nat['mesure'].unique()) == sorted(pp_nat['mesure'].unique())
     assert sorted(pp_nat['short_mesure'].unique()) == sorted(pp_nat['short_mesure'].unique())
 
 
-def complete_values_for_missing_dates(df_plot, na_replacement, last_dates_to_keep, months):
+def complete_values_for_missing_dates(df_plot: pd.DataFrame, na_replacement: str, last_dates_to_keep: list, months: tuple) ->pd.DataFrame:
+    """ For each date in last_dates_to_keep, if the date is missing in df_plot then we complete with na_replacement """
     # Obtention des dates à ajouter
     missing_dates = set(last_dates_to_keep) - set(df_plot.Date)
     sorted_missing_dates = sorted(missing_dates, key=lambda x: months.index(x.split(' ')[0]))
@@ -272,7 +281,25 @@ def complete_values_for_missing_dates(df_plot, na_replacement, last_dates_to_kee
     return pd.concat([df_plot, df_complement]).reset_index(drop=True)
 
 
-def make_pp_chart(maille, mesure, short_indics, pp_dep, pp_reg, pp_nat, taxo_dep_df, last_dates_to_keep, months, all_charts_as_df):
+def make_pp_chart(maille: str, mesure: str, short_indics: list, pp_dep: pd.DataFrame, pp_reg: pd.DataFrame,
+                  pp_nat: pd.DataFrame, taxo_dep_df: pd.DataFrame, last_dates_to_keep: list, months: tuple, all_charts_as_df: dict):
+    """ For one mesure and one maille, create every tables we need to generate parlementary file, and stock them in all_charts_as_df.  
+    Depending on the parameter maille, tables will be create:
+        - with pp_dep if maille = départemental, for all department
+        - with pp_reg if maille = régional, for all region
+        - pp_nat otherwise
+    Behind, layout of one created table with pp_dep: 
+     
+            -----------------------
+            |        mesure        |
+            ------------------------
+            |shrtind1|....|shrtindn|
+            ------------------------
+       date1|   data from pp_dep   |
+       date2|   data from pp_dep   |
+       date3|   data from pp_dep   |
+            ------------------------
+       """
     na_replacement = "Indisponible"
     
     if maille == "departemental":
@@ -363,14 +390,19 @@ def make_pp_chart(maille, mesure, short_indics, pp_dep, pp_reg, pp_nat, taxo_dep
         all_charts_as_df[maille]['France'][mesure] = df_plot.T.reset_index().T
 
 
-def make_all_charts(dict_mesure_indic, pp_dep, pp_reg, pp_nat, taxo_dep_df, last_dates_to_keep, months, all_charts_as_df):
+def make_all_charts(dict_mesure_indic: dict, pp_dep: pd.DataFrame, pp_reg: pd.DataFrame, pp_nat: pd.DataFrame, taxo_dep_df: pd.DataFrame,
+                    last_dates_to_keep: list, months: tuple, all_charts_as_df: dict):
+    """ Create all tables we need to generate every parlementary file and store them in all_charts_as_df """
     for mesure in dict_mesure_indic:
         short_indics = dict_mesure_indic[mesure]
         for maille in mailles :
             make_pp_chart(maille, mesure, short_indics, pp_dep, pp_reg, pp_nat, taxo_dep_df, last_dates_to_keep, months, all_charts_as_df)
 
 
-def check_charts_exhaustivity(all_charts_as_df, taxo_dep_df, taxo_reg_df, dict_mesure_indic):
+def check_charts_exhaustivity(all_charts_as_df: dict, taxo_dep_df: pd.DataFrame, taxo_reg_df: pd.DataFrame, dict_mesure_indic: dict):
+    """ Multiple checks
+            - Check if in all_charts_as_df, there are all department, regions and the key France
+            - Check if in all_charts_as_df, there are all tables for each department, regions and for the key France"""
     assert sorted(all_charts_as_df['departemental'].keys()) == sorted(taxo_dep_df['dep'])
     assert sorted(all_charts_as_df['regional'].keys()) == sorted(taxo_reg_df['reg'])
     assert sorted(all_charts_as_df['national'].keys()) == ['France']
@@ -383,7 +415,14 @@ def check_charts_exhaustivity(all_charts_as_df, taxo_dep_df, taxo_reg_df, dict_m
     
     assert sorted(all_charts_as_df['national']['France'].keys()) == sorted(dict_mesure_indic.keys())
 
-def mesure_to_insert(pp_dep):
+def mesure_to_insert(pp_dep: pd.DataFrame) -> list:
+    """ Business fonction. Only some measures will be present in parlementary file and for the latter 
+        we will keep an URL for extra information, and if we have to create a commentary space in the file 
+    
+    Returns:
+        list[0]: short_mesure2url
+        list[1]: short_mesure2to_comment
+        """
     # Importer le dataframe des mesures à insérer
     ref_mesures2 = pd.read_excel('refs/20210630_Liste_Mesures-Ficheparlementaire.xlsx')
     ref_mesures2.drop(["Unnamed: 5", "Mesures suivie dans le TdB grand public"], axis = 1, inplace=True)
@@ -444,7 +483,8 @@ def mesure_to_insert(pp_dep):
     return short_mesure2url, short_mesure2to_comment
 
 
-def create_front_page(nom_departement):
+def create_front_page(nom_departement: str) -> str:
+    """ Create for one departement, the front page of the parlementary file """
     doc = DocxTemplate("template/template_front_page.docx")
     today = datetime.datetime.today()
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 
@@ -458,7 +498,8 @@ def create_front_page(nom_departement):
     return name_file
 
 
-def encode_name(name):
+def normalize_name(name: str) -> str:
+    """ Normalize a str: delete whitespace, special characters, put in lowercase and keep only letters"""
     # Normalise le nom de la mesure ou volet, notamment pour l'utiliser comme nom de code dans les commentaires
     name = name.lower()
     name = unidecode(name)
@@ -467,11 +508,12 @@ def encode_name(name):
     return name
 
 
-def create_volet_page(nom_volet, num_volet):
+def create_volet_page(nom_volet: str, num_volet: int) -> str:
+    """ Create for one departement, the "volet" page of the parlementary file """
     doc = DocxTemplate("template/template_volet.docx")
     context = {'volet': nom_volet, 
                'num_volet': num_volet, 
-               'code_comment': "{% for f in " + encode_name(nom_volet) + " %}{{ f.text }} {{ f.image }} {% endfor %}",
+               'code_comment': "{% for f in " + normalize_name(nom_volet) + " %}{{ f.text }} {{ f.image }} {% endfor %}",
               }
     doc.render(context)
     name_file = "reports_word/Generation_p2p/{}.docx".format(nom_volet)
@@ -479,13 +521,15 @@ def create_volet_page(nom_volet, num_volet):
     return name_file
 
 
-def delete_paragraph(paragraph):
+def delete_paragraph(paragraph: docx.text.paragraph.Paragraph):
+    """ Delete the paragraph """
     p = paragraph._element
     p.getparent().remove(p)
     paragraph._p = paragraph._element = None
     
     
-def fusion_word(word1, word2, dep):
+def fusion_word(word1: str, word2: str, dep: str) -> str:
+    """ Concatenate word2 at the end of word1 """
     master = Document(word1)
     master.add_page_break()
     composer = Composer(master)
@@ -496,7 +540,9 @@ def fusion_word(word1, word2, dep):
     return name_fusion
 
 
-def create_content_page(all_charts_as_df, departement, region, mesure, volet, dep_name, reg_name, num_mesure, short_mesure2to_comment, short_mesure2url, dict_mesure_indic):
+def create_content_page(all_charts_as_df: dict, departement: str, region: str, mesure: str, volet: str, dep_name: str, reg_name: str,
+                        num_mesure: int, short_mesure2to_comment: dict, short_mesure2url: dict, dict_mesure_indic: dict) -> str:
+    """ Create one page for parlementary file. This page is composed of 3 tables (departmental, regional, national) for one measure  """
     # Ouverture de template
     if mesure in short_mesure2to_comment and short_mesure2to_comment[mesure]:
         doc = DocxTemplate("template/template_content_page.docx")
@@ -530,7 +576,7 @@ def create_content_page(all_charts_as_df, departement, region, mesure, volet, de
                 'tbl_contents_nat': [{'cols' : list(df_nat.iloc[-i-1])} for i in range(min(len(df_nat)-1, 3))],
                 'tbl_contents_reg': [{'cols' : list(df_reg.iloc[-i-1])} for i in range(min(len(df_reg)-1, 3))],
                 'tbl_contents_dep': [{'cols' : list(df_dep.iloc[-(i+1)])} for i in range(min(len(df_dep)-1, 3))],
-                'code_comment': "{% for f in " + encode_name(mesure) + " %}{{ f.text }} {{ f.image }} {% endfor %}",
+                'code_comment': "{% for f in " + normalize_name(mesure) + " %}{{ f.text }} {{ f.image }} {% endfor %}",
                 }
     doc.render(context)
     name_file = "reports_word/Generation_p2p/content_page_{}.docx".format(mesure)
@@ -538,7 +584,9 @@ def create_content_page(all_charts_as_df, departement, region, mesure, volet, de
     return name_file
 
 
-def create_fiche(dep, taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, short_mesure2to_comment, short_mesure2url, dict_mesure_indic):
+def create_fiche(dep, taxo_dep_df: pd.DataFrame, taxo_reg_df: pd.DataFrame, volet2mesures: dict, all_charts_as_df: dict,
+                 short_mesure2to_comment: dict, short_mesure2url: dict, dict_mesure_indic: dict) -> str:
+    """ For one department: Create all pages we need ( front page, "volet" pages and measures pages) and concatenate them into one docx document """
     #departement: code departement 01:
     #On a les variables volet2mesures, all_charts
     reg = taxo_dep_df[taxo_dep_df['dep'] == dep].iloc[0]['reg']  # Code region
@@ -561,7 +609,9 @@ def create_fiche(dep, taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df,
             
 
 
-def create_all_dep(taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, short_mesure2to_comment, short_mesure2url, dict_mesure_indic):
+def create_all_dep(taxo_dep_df: pd.DataFrame, taxo_reg_df: pd.DataFrame, volet2mesures: dict, all_charts_as_df: dict,
+                   short_mesure2to_comment: dict, short_mesure2url: dict, dict_mesure_indic: dict):
+    """ Create parlementary file for each french department  """
     list_all_dep = taxo_dep_df[~taxo_dep_df["dep"].isin(L_dep_no_output)].dep
     for dep in list_all_dep:
         docx_path = create_fiche(dep, taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, short_mesure2to_comment, short_mesure2url, dict_mesure_indic)
@@ -589,7 +639,8 @@ def create_all_dep(taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, sh
         doc.save(docx_path)
 
 
-def check_num_docx_created(taxo_dep_df):
+def check_num_docx_created(taxo_dep_df: pd.DataFrame):
+    """ Check if we have 109 parlementary files """
     # Vérifier si on a bien toutes les fiches
     num_test = len([fn for fn in os.listdir('reports_word') if "Suivi" in fn])
     num_true = taxo_dep_df['dep'].shape[0]
