@@ -75,7 +75,7 @@ jobs:
                     if test -f "$FILE"; then
                         echo "$FILE successfuly created."
                     fi
-                
+
           - persist_to_workspace:
               root: ./
               paths:
@@ -164,6 +164,9 @@ jobs:
           - store_artifacts:
               path: ./pp_dep.csv
               destination: pp_dep.csv
+          - store_artifacts:
+              path: ./pp_nat.csv
+              destination: pp_nat.csv
           - store_artifacts:
               path: ./france-relance-data-tableau-de-bord.txt
               destination: france-relance-data-tableau-de-bord.txt
