@@ -186,10 +186,10 @@ workflows:
       - publish-json-france-relance:
             requires:
               - convert-pp_dep-to-json-france-relance
-            # filters:
-            #   branches:
-            #     only:
-            #       - master
+            filters:
+              branches:
+                only:
+                  - master
 
   daily:
     jobs:
