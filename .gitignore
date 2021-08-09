@@ -12,36 +12,27 @@ __pycache__/
 *.zip
 *.log
 temp_docx
-reports_word/temp_transposition
+reports/reports_word/temp_transposition
 archive
 # Fichier .py
 Conversion.py
 
 # Travail sur les dossiers word
 # Dossier reports_word
-reports_word/Generation_p2p/*
-!reports_word/Generation_p2p
-reports_word/reports_images/*
-!reports_word/reports_images/.gitkeep
-reports_word/transposed_reports/*
-!reports_word/transposed_reports/.gitkeep
-reports_word/*.docx
-modified_reports/*
-!modified_reports/.gitkeep
+reports/reports_word/*
+reports/modified_reports/*
+!reports/modified_reports/.gitkeep
 
-reports_before_new_comment
-reports_before_new_comment_pdf
+reports/reports_before_new_comment/*
+reports/reports_before_new_comment_pdf/*
 # Les fichiers temporaires par Libreoffice
 .~lock.*
 
 # Les fichiers pdf
-reports_pdf/*
-!reports_pdf/.gitkeep
+reports/reports_pdf/*
+!reports/reports_pdf/.gitkeep
 
 Fiche_Avant_Osmose_pdf/*.pdf
-
-reports/*
-!reports/.gitkeep
 
 pp_dep.csv
 france-relance-data-tableau-de-bord.txt
