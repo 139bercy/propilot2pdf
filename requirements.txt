@@ -9,3 +9,4 @@ docxtpl
 docxcompose
 unidecode==1.2.0
 pytz
+openpyxl
