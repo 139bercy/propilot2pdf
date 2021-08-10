@@ -6,26 +6,43 @@ import build_reports
 import docx2pdf
 import datetime
 import zipfile
+
 #Partie chargement propilot encore en ipynb
 from nbconvert.preprocessors import ExecutePreprocessor
 import nbformat
 
+# Logger
+import logging
+import logging.config
+
+#Définition du logger
+logger = logging.getLogger("main")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+fh = logging.handlers.RotatingFileHandler("Parlementary_files.log", maxBytes=100000000, backupCount=5)
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(name)-20s - %(levelname)-8s - %(message)s")
+ch.setFormatter(formatter)
+fh.setFormatter(formatter)
+logger.addHandler(ch)
+logger.addHandler(fh)
 
 def main():
     # Création de pp_dep
-    print("Création de pp_dep")
+    logger.info("Création de pp_dep")
     notebook_filename = 'chargement_propilot.ipynb'
-    lancement_auto_notebook(notebook_filename)
-    print("Génération des fiches")
+    auto_notebook_launch(notebook_filename)
+    logger.info("Génération des fiches")
     build_reports.main_build_reports()
-    print("Récupération des commentaires")
+    logger.info("Récupération des commentaires")
     modified_docx_dir = os.path.join("reports","modified_reports")
     mkdir_ifnotexist(modified_docx_dir)
     if len(os.listdir(modified_docx_dir)) > 0:
         transpose_comments.main_transpose_comments()
-        print("Conversion en pdf")
+        logger.info("Conversion en pdf")
         docx2pdf.main_docx2pdf_avant_osmose()
-        print("Création des archives zip")
+        logger.info("Création des archives zip")
         # Obtention du mois de génération des fiches
         today = datetime.datetime.today()
         months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 
@@ -39,21 +56,31 @@ def main():
         folder_docx = os.path.join("reports","reports_before_new_comment")
         create_zip_for_archive(name_zip, folder_pdf, folder_docx)
     else:
-        print("Le dossier modified_reports est vide. Arrêt du traitement")
+        logger.info("Le dossier modified_reports est vide. Arrêt du traitement")
+        raise ValueError("Le dossier modified_reports est vide. Arrêt du traitement")
     
 
-def lancement_auto_notebook(notebook_filename):
+def auto_notebook_launch(notebook_filename: str):
+    """
+    Launch a notebook in a .py file
+    """
     with open(notebook_filename) as f:
         nb = nbformat.read(f, as_version=4) # Ouverture du ipynb
     ep = ExecutePreprocessor(timeout=1000, kernel_name='python3') # Configuration pour l'execution
     ep.preprocess(nb, {'metadata': {'path': os.getcwd()}}) # Execution du notebook présent dans 'path
 
-def mkdir_ifnotexist(path) :
-    if not os.path.isdir(path) :
+
+def mkdir_ifnotexist(path: str):
+    """
+    Creates a folder if it's doesn't exist
+    """
+    if not os.path.isdir(path):
         os.mkdir(path)
 
-def create_zip_for_archive(name_zip, folder_pdf, folder_docx):
-    #Code permettant de créer un zip avec l'arborescence du fichier source
+def create_zip_for_archive(name_zip: str, folder_pdf: str, folder_docx: str):
+    """
+    Creates a zip in archive/Month_Year with 2 folders: folder_pdf and forlder_docx
+    """
     with zipfile.ZipFile(name_zip, "w", zipfile.ZIP_DEFLATED) as zfile:
             for root, _, files in os.walk(folder_pdf):
                 for file in files:

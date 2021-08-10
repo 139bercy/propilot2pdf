@@ -75,11 +75,12 @@ jobs:
                     if test -f "$FILE"; then
                         echo "$FILE successfuly created."
                     fi
-                
+
           - persist_to_workspace:
               root: ./
               paths:
                 - pp_dep.csv
+                - pp_nat.csv
           - run:
                 name: Production des fiches parlementaires
                 no_output_timeout: 1h
@@ -154,15 +155,18 @@ jobs:
           - restore_cache:
               keys:
                 - relance-tableau-de-bord-data-{{ checksum "date" }}
-          # - run:
-          #       name: Publication des documents JSON à publier sur data-economie pour le TDB France Relance
-          #       command: |
-          #         apt-get update
-          #         apt-get install -y zip lftp
-          #         lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd france-relance-tableau-de-bord ; put france-relance-data-tableau-de-bord.txt ; quit"
+          - run:
+                name: Publication des documents JSON sur data-economie pour le TDB France Relance
+                command: |
+                  apt-get update
+                  apt-get install -y zip lftp
+                  lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; put france-relance-data-tableau-de-bord.txt ; rm relance.txt ; mv france-relance-data-tableau-de-bord.txt relance.txt ; quit"
           - store_artifacts:
               path: ./pp_dep.csv
               destination: pp_dep.csv
+          - store_artifacts:
+              path: ./pp_nat.csv
+              destination: pp_nat.csv
           - store_artifacts:
               path: ./france-relance-data-tableau-de-bord.txt
               destination: france-relance-data-tableau-de-bord.txt
@@ -182,10 +186,10 @@ workflows:
       - publish-json-france-relance:
             requires:
               - convert-pp_dep-to-json-france-relance
-            # filters:
-            #   branches:
-            #     only:
-            #       - master
+            filters:
+              branches:
+                only:
+                  - master
 
   daily:
     jobs:

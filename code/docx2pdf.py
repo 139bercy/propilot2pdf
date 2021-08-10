@@ -8,6 +8,12 @@ from unidecode import unidecode
 from tqdm import tqdm
 import time
 
+# Logger
+import logging
+import logging.handlers
+# Définition du logger
+logger = logging.getLogger("main.docx2pdf")
+logger.setLevel(logging.DEBUG)
 
 # Variable globale
 
@@ -26,7 +32,7 @@ def main_docx2pdf_avant_osmose():
     mkdir_ifnotexist(OUTPUT_DIR)
     mkdir_ifnotexist(DIR_COPY_DOCX)
     mkdir_ifnotexist(avant_osmose_pdf) 
-    depname2num = create_dico_dep2name(taxo_dep_df)
+    depname2num = create_dico_dep2num(taxo_dep_df)
     # Mapping docx -> nom pdf
     docx2pdf_filename, doc_odt = docxnames_to_pdfnames(DIR_TO_CONVERT, depname2num)
     check_duclicated_docx(docx2pdf_filename)
@@ -39,7 +45,7 @@ def main_docx2pdf_apres_osmose():
     mkdir_ifnotexist(OUTPUT_DIR)
     mkdir_ifnotexist(DIR_COPY_DOCX)
     mkdir_ifnotexist(avant_osmose_pdf)
-    depname2num = create_dico_dep2name(taxo_dep_df)
+    depname2num = create_dico_dep2num(taxo_dep_df)
     # Mapping docx -> nom pdf
     docx2pdf_filename, doc_odt = docxnames_to_pdfnames(DIR_TO_CONVERT, depname2num)
     check_duclicated_docx(docx2pdf_filename)
@@ -47,12 +53,18 @@ def main_docx2pdf_apres_osmose():
     export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2num)
 
 
-def mkdir_ifnotexist(path) :
-    if not os.path.isdir(path) :
+def mkdir_ifnotexist(path: str):
+    """
+    Creates a folder if it's doesn't exist
+    """
+    if not os.path.isdir(path):
         os.mkdir(path)
         
 
-def create_dico_dep2name(taxo_dep_df):
+def create_dico_dep2num(taxo_dep_df: pd.DataFrame) -> dict:
+    """
+    Creates crossing dictionnary between department's name and department's number
+    """
     depname2num = {}
     for i, row in taxo_dep_df.iterrows():
         if row['dep'] != '0':
@@ -61,8 +73,10 @@ def create_dico_dep2name(taxo_dep_df):
     return depname2num
 
 
-def normalisation_name(name):
-    # Normalise le nom de la mesure ou volet, notamment pour l'utiliser comme nom de code dans les commentaires
+def normalize_name(name: str) -> str:
+    """
+    Normalize a str: delete whitespace, special characters, put in lowercase and keep only letters
+    """
     name = name.lower()
     name = unidecode(name)
     name = re.sub('[^a-z]', ' ',  name)
@@ -70,8 +84,10 @@ def normalisation_name(name):
     return name
 
 
-def get_dep_name_from_docx(docx_filename):
-    # Extraire le nom du département depuis la page de garde du docx
+def get_dep_name_from_docx(docx_filename: str) -> str:
+    """
+    Extract department's name from docx's front page
+    """
     content = docx2python(docx_filename)
     # Chercher la ligne "Données pour le département :..."
     for line in content.body[0][0][0]:
@@ -82,17 +98,22 @@ def get_dep_name_from_docx(docx_filename):
     raise Exception(f"Pas de nom de département trouvé pour {docx_filename}")
 
 
-def docxnames_to_pdfnames(base_dir, depname2num):
-    # Lister les fichiers à convertir - ignorer les fichiers lock (.docx#)
+def docxnames_to_pdfnames(base_dir: str, depname2num: dict) -> list:
+    """ 
+    Creates crossing dictionnary between a file in base_dir and a required output file  
+    Returns:
+        list[0]: Crossing dictionnary between docx name and pdf name
+        list[1]: Crossing dictionnary between odt name and pdf name
+    """
     docx_filenames = [os.path.join(base_dir, basename) for basename in os.listdir(base_dir) if not basename.endswith('#')]
     docx2pdf_filename = {}
     doc_odt = []
     # Faire correspondre chaque nom de docx vers un nom de pdf - ex : "75 - Suivi Territorial plan France relance Paris.pdf"
     for docx_filename in docx_filenames:
         # Extraire le nom du département
-        if docx_filename.endswith("docx"): #Condition pour ne traiter que les docx
+        if docx_filename.endswith("docx"): #Condition pour ne traiter que les docx (ignore les #docx)
             dep_name = get_dep_name_from_docx(docx_filename)
-            clean_dep_name = normalisation_name(dep_name)
+            clean_dep_name = normalize_name(dep_name)
             pdf_filename = f"{depname2num[dep_name]} - Suivi Territorial plan France relance {dep_name}.pdf"
             # Ajout du nom de fichier original dans le dictionnaire pour vérifier les doublons
             docx2pdf_filename[docx_filename] = pdf_filename
@@ -103,7 +124,13 @@ def docxnames_to_pdfnames(base_dir, depname2num):
     return docx2pdf_filename, doc_odt
 
 
-def check_duclicated_docx(docx2pdf_filename):
+def check_duclicated_docx(docx2pdf_filename: dict):
+    """
+    Check if there are duplicate department in docx2pdf_filename
+
+    Input (for our main):
+        docx2pdf_filename: {key: docx_name into modified_reports folder, value: target pdf name}
+    """
     # Les doublons auront le même nom de fichier pdf.
     # Mapping pdf->[docx]
     pdf2docx_filenames = {}
@@ -117,13 +144,17 @@ def check_duclicated_docx(docx2pdf_filename):
         dep_name = pdf_filename.split(os.sep)[-1].split('.')[0].split('relance ')[-1]
         if len(docx_filenames) > 1:
             # Lister les fichiers dupliqués
-            print(f"Dupliqués {dep_name} :")
-            _ = [print("\t", docx_filename) for docx_filename in docx_filenames]
+            logger.info(f"Dupliqués {dep_name} :")
+            _ = [logger.info("\t", docx_filename) for docx_filename in docx_filenames]
             flag_duplication = True
     assert not flag_duplication, "Fichiers dupliqués : supprimez les fichiers en trop."
     
 
-def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2num):
+def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR: str, doc_odt: dict, depname2num: dict):
+    """
+    Convert into pdf all keys in docx2pdf_filename and doc_odt. 
+    For our main: Convert all files to pdf from modified_report folder into reports_pdf 
+    """
     files_to_convert = list(docx2pdf_filename.keys())
     for filename in tqdm(files_to_convert, desc="Conversion PDF des fiches docx"):
         # Effectuer la copie : les noms de fichiers comportant un espace ou une apostrophe rencontrent
@@ -170,7 +201,11 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
         os.rename(pdf_filename, os.path.join(OUTPUT_DIR, clean_pdf_filename))
 
 
-def export_to_pdf_avant_osmose(depname2num):
+def export_to_pdf_avant_osmose(depname2num: dict):
+    """ 
+    Convert docx into pdf. 
+    For our main: Convert all docx to pdf from reports_before_new_comment folder to reports_before_new_comment_pdf 
+    """
     # Pour les fiches avant le passage osmose
     docx2pdf_filename, doc_odt = docxnames_to_pdfnames(os.path.join(os.getcwd(), "reports", "reports_before_new_comment"), depname2num)
     output = os.path.join("reports", "reports_before_new_comment_pdf")
@@ -193,12 +228,19 @@ def export_to_pdf_avant_osmose(depname2num):
         os.rename(pdf_filename, os.path.join(output, clean_pdf_filename))
 
 
-def replace_key(dictionary, old_key, new_key):
+def replace_key(dictionary: dict, old_key: str, new_key:str):
+    """
+    Replace a key (old key) by another key (new_key) into a dictionnary 
+    """
     dictionary[new_key] = dictionary[old_key]
     del dictionary[old_key]
 
 
-def rename_docx_without_buggy_chars(src_file):
+def rename_docx_without_buggy_chars(src_file: str) -> str:
+    """
+    Replace white space and apostrophe by #
+    With white space and apostrophe the command line to convert into pdf doesn't work
+    """
     clean_filename = re.sub("[ ']", "#", src_file)
     clean_path = os.path.join(DIR_COPY_DOCX, clean_filename.split(os.sep)[-1]) # Mettre la copie dans un autre dossier
     if os.path.exists(clean_path):
