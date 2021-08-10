@@ -48,7 +48,7 @@ def main_docx2pdf_apres_osmose():
 
 def mkdir_ifnotexist(path: str):
     """
-    Create a folder if it's doesn't exist
+    Creates a folder if it's doesn't exist
     """
     if not os.path.isdir(path):
         os.mkdir(path)
@@ -56,7 +56,7 @@ def mkdir_ifnotexist(path: str):
 
 def create_dico_dep2num(taxo_dep_df: pd.DataFrame) -> dict:
     """
-    Create crossing dictionnary between department and department's number
+    Creates crossing dictionnary between department's name and department's number
     """
     depname2num = {}
     for i, row in taxo_dep_df.iterrows():
@@ -93,7 +93,7 @@ def get_dep_name_from_docx(docx_filename: str) -> str:
 
 def docxnames_to_pdfnames(base_dir: str, depname2num: dict) -> list:
     """ 
-    Create crossing dictionnary between a file in base_dir and a required output file  
+    Creates crossing dictionnary between a file in base_dir and a required output file  
     Returns:
         list[0]: Crossing dictionnary between docx name and pdf name
         list[1]: Crossing dictionnary between odt name and pdf name

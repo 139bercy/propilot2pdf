@@ -107,11 +107,11 @@ def main_build_reports():
                     "national": {'France': {}},
                     "regional": {reg: {} for reg in reg_list}}
     # Récuperer les 3 derniers mois à insérer dans les fiches
-    last_dates_to_keep = months_to_insert(modulo=1)
+    last_dates_to_keep = insert_months_to(modulo=1)
 
     make_all_charts(dict_mesure_indic, pp_dep, pp_reg, pp_nat, taxo_dep_df, last_dates_to_keep, months, all_charts_as_df)
     check_charts_exhaustivity(all_charts_as_df, taxo_dep_df, taxo_reg_df, dict_mesure_indic)
-    short_mesure2url, short_mesure2to_comment = mesure_to_insert(pp_dep)
+    short_mesure2url, short_mesure2to_comment = insert_mesure_to(pp_dep)
     
     # Lance la génération dans le dossier reports_word
     create_all_dep(taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, short_mesure2to_comment, short_mesure2url, dict_mesure_indic)
@@ -121,7 +121,7 @@ def main_build_reports():
 
 def create_dict_mesure_indic(pp_dep: pd.DataFrame, volet2code_mesures: dict) -> dict:
     """
-    Create crossing dictionnary between Mesure (key) and Indicateur (value)
+    Creates crossing dictionnary between Mesure (key) and Indicateur (value)
     """
     # Extraction des mesures-indicateurs à afficher dans les fiches
     code_mesures_to_keep = set([mesure for volet in volet2code_mesures for mesure in volet2code_mesures[volet]])
@@ -175,7 +175,7 @@ def add_cumulated_value(pp_dep: pd.DataFrame, taxo_reg_df: pd.DataFrame) -> list
     return pp_reg, pp_nat
 
 
-def months_to_insert(modulo: int = 0, months: tuple = months, nb_mois: int = 3) -> list:
+def insert_months_to(modulo: int = 0, months: tuple = months, nb_mois: int = 3) -> list:
     """
     Collect the 3 months to insert in the parlementary files
     """
@@ -314,7 +314,7 @@ def make_pp_chart(maille: str, mesure: str, short_indics: list, pp_dep: pd.DataF
     Below, layout of one created table with pp_dep: 
      
             -----------------------
-            |        mesure        |
+            |        maille:       |
             ------------------------
             |shrtind1|....|shrtindn|
             ------------------------
@@ -442,7 +442,7 @@ def check_charts_exhaustivity(all_charts_as_df: dict, taxo_dep_df: pd.DataFrame,
     
     assert sorted(all_charts_as_df['national']['France'].keys()) == sorted(dict_mesure_indic.keys())
 
-def mesure_to_insert(pp_dep: pd.DataFrame) -> list:
+def insert_mesure_to(pp_dep: pd.DataFrame) -> tuple:
     """ 
     Only some measures will be present in parlementary file and for the latter 
     we will keep an URL for extra information, and if we have to create a commentary space in the file 

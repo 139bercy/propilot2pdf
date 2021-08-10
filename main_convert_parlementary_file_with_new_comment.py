@@ -26,14 +26,14 @@ def main():
 
 def mkdir_ifnotexist(path: str):
     """
-    Create a folder if it's doesn't exist
+    Creates a folder if it's doesn't exist
     """
     if not os.path.isdir(path):
         os.mkdir(path)
 
 def create_zip_for_archive(name_zip: str, folder_pdf: str, folder_docx: str):
     """
-    Create a zip in archive/Month_Year with 2 folders: folder_pdf and forlder_docx
+    Creates a zip in archive/Month_Year with 2 folders: folder_pdf and forlder_docx
     """
     with zipfile.ZipFile(name_zip, "w", zipfile.ZIP_DEFLATED) as zfile:
             for root, _, files in os.walk(folder_pdf):

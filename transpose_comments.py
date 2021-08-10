@@ -126,7 +126,8 @@ def flatten(L: list):
 
 def gen_unit_list(L: list):
     """
-    ???
+    Creates a generator that generates the smallest list for nested lists:
+    [ [[.], [., .], [.]], [ [a], [.] ] ] --> [.], [., .], [.], [a], [.]
     """
     if (type(L) is list) and (len(L) > 0) and (type(L[0]) is not list):
         yield L
@@ -224,6 +225,7 @@ def extract_comment(textbox_content: list) -> list:
 def alternate_texts_and_images(doc: DocxTemplate, textbox_content: str) -> list:
     """
     Comments may contain pictures. To keep them, we create a liste to store text and image path
+    The image size is fixed since it cannot be extracted from the initial document
     
     Return Structure:
         list: [{text:..., image:...}, {text:..., image:...}]
