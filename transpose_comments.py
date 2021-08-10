@@ -1,30 +1,17 @@
 from unidecode import unidecode
 import os
-import urllib.request
-import json
 import re
-import datetime
-
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from pprint import pprint
 
 # Permet la génération de word
-import docx
-import docxtpl
 import docx2python
-from docx import Document
-from docxcompose.composer import Composer
-from docxtpl import DocxTemplate, R, Listing, InlineImage
 from docx.shared import Mm
+from docxtpl import DocxTemplate, InlineImage
 
 # Parsing des commentaires
 from docx2python import docx2python
 
 # Nettoyage du texte
 import html
-from collections import Counter
 
 # Ouvrir les docx en tant que zip pour remplacer manipuler son code XML
 import zipfile
@@ -68,17 +55,18 @@ volet2mesures = {
              ]
 }
 
-comment_prefixes = set(['Espace Commentaires\xa0:', 'Espace Commentaires :', 
-                        'Exemples de lauréats :', 'Exemples de lauréats\xa0:', 
-                       "Commentaires généraux\xa0:", "Commentaires généraux :", 
-                       "Volet\xa0: Ecologie", "Volet\xa0: Compétitivité", "Volet\xa0: Cohésion",
-                       "Volet : Ecologie", "Volet : Compétitivité", "Volet : Cohésion",])
+comment_prefixes = set(['Espace Commentaires\xa0:', 'Espace Commentaires :',
+                        'Exemples de lauréats :', 'Exemples de lauréats\xa0:',
+                        "Commentaires généraux\xa0:", "Commentaires généraux :",
+                        "Volet\xa0: Ecologie", "Volet\xa0: Compétitivité", "Volet\xa0: Cohésion",
+                        "Volet : Ecologie", "Volet : Compétitivité", "Volet : Cohésion"])
 
 # main
 
+
 def main_transpose_comments():
-    #Vérification de l'existence des dossiers
-    mkdir_ifnotexist(avant_osmose)    
+    # Vérification de l'existence des dossiers
+    mkdir_ifnotexist(avant_osmose)
     mkdir_ifnotexist(transposed_docx_dir)
     mkdir_ifnotexist(image_folder)
     mkdir_ifnotexist(modified_docx_dir)
@@ -91,10 +79,11 @@ def main_transpose_comments():
     errors = transpose_modification_to_new_reports(template2modified_docx)
     if errors:
         print("Erreurs rencontrées :", errors)
-    assert len(os.listdir(transposed_docx_dir)) == 110
+    assert len(os.listdir(transposed_docx_dir)) == 109
     shutil.rmtree(os.path.join("reports_word", "temp_transposition"))
 
 # Fonction nécessaire
+
 
 def mkdir_ifnotexist(path: str):
     """
@@ -102,7 +91,7 @@ def mkdir_ifnotexist(path: str):
     """
     if not os.path.isdir(path):
         os.mkdir(path)
-        
+
 
 def normalize_name(name: str) -> str:
     """
@@ -110,9 +99,10 @@ def normalize_name(name: str) -> str:
     """
     name = name.lower()
     name = unidecode(name)
-    name = re.sub('[^a-z]', ' ',  name)
+    name = re.sub('[^a-z]', ' ', name)
     name = re.sub(' +', '', name)
     return name
+
 
 def flatten(L: list):
     """
@@ -123,7 +113,7 @@ def flatten(L: list):
             yield from flatten(item)
     else:
         yield L
-        
+
 
 def gen_unit_list(L: list):
     """
@@ -159,13 +149,13 @@ def reformat_url(text: str) -> str:
 
 def fix_vanishing_break_lines(text: str) -> str:
     """
-    In modify_docx_break_line, we replace break line (create by Enter or Shift+ Enter) by a special token. 
-    Replace this token by "\n" 
+    In modify_docx_break_line, we replace break line (create by Enter or Shift+ Enter) by a special token.
+    Replace this token by "\n"
     """
     text = re.sub(BR_TOKEN, '\n', text)
     return text
 
-    
+
 def extract_comment(textbox_content: list) -> list:
     """
     Extract comment from textbox_content. Comments are always preceded by one of these prefixes:
@@ -181,7 +171,7 @@ def extract_comment(textbox_content: list) -> list:
             - "Volet : Ecologie"
             - "Volet : Compétitivité"
             - "Volet : Cohésion"
-    """ 
+    """
     # Cleaning section
     texts = []
     for text in textbox_content:
@@ -190,7 +180,6 @@ def extract_comment(textbox_content: list) -> list:
         text = reformat_url(text)
         text = fix_vanishing_break_lines(text)
         text = text.strip()
-        
         texts.append(text)
     textbox_content = texts
 
@@ -204,7 +193,7 @@ def extract_comment(textbox_content: list) -> list:
     prefix_clean = False
     while not prefix_clean:
         # Les préfixes étant déclarés dans un set, dès lors qu'on retrouve un préfixe à retirer,
-        # on re-parcourt le set de préfixes 
+        # on re-parcourt le set de préfixes
         prefix_clean = True
         for prefix in comment_prefixes:
             if textbox_content.startswith(prefix):
@@ -215,19 +204,17 @@ def extract_comment(textbox_content: list) -> list:
                 textbox_content = textbox_content[:-len(prefix)]
                 textbox_content = textbox_content.strip()
                 prefix_clean = False
-            
-    
     textbox_content = textbox_content.strip()
     # Carriage pour conserver les retours à la ligne
     textbox_content = re.sub("\n", "\r\n", textbox_content)
     return textbox_content
-    
+
 
 def alternate_texts_and_images(doc: DocxTemplate, textbox_content: str) -> list:
     """
     Comments may contain pictures. To keep them, we create a liste to store text and image path
     The image size is fixed since it cannot be extracted from the initial document
-    
+
     Return Structure:
         list: [{text:..., image:...}, {text:..., image:...}]
     """
@@ -235,7 +222,6 @@ def alternate_texts_and_images(doc: DocxTemplate, textbox_content: str) -> list:
     r = re.compile("----media/(.*?)----")  # Pattern pour les images
     image_names = r.findall(textbox_content) + [None]
     texts = r.split(textbox_content)
-    
     frameworks = []
     for text, image_basename in zip(texts[0::2], image_names):
         if image_basename is not None:
@@ -249,17 +235,16 @@ def alternate_texts_and_images(doc: DocxTemplate, textbox_content: str) -> list:
 def get_mesure_to_comment(doc: DocxTemplate, content: docx2python, volet2mesures: dict) -> dict:
     """
     Get measures (not volet) that have comments space and comment space's content
-    
     Returns:
         dict: {key: measure name, value: comment space's content}
     """
     mesure2comment = {}
-    
+
     # Pattern regex pour attraper le nom des mesures
     list_mesures = [mesure for mesures in volet2mesures.values() for mesure in mesures]
-    re_group_mesures = "("+ '|'.join(list_mesures) + ")"
+    re_group_mesures = "(" + '|'.join(list_mesures) + ")"
     re_title_mesure_pattern = f'(\d - <a href=.*>{re_group_mesures}</a>)'
-    
+
     current_mesure = None
     num_blocks_to_pass = 0
     for text_list_block in content.body:
@@ -275,7 +260,7 @@ def get_mesure_to_comment(doc: DocxTemplate, content: docx2python, volet2mesures
             # On veut récupérer le commentaire
             # il faudra passer 3 tableaux + 3 retours à la ligne
             if num_blocks_to_pass == 0:
-                
+
                 # On extrait le commentaire
                 text_list = list(flatten(text_list_block))
                 textbox_content = extract_comment(text_list)
@@ -284,12 +269,9 @@ def get_mesure_to_comment(doc: DocxTemplate, content: docx2python, volet2mesures
                 # On associe volet et commentaire
                 encoded_mesure = normalize_name(current_mesure)
                 mesure2comment[encoded_mesure] = frameworks
-                
                 # Reinit la mesure courante pour récupérer la suivante
                 current_mesure = None
-            
             num_blocks_to_pass -= 1
-    
     assert len(mesure2comment) == len(list_mesures), f"{len(mesure2comment)} != {len(list_mesures)} attendues"
     return mesure2comment
 
@@ -297,15 +279,14 @@ def get_mesure_to_comment(doc: DocxTemplate, content: docx2python, volet2mesures
 def get_volet_to_comment(doc: DocxTemplate, content, volet2mesures: dict) -> dict:
     """
     Get volet that have comments space and comment space's content
-    
+
     Returns:
         dict: {key: measure name, value: comment space's content}
     """
     volet2comment = {}
-    body = content.body
     volet = None
     text_unit_generator = gen_unit_list(content.body)
-    volet_names_regex = "(" + '|'.join([volet for volet in volet2mesures]) + ")"  #-> (Ecologie|Compétitivité|Cohésion)
+    volet_names_regex = "(" + '|'.join([volet for volet in volet2mesures]) + ")"  # -> (Ecologie|Compétitivité|Cohésion)
 
     for text_list in text_unit_generator:
         # On cherche à trouver le titre contenant le nom du volet (partie else)
@@ -314,13 +295,13 @@ def get_volet_to_comment(doc: DocxTemplate, content, volet2mesures: dict) -> dic
             # On extrait le commentaire
             textbox_content = extract_comment(text_list)
             frameworks = alternate_texts_and_images(doc, textbox_content)
-            
+
             # On associe volet et commentaire
             encoded_volet = normalize_name(volet)
             volet2comment[encoded_volet] = frameworks
-            
+
             # Reinitialise volet
-            volet = None            
+            volet = None
         else:
             text_list = ' '.join(text_list)
             patterns = re.findall(f'(Volet [1-3] : {volet_names_regex})', text_list)
@@ -351,9 +332,8 @@ def modify_docx_break_line(input_docx: str, output_docx: str):
                         xml_content = re.sub('<w:br/>', f'<w:t>{BR_TOKEN}</w:t>', xml_content)
                         # Write content
                         outzip.writestr(inzipinfo.filename, xml_content)
-                    else: # Si pas de texte, simple recopiage du contenu du fichier
+                    else:  # Si pas de texte, simple recopiage du contenu du fichier
                         outzip.writestr(inzipinfo.filename, infile.read())
-
 
 
 def transpose_comments(src_filename: str, template_filename: str, output_filename: str, volet2mesures: dict) -> str:
@@ -367,53 +347,48 @@ def transpose_comments(src_filename: str, template_filename: str, output_filenam
     # Lecture du document
     content = docx2python(src_filename, image_folder=image_folder)
     doc_template = DocxTemplate(template_filename)
-    
+
     # Parse les commentaires sous les volets et mesures
     mesure2comment = get_mesure_to_comment(doc_template, content, volet2mesures)
     volet2comment = get_volet_to_comment(doc_template, content, volet2mesures)
     context = {**mesure2comment, **volet2comment}
-    dep_name = output_filename.split('_')[-1].split('.docx')[0]
 
     # On génère un nouveau document avec les commentaires recopiés
     doc_template.render(context, autoescape=True)
     doc_template.save(output_filename)
-    return output_filename
 
 
 def fill_template(template_filename: str, output_filename: str, volet2mesures: dict) -> str:
     """
-    Complete space comment into template_filename by void. 
+    Complete space comment into template_filename by void.
     In fact, template_filename's space comment contain a tag allowing text insertion. This function delete this tag.
     """
-    ordered_mesures = [mesure for mesures in volet2mesures.values() for mesure in mesures]
     ordered_volets = list(volet2mesures.keys())
-    
+
     context = {normalize_name(volet): [{'text': '', 'image': ''}] for volet in ordered_volets}
-    dep_name = output_filename.split('_')[-1].split('.docx')[0]
     doc = DocxTemplate(template_filename)
     doc.render(context, autoescape=True)
     doc.save(output_filename)
-    return output_filename
 
 
 def map_templates_to_modified_reports(templates: list, modified_docx: list) -> dict:
     """
-    After the comments phase parlementary file's name could be modified. 
+    After the comments phase parlementary file's name could be modified.
     Create a dictionnary to match original name and name after comment phase
 
     Return:
         dict: {key: new name, value: old name}
     """
-    mapping = {filename:None for filename in templates}
-    
+    mapping = {filename: None for filename in templates}
+
     # Faire correspondre le nom des départements encodés vers le bon template
     encoded_dep_name2template = {}
     for filename in mapping:
         raw_dep_name = filename.split('_')[-1].split('.')[0]
         encoded_dep_name = normalize_name(raw_dep_name)
         encoded_dep_name2template[encoded_dep_name] = filename
-    #assert len(encoded_dep_name2template) == 109
-    
+    # assert len(encoded_dep_name2template) == 109
+
     # Faire correspondre le nom du département
     duplicated_dep = []
     for modified in modified_docx:
@@ -429,7 +404,7 @@ def map_templates_to_modified_reports(templates: list, modified_docx: list) -> d
         else:
             duplicated_dep.append(dep_name)
             print(f"!!! {target_template} is not None -> probably duplicated \n----See {modified}")
-            
+
     print("Fiches dupliquées (à retirer manuellement puis relancer le script) :\n", duplicated_dep)
     print(f"{len(mapping)} hits")
     return mapping
@@ -454,15 +429,15 @@ def transpose_modification_to_new_reports(template2modified_docx: dict):
         if modified_docx_path is None:
             unhit += 1
             print(f'Pas de transposition pour {template_path}')
-            output_name = fill_template(template_path, output_path, volet2mesures)
+            fill_template(template_path, output_path, volet2mesures)
         else:
             print(f'Transpose {template_path} vers {output_path}')
             try:
-                output_name = transpose_comments(template_path, modified_docx_path, output_path, volet2mesures)
+                transpose_comments(template_path, modified_docx_path, output_path, volet2mesures)
                 hit += 1
             except BaseException as e:
                 print(f"** Transposition impossible. Génération d'une fiche vide dans {template_path}**")
-                output_name = fill_template(template_path, output_path, volet2mesures)
+                fill_template(template_path, output_path, volet2mesures)
                 unhit += 1
                 print("erreur rencontrée")
                 errors.append(e)
