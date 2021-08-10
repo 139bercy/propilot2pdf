@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 from unidecode import unidecode
 import docx
+import tqdm
 
 # Permet la génération de word
 from docx import Document
@@ -661,7 +662,7 @@ def create_all_dep(taxo_dep_df: pd.DataFrame, taxo_reg_df: pd.DataFrame, volet2m
     Create parlementary file for each french department
     """
     list_all_dep = taxo_dep_df[~taxo_dep_df["dep"].isin(L_dep_no_output)].dep
-    for dep in list_all_dep:
+    for dep in tqdm(list_all_dep, desc="Nombre de fiches générées"):
         docx_path = create_fiche(dep, taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, short_mesure2to_comment, short_mesure2url, dict_mesure_indic)
         logger.info(dep + ' ' + docx_path)
         doc = Document(docx_path)
