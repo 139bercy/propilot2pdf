@@ -4,6 +4,7 @@ import build_reports
 import docx2pdf
 import datetime
 import zipfile
+
 #Partie chargement propilot encore en ipynb
 from nbconvert.preprocessors import ExecutePreprocessor
 import nbformat
@@ -13,7 +14,7 @@ def main():
     # Création de pp_dep
     print("Création de pp_dep")
     notebook_filename = 'chargement_propilot.ipynb'
-    lancement_auto_notebook(notebook_filename)
+    auto_notebook_launch(notebook_filename)
     print("Génération des fiches")
     build_reports.main_build_reports()
     print("Récupération des commentaires")
@@ -40,18 +41,27 @@ def main():
         print("Le dossier modified_reports est vide. Arrêt du traitement")
     
 
-def lancement_auto_notebook(notebook_filename):
+def auto_notebook_launch(notebook_filename: str):
+    """
+    Launch a notebook in a .py file
+    """
     with open(notebook_filename) as f:
         nb = nbformat.read(f, as_version=4) # Ouverture du ipynb
     ep = ExecutePreprocessor(timeout=1000, kernel_name='python3') # Configuration pour l'execution
     ep.preprocess(nb, {'metadata': {'path': os.getcwd()}}) # Execution du notebook présent dans 'path
 
-def mkdir_ifnotexist(path) :
-    if not os.path.isdir(path) :
+
+def mkdir_ifnotexist(path: str):
+    """
+    Creates a folder if it's doesn't exist
+    """
+    if not os.path.isdir(path):
         os.mkdir(path)
 
-def create_zip_for_archive(name_zip, folder_pdf, folder_docx):
-    #Code permettant de créer un zip avec l'arborescence du fichier source
+def create_zip_for_archive(name_zip: str, folder_pdf: str, folder_docx: str):
+    """
+    Creates a zip in archive/Month_Year with 2 folders: folder_pdf and forlder_docx
+    """
     with zipfile.ZipFile(name_zip, "w", zipfile.ZIP_DEFLATED) as zfile:
             for root, _, files in os.walk(folder_pdf):
                 for file in files:
