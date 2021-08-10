@@ -7,6 +7,12 @@ from unidecode import unidecode
 # Barre de progression
 from tqdm import tqdm
 
+# Logger
+import logging
+import logging.handlers
+# Définition du logger
+logger = logging.getLogger("main.docx2pdf")
+logger.setLevel(logging.DEBUG)
 
 # Variable globale
 
@@ -137,8 +143,8 @@ def check_duclicated_docx(docx2pdf_filename: dict):
         dep_name = pdf_filename.split(os.sep)[-1].split('.')[0].split('relance ')[-1]
         if len(docx_filenames) > 1:
             # Lister les fichiers dupliqués
-            print(f"Dupliqués {dep_name} :")
-            _ = [print("\t", docx_filename) for docx_filename in docx_filenames]
+            logger.info(f"Dupliqués {dep_name} :")
+            _ = [logger.info("\t", docx_filename) for docx_filename in docx_filenames]
             flag_duplication = True
     assert not flag_duplication, "Fichiers dupliqués : supprimez les fichiers en trop."
     

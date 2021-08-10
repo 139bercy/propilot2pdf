@@ -18,6 +18,12 @@ import zipfile
 # Suppression de dossier temporaire
 import shutil
 
+# Logger
+import logging
+import logging.handlers
+# Définition du logger
+logger = logging.getLogger("main.transpose_comments")
+logger.setLevel(logging.DEBUG)
 
 # Variable globale
 BR_TOKEN = '###BR###'  # Les retours à la ligne encodés dans les docx seront remplacés par ce token
@@ -78,7 +84,7 @@ def main_transpose_comments():
     template2modified_docx = map_templates_to_modified_reports(templates, modified_docx)
     errors = transpose_modification_to_new_reports(template2modified_docx)
     if errors:
-        print("Erreurs rencontrées :", errors)
+        logger.info("Erreurs rencontrées :", errors)
     assert len(os.listdir(transposed_docx_dir)) == 109
     shutil.rmtree(os.path.join("reports_word", "temp_transposition"))
 
@@ -394,7 +400,7 @@ def map_templates_to_modified_reports(templates: list, modified_docx: list) -> d
     for modified in modified_docx:
         content = docx2python(modified)
         expr_with_dep_name = content.body[0][0][0][7]
-        print(f"Extrait de {modified} : ", expr_with_dep_name)
+        logger.info(f"Extrait de {modified} : ", expr_with_dep_name)
         expr_with_dep_name.split(':')
         dep_name = expr_with_dep_name.split(':')[-1].strip()
         clean_dep_name = normalize_name(dep_name)
@@ -403,10 +409,10 @@ def map_templates_to_modified_reports(templates: list, modified_docx: list) -> d
             mapping[target_template] = modified
         else:
             duplicated_dep.append(dep_name)
-            print(f"!!! {target_template} is not None -> probably duplicated \n----See {modified}")
-
-    print("Fiches dupliquées (à retirer manuellement puis relancer le script) :\n", duplicated_dep)
-    print(f"{len(mapping)} hits")
+            logger.info(f"!!! {target_template} is not None -> probably duplicated \n----See {modified}")
+    if duplicated_dep != []:        
+        logger.info("Fiches dupliquées (à retirer manuellement puis relancer le script) :\n", str(duplicated_dep))
+    logger.info(f"{len(mapping)} hits")
     return mapping
 
 
@@ -428,22 +434,22 @@ def transpose_modification_to_new_reports(template2modified_docx: dict):
 
         if modified_docx_path is None:
             unhit += 1
-            print(f'Pas de transposition pour {template_path}')
+            logger.info(f'Pas de transposition pour {template_path}')
             fill_template(template_path, output_path, volet2mesures)
         else:
-            print(f'Transpose {template_path} vers {output_path}')
+            logger.info(f'Transpose {template_path} vers {output_path}')
             try:
                 transpose_comments(template_path, modified_docx_path, output_path, volet2mesures)
                 hit += 1
             except BaseException as e:
-                print(f"** Transposition impossible. Génération d'une fiche vide dans {template_path}**")
+                logger.info(f"** Transposition impossible. Génération d'une fiche vide dans {template_path}**")
                 fill_template(template_path, output_path, volet2mesures)
                 unhit += 1
-                print("erreur rencontrée")
+                logger.info("erreur rencontrée")
                 errors.append(e)
     if errors:
         return errors
-    print(f"Hit : {hit} | Unhit : {unhit}")
+    logger.info(f"Hit : {hit} | Unhit : {unhit}")
 
 
 if __name__ == "__main__":
