@@ -4,10 +4,27 @@ import datetime
 import os 
 import shutil
 
+# Logger
+import logging
+import logging.config
+
+#Définition du logger
+logger = logging.getLogger("main")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+fh = logging.handlers.RotatingFileHandler("Parlementary_files_Conversion.log", maxBytes=100000000, backupCount=5)
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(name)-20s - %(levelname)-8s - %(message)s")
+ch.setFormatter(formatter)
+fh.setFormatter(formatter)
+logger.addHandler(ch)
+logger.addHandler(fh)
+
 def main():
-    print("Conversion des fiches présentes dans modified_reports")
+    logger.info("Conversion des fiches présentes dans modified_reports")
     docx2pdf.main_docx2pdf_apres_osmose()
-    print("Création des archives zip")
+    logger.info("Création des archives zip")
     # Obtention du mois de génération des fiches
     today = datetime.datetime.today()
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 

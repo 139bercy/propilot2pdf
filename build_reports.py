@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 from unidecode import unidecode
 import docx
+from tqdm import tqdm
 
 # Permet la génération de word
 from docx import Document
@@ -14,6 +15,14 @@ from docx.shared import Pt
 from docxcompose.composer import Composer
 from docxtpl import DocxTemplate, RichText
 from docx.enum.style import WD_STYLE_TYPE
+
+# Logger
+import logging
+import logging.handlers
+# Définition du logger
+logger = logging.getLogger("main.build_reports")
+logger.setLevel(logging.DEBUG)
+
 
 # Variable globale
 mailles = ["national", "regional", "departemental"]
@@ -53,12 +62,12 @@ def main_build_reports():
     taxo_dep_df['dep'] = taxo_dep_df['dep'].apply(lambda x: x.zfill(2))
     taxo_dep_df['reg'] = taxo_dep_df['reg'].apply(lambda x: x.zfill(2))
     dep_list = list(taxo_dep_df['dep'].unique())
-    print('{} departements.'.format(len(dep_list)))
+    logger.info('{} departements.'.format(len(dep_list)))
 
     taxo_reg_df = pd.read_csv('refs/taxo_regions.csv', dtype={'reg':str})
     taxo_reg_df['reg'] = taxo_reg_df['reg'].apply(lambda x: x.zfill(2))
     reg_list = list(taxo_reg_df['reg'].unique())
-    print('{} regions.'.format(len(reg_list)))
+    logger.info('{} regions.'.format(len(reg_list)))
 
     pp_dep = pd.read_csv("pp_dep.csv", sep=";", dtype={"reg":str, "dep":str})
 
@@ -257,7 +266,7 @@ def format_amount(indic: str, valeur: str) -> str:
         try:
             return format_thousands(valeur.split(".")[0])
         except ValueError as err:
-            print(f"L'indicateur {indic} possède des valeurs invalides : {err}")
+            logger.info(f"L'indicateur {indic} possède des valeurs invalides : {err}")
 
 
 def check_pp_reg(pp_reg: pd.DataFrame, taxo_reg_df: pd.DataFrame, pp_dep: pd.DataFrame):
@@ -340,7 +349,6 @@ def make_pp_chart(maille: str, mesure: str, short_indics: list, pp_dep: pd.DataF
         default = default.drop('index', axis=1)
 
         for dep in deps:
-            #print(f"Plotting {mesure}-{short_indics} : departement {dep}")
             df_dep = df.loc[df.dep == dep]
             if df_dep.shape[0] == 0:
                 all_charts_as_df[maille][dep][mesure] = default.T.reset_index().T  # Avoir le nom des colonnes en valeurs
@@ -377,7 +385,6 @@ def make_pp_chart(maille: str, mesure: str, short_indics: list, pp_dep: pd.DataF
         default = default.drop('index', axis=1)
 
         for reg in regs:
-            #print(f"Plotting region {mesure}-{short_indics} : {reg}")
             df_reg = df.loc[df.reg == reg]
             if df_reg.shape[0] == 0:
                 all_charts_as_df[maille][reg][mesure] = default.T.reset_index().T
@@ -399,7 +406,6 @@ def make_pp_chart(maille: str, mesure: str, short_indics: list, pp_dep: pd.DataF
                 all_charts_as_df[maille][reg][mesure] = df_plot.T.reset_index().T
             
     elif maille == "national":
-        #print(f"Plotting country {mesure}-{short_indics}")
         df_nat = pp_nat.loc[(pp_nat.short_mesure == mesure)].sort_values(by="period_date", ascending=True).copy()
         df_plot = pd.pivot_table(df_nat, index=['period_date', 'Date'], columns=['short_indic'], values='valeur', aggfunc='first')
         df_plot = df_plot.reset_index()
@@ -656,9 +662,9 @@ def create_all_dep(taxo_dep_df: pd.DataFrame, taxo_reg_df: pd.DataFrame, volet2m
     Create parlementary file for each french department
     """
     list_all_dep = taxo_dep_df[~taxo_dep_df["dep"].isin(L_dep_no_output)].dep
-    for dep in list_all_dep:
+    for dep in tqdm(list_all_dep, desc="Nombre de fiches générées"):
         docx_path = create_fiche(dep, taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, short_mesure2to_comment, short_mesure2url, dict_mesure_indic)
-        print(dep + ' ' + docx_path)
+        logger.info(dep + ' ' + docx_path)
         doc = Document(docx_path)
 
         # Retirer le double espacement après les tableaux
