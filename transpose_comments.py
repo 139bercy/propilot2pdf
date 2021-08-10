@@ -86,7 +86,9 @@ def main_transpose_comments():
     templates = [os.path.join(template_dir, filename) for filename in os.listdir(template_dir) if filename.endswith('docx')]
     modified_docx = [os.path.join(modified_docx_dir, filename) for filename in os.listdir(modified_docx_dir) if filename.endswith('docx')]
     template2modified_docx = map_templates_to_modified_reports(templates, modified_docx)
-    transpose_modification_to_new_reports(template2modified_docx)
+    errors = transpose_modification_to_new_reports(template2modified_docx)
+    if errors:
+        print("Erreurs rencontrées :", errors)
     assert len(os.listdir(transposed_docx_dir)) == 110
     shutil.rmtree(os.path.join("reports_word", "temp_transposition"))
 
@@ -369,27 +371,29 @@ def transpose_modification_to_new_reports(template2modified_docx):
     # Transpose le texte ajouté aux documents sur le template associé. 
     # La correspondance se fait à partir du mapping (dictionnaire template -> doc modifié)
     hit, unhit = 0, 0
+    errors = []
     for template_path, modified_docx_path in template2modified_docx.items():
         output_basename = template_path.split(os.sep)[-1]
         output_path = os.path.join(transposed_docx_dir, output_basename)
+        fill_template(template_path, os.path.join(os.getcwd(), 'reports_before_new_comment', output_basename), volet2mesures)
 
-        output_name = fill_template(template_path, os.path.join(os.getcwd(), 'reports_before_new_comment', output_basename), volet2mesures)
-        
         if modified_docx_path is None:
             unhit += 1
             print(f'Pas de transposition pour {template_path}')
             output_name = fill_template(template_path, output_path, volet2mesures)
-        
         else:
             print(f'Transpose {template_path} vers {output_path}')
             try:
                 output_name = transpose_comments(template_path, modified_docx_path, output_path, volet2mesures)
                 hit += 1
-            except:
+            except BaseException as e:
                 print(f"** Transposition impossible. Génération d'une fiche vide dans {template_path}**")
                 output_name = fill_template(template_path, output_path, volet2mesures)
                 unhit += 1
-                
+                print("erreur rencontrée")
+                errors.append(e)
+    if errors:
+        return errors
     print(f"Hit : {hit} | Unhit : {unhit}")
 
 
