@@ -48,18 +48,21 @@ pp_dep['Date'] = pp_dep.Date.apply(lambda x: re.sub(' +', ' ', x))
 
 def main_create_commentary_csv():
     path_to_transposed_report = os.path.join(os.getcwd(), 'reports_word', 'transposed_reports')
-    dico_commentaire_mesure, dico_commentaire_volet = recuperation_commentaire_all(path_to_transposed_report)
-    normalize_dict(dico_commentaire_volet)
-    df = convert_dico_to_pd(dico_commentaire_mesure, dico_commentaire_volet)
-    L_code = nomalize_libelle_indic(pp_dep, liste_indic)
-    df_to_merge = pd.DataFrame(L_code)
-    df_to_merge.columns = ["Quadrigramme", "mesure", "mesure_without_space", 'indicateurs']
-    df = create_csv(df, df_to_merge, pp_dep) 
+    dict_mesure2com, dict_volet2com = create_dict2com(path_to_transposed_report)
+    normalize_dict(dict_volet2com)
+    df = convert_dico2pd(dict_mesure2com, dict_volet2com)
+    df_to_merge = normalize_libelle_indic(pp_dep, liste_indic)
+    df = create_csv(df, df_to_merge, pp_dep)
     df.to_csv("enrichissement_commentaireV2.csv", sep=";", index=False)
 
 
 
-def get_comment(content, volet2mesures):
+def get_comment(content: DocxContent, volet2mesures: dict) -> tuple:
+    """
+    Collects the comments on one file and creates two dictionaries:
+        - One for volets
+        - The other for mesures
+    """
     volet2comment = {}
     mesure2comment = {}
     body = content.body[:min(len(content.body),142)] #Supprime le dernier retour à la ligne parasite
@@ -109,36 +112,52 @@ def get_comment(content, volet2mesures):
     return mesure2comment, volet2comment
 
 
-def recuperation_commentaire_all(path_to_transposed_report, path_to_image = image_folder):
+def create_dict2com(path_to_transposed_report: str, path_to_image: str = image_folder) -> tuple:
+    """ 
+    Collects the comments on all files and creates two dictionaries:
+        - One for volets
+        - The other for mesures
+    """
     #On ne conserve que les fiches docx
     liste_fichier = os.listdir(path_to_transposed_report)
-    dico_commentaire_volet = {}
-    dico_commentaire_mesure = {}
+    dict_volet2com = {}
+    dict_mesure2com = {}
     for fichier in liste_fichier:
         if fichier.endswith('.docx'):
             src_filename = os.path.join(path_to_transposed_report, fichier) #Departement du nord 73
             content = docx2python(src_filename, image_folder=image_folder)
             mesurecomment, voletcomment = get_comment(content, volet2mesures)
             dep_name = src_filename.split('_')[-1].split('.docx')[0]
-            dico_commentaire_mesure[dep_name] = mesurecomment
-            dico_commentaire_volet[dep_name] = voletcomment
-    return dico_commentaire_mesure, dico_commentaire_volet
+            dict_mesure2com[dep_name] = mesurecomment
+            dict_volet2com[dep_name] = voletcomment
+    return dict_mesure2com, dict_volet2com
 
 
-def normalize_dict(dico_commentaire_volet):
-    for dep in dico_commentaire_volet:
-        if len(list(dico_commentaire_volet[dep].keys())) == 2:
-            dico_commentaire_volet[dep]["cohesion"] = ""
+def normalize_dict(dict_volet2com: dict):
+    """ 
+    Add, into dict_volet2com, the volets as keys, when they missing
+    """
+    volets = ["ecologie", "competitivite", "cohesion"]
+    for dep in dict_volet2com:
+        keys = list(dict_volet2com[dep].keys())
+        if len(keys) < 3:
+            for volet in volets:
+                if volet not in keys:
+                    dict_volet2com[dep]["volet"] = ""
 
-def convert_dico_to_pd(dico_commentaire_mesure, dico_commentaire_volet):
+
+def convert_dico2pd(dict_mesure2com: dict, dict_volet2com:dict) -> pd.DataFrame:
+    """
+    Creates, from dict_mesure2com and dict_volet2com, a DataFrame with comments
+    """
     L_to_dataframe = []
-    for dep in list(dico_commentaire_mesure.keys()):
+    for dep in list(dict_mesure2com.keys()):
         L_dep = [dep]
         for key in list(volet2mesures.keys()):
             for mesure in volet2mesures[key]:
-                com_volet = dico_commentaire_volet[dep][transpose_comments.encode_name(key)]
+                com_volet = dict_volet2com[dep][transpose_comments.encode_name(key)]
                 try:
-                    com_mesure = dico_commentaire_mesure[dep][transpose_comments.encode_name(mesure)]
+                    com_mesure = dict_mesure2com[dep][transpose_comments.encode_name(mesure)]
                     L_dep = [dep, transpose_comments.encode_name(key), com_volet, transpose_comments.encode_name(mesure), com_mesure]
                 except: # Toutes les mesures n'ont pas de commentaires
                     L_dep = [dep, transpose_comments.encode_name(key), com_volet, transpose_comments.encode_name(mesure), ""] 
@@ -147,7 +166,10 @@ def convert_dico_to_pd(dico_commentaire_mesure, dico_commentaire_volet):
     df.columns = ["Département", "Volet", "Commentaire_volet", "Mesure", "Commentaire_mesure"]
     return df
 
-def nomalize_libelle_indic(pp_dep, liste_indic):
+def normalize_libelle_indic(pp_dep: pd.DataFrame, liste_indic: list) -> pd.DataFrame:
+    """
+    Format indicateur's name and creates Dataframe with all informations about mesure and indicateur
+    """
     L_code = []
     for code in liste_indic:
         try:
@@ -169,13 +191,16 @@ def nomalize_libelle_indic(pp_dep, liste_indic):
             L_code += [[code, mesure_comp, mesure_dico, indicateur]]
         except:
             print("Code Indicateur non traité: {}".format(code))
-    return L_code
-
-
-def create_csv(df, df_to_merge, pp_dep):
     df_to_merge = pd.DataFrame(L_code)
     df_to_merge.columns = ["Quadrigramme", "mesure", "mesure_without_space", 'indicateurs']
+    return df_to_merge
 
+
+def create_csv(df: pd.DataFrame, df_to_merge: pd.DataFrame, pp_dep: pd.DataFrame) -> pd.DataFrame:
+    """
+    Merges df, df_to_merge, and some columns from pp_dep into one dataframe.
+    This dataframe will be export into csv 
+    """
     df = pd.merge(df, df_to_merge, how='left', left_on='Mesure', right_on='mesure_without_space')
     df = df.drop(["mesure", "mesure_without_space"], axis=1)
     # Rajout de la date à laquelle les commentaires ont été fait
