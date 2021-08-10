@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from unidecode import unidecode
 import docx
-import tqdm
+from tqdm import tqdm
 
 # Permet la génération de word
 from docx import Document
