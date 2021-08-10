@@ -6,6 +6,7 @@ from docx2python import docx2python
 from unidecode import unidecode
 # Barre de progression
 from tqdm import tqdm
+import time
 
 
 # Variable globale
@@ -14,10 +15,10 @@ from tqdm import tqdm
 taxo_dep_df = pd.read_csv(os.path.join('refs', 'taxo_deps.csv'), dtype={'dep':str, 'reg':str})
 
 # Définition et création des dossiers
-DIR_TO_CONVERT = os.path.join(os.getcwd(), "modified_reports")
-OUTPUT_DIR = os.path.join(os.getcwd(), 'reports_pdf')
-avant_osmose_pdf = "reports_before_new_comment_pdf"
-DIR_COPY_DOCX = os.path.join(os.getcwd(), "temp_docx")
+DIR_TO_CONVERT = os.path.join(os.getcwd(), "reports", "modified_reports")
+OUTPUT_DIR = os.path.join(os.getcwd(), "reports",'reports_pdf')
+avant_osmose_pdf = os.path.join("reports", "reports_before_new_comment_pdf")
+DIR_COPY_DOCX = os.path.join(os.getcwd(), "reports", "temp_docx")
 
 # main
 
@@ -31,7 +32,7 @@ def main_docx2pdf_avant_osmose():
     check_duclicated_docx(docx2pdf_filename)
     #Archivage a faire ici des docx
     export_to_pdf_avant_osmose(depname2num)
-    shutil.rmtree("temp_docx")
+    shutil.rmtree(os.path.join("reports", "temp_docx"))
 
 
 def main_docx2pdf_apres_osmose():
@@ -134,7 +135,7 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
         # Conversion en pdf
         # > test.log 2> warning.log permet de rediriger la sortie vers test.log et les warning vers warning.log
         os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{clean_path}" > test.log 2> warning.log')
-        
+    time.sleep(5)
     for filename in docx2pdf_filename:    
         clean_pdf_filename = docx2pdf_filename[filename]
         pdf_basename = re.sub('.'+filename.split('.')[-1], '.pdf', os.path.basename(filename))
@@ -151,7 +152,6 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
             dep = depname2num[dep_name]
             renommage_odt[filename] = str(dep) + " - Suivi Territorial plan France relance " + str(dep_name) + ".pdf"
         
-
     for filename in tqdm(doc_odt, desc="Conversion PDF des fiches odt"):
         # Effectuer la copie : les noms de fichiers comportant un espace ou une apostrophe rencontrent
         # font planter la conversion
@@ -162,7 +162,7 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
         del renommage_odt[filename]
         # Conversion en pdf
         os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{clean_path}" > test.log 2> warning.log')
-        
+    time.sleep(5) 
     for filename in renommage_odt:
         clean_pdf_filename = renommage_odt[filename]
         pdf_basename = re.sub('.'+filename.split('.')[-1], '.pdf', os.path.basename(filename))
@@ -172,8 +172,8 @@ def export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2n
 
 def export_to_pdf_avant_osmose(depname2num):
     # Pour les fiches avant le passage osmose
-    docx2pdf_filename, doc_odt = docxnames_to_pdfnames(os.path.join(os.getcwd(), "reports_before_new_comment"), depname2num)
-    output = "reports_before_new_comment_pdf"
+    docx2pdf_filename, doc_odt = docxnames_to_pdfnames(os.path.join(os.getcwd(), "reports", "reports_before_new_comment"), depname2num)
+    output = os.path.join("reports", "reports_before_new_comment_pdf")
     # Conversion docx -> pdf - Peut prendre quelques minutes
     # CAVEAT : Fermer les applications Libreoffice ouverte avant de lancer cette cellule
     files_to_convert = list(docx2pdf_filename.keys())
@@ -185,8 +185,7 @@ def export_to_pdf_avant_osmose(depname2num):
         # vers les bons pdf
         replace_key(docx2pdf_filename, filename, clean_path)
         os.system(f'libreoffice --headless -convert-to pdf --outdir "{output}" {clean_path} > test.log 2> warning.log')
-
-        
+    time.sleep(5) 
     for filename in tqdm(docx2pdf_filename):    
         clean_pdf_filename = docx2pdf_filename[filename]
         pdf_basename = re.sub('.'+filename.split('.')[-1], '.pdf', os.path.basename(filename))

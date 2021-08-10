@@ -32,12 +32,12 @@ import shutil
 
 # Variable globale
 BR_TOKEN = '###BR###'  # Les retours à la ligne encodés dans les docx seront remplacés par ce token
-template_dir = "reports_word"
-modified_docx_dir = "modified_reports"
-transposed_docx_dir = os.path.join("reports_word", "transposed_reports")
-image_folder = os.path.join("reports_word", "reports_images")
-avant_osmose = "reports_before_new_comment"
-temp_transpo = os.path.join('reports_word', 'temp_transposition')
+template_dir = os.path.join("reports", "reports_word")
+modified_docx_dir = os.path.join("reports", "modified_reports")
+transposed_docx_dir = os.path.join("reports", "reports_word", "transposed_reports")
+image_folder = os.path.join("reports", "reports_word", "reports_images")
+avant_osmose = os.path.join("reports", "reports_before_new_comment")
+temp_transpo = os.path.join("reports",'reports_word', 'temp_transposition')
 # Mesures des fiches V2 contenant des commentaires
 volet2mesures = {
     'Ecologie': [#'Bonus écologique',
@@ -81,14 +81,15 @@ def main_transpose_comments():
     mkdir_ifnotexist(image_folder)
     mkdir_ifnotexist(modified_docx_dir)
     mkdir_ifnotexist(temp_transpo)
+    print(len(os.listdir(modified_docx_dir)))
     assert len(os.listdir(modified_docx_dir)) > 0, f"Le dossier {modified_docx_dir} est vide. Vous devez y placer les fichiers docx contenant les commentaires à déplacer."
 
     templates = [os.path.join(template_dir, filename) for filename in os.listdir(template_dir) if filename.endswith('docx')]
     modified_docx = [os.path.join(modified_docx_dir, filename) for filename in os.listdir(modified_docx_dir) if filename.endswith('docx')]
     template2modified_docx = map_templates_to_modified_reports(templates, modified_docx)
     transpose_modification_to_new_reports(template2modified_docx)
-    assert len(os.listdir(transposed_docx_dir)) == 110
-    shutil.rmtree(os.path.join("reports_word", "temp_transposition"))
+    assert len(os.listdir(transposed_docx_dir)) == 109
+    shutil.rmtree(os.path.join("reports", "reports_word", "temp_transposition"))
 
 # Fonction nécessaire
 
@@ -373,7 +374,7 @@ def transpose_modification_to_new_reports(template2modified_docx):
         output_basename = template_path.split(os.sep)[-1]
         output_path = os.path.join(transposed_docx_dir, output_basename)
 
-        output_name = fill_template(template_path, os.path.join(os.getcwd(), 'reports_before_new_comment', output_basename), volet2mesures)
+        output_name = fill_template(template_path, os.path.join(avant_osmose, output_basename), volet2mesures)
         
         if modified_docx_path is None:
             unhit += 1

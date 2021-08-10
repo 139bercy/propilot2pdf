@@ -1,7 +1,9 @@
+import os
+import sys
+sys.path.append(os.path.join(os.getcwd(), "code"))
 import docx2pdf
 import zipfile
 import datetime
-import os 
 import shutil
 
 def main():
@@ -19,8 +21,8 @@ def main():
     mkdir_ifnotexist(path)
     
     name_zip = os.path.join(path, 'reports_with_new_comment_{}.zip'.format(today_str))
-    folder_pdf = "reports_pdf"
-    folder_docx = "modified_reports"
+    folder_pdf = os.path.join("reports", "reports_pdf")
+    folder_docx = os.path.join("reports","modified_reports")
     create_zip_for_archive(name_zip, folder_pdf, folder_docx)
 
 

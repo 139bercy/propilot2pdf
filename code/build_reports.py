@@ -44,9 +44,9 @@ months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
 L_reg_no_output = ["00"]  # 00 correspond à Etranger
 L_dep_no_output = ['00']
 # Dossier imgs avec les logos
-img_dir_path = './img/'
-word_dir_path = "reports_word"
-word_gen_dir_path = "reports_word/Generation_p2p"
+img_dir_path = os.path.join(os.getcwd(), "img")
+word_dir_path = os.path.join(os.getcwd(), "reports", "reports_word")
+word_gen_dir_path = os.path.join(os.getcwd(), "reports", "reports_word", "Generation_p2p")
 
 # main du fichier
 def main_build_reports():
@@ -385,7 +385,8 @@ def check_charts_exhaustivity(all_charts_as_df, taxo_dep_df, taxo_reg_df, dict_m
 
 def mesure_to_insert(pp_dep):
     # Importer le dataframe des mesures à insérer
-    ref_mesures2 = pd.read_excel('refs/20210630_Liste_Mesures-Ficheparlementaire.xlsx')
+    path = os.path.join("refs", "20210630_Liste_Mesures-Ficheparlementaire.xlsx")
+    ref_mesures2 = pd.read_excel(path)
     ref_mesures2.drop(["Unnamed: 5", "Mesures suivie dans le TdB grand public"], axis = 1, inplace=True)
     ref_mesures2.drop([27], inplace=True)
     ref_mesures2 = ref_mesures2.rename(columns={"Liens hypertexte": "url",
@@ -445,7 +446,8 @@ def mesure_to_insert(pp_dep):
 
 
 def create_front_page(nom_departement):
-    doc = DocxTemplate("template/template_front_page.docx")
+    path = os.path.join("template", "template_front_page.docx")
+    doc = DocxTemplate(path)
     today = datetime.datetime.today()
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 
             'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
@@ -453,7 +455,8 @@ def create_front_page(nom_departement):
     context = {'dep': str(nom_departement), 
                'date': today_str}  # A remplacer par today_str plus tard. On nous demande de mettre Mai 2021 ------------------------------------ !!!!!!!!!!!!!!!!!!!!
     doc.render(context)
-    name_file = "reports_word/Generation_p2p/front_page_{}.docx".format(nom_departement)
+    name_page = "front_page_{}.docx".format(nom_departement)
+    name_file = os.path.join("reports", "reports_word", "Generation_p2p", name_page)
     doc.save(name_file)
     return name_file
 
@@ -468,13 +471,15 @@ def encode_name(name):
 
 
 def create_volet_page(nom_volet, num_volet):
-    doc = DocxTemplate("template/template_volet.docx")
+    path = os.path.join("template", "template_volet.docx")
+    doc = DocxTemplate(path)
     context = {'volet': nom_volet, 
                'num_volet': num_volet, 
                'code_comment': "{% for f in " + encode_name(nom_volet) + " %}{{ f.text }} {{ f.image }} {% endfor %}",
               }
     doc.render(context)
-    name_file = "reports_word/Generation_p2p/{}.docx".format(nom_volet)
+    name_volet = "{}.docx".format(nom_volet)
+    name_file = os.path.join("reports", "reports_word", "Generation_p2p", name_volet)
     doc.save(name_file)
     return name_file
 
@@ -491,7 +496,8 @@ def fusion_word(word1, word2, dep):
     composer = Composer(master)
     doc1 = Document(word2)
     composer.append(doc1)
-    name_fusion = "reports_word/Suivi_Territorial_plan_relance_{}.docx".format(dep)
+    new_docx = "Suivi_Territorial_plan_relance_{}.docx".format(dep)
+    name_fusion = os.path.join("reports", "reports_word", new_docx)
     composer.save(name_fusion)
     return name_fusion
 
@@ -499,9 +505,11 @@ def fusion_word(word1, word2, dep):
 def create_content_page(all_charts_as_df, departement, region, mesure, volet, dep_name, reg_name, num_mesure, short_mesure2to_comment, short_mesure2url, dict_mesure_indic):
     # Ouverture de template
     if mesure in short_mesure2to_comment and short_mesure2to_comment[mesure]:
-        doc = DocxTemplate("template/template_content_page.docx")
+        path = os.path.join("template", "template_content_page.docx")
+        doc = DocxTemplate(path)
     else:
-        doc = DocxTemplate("template/template_content_page_no_comment.docx")
+        path = os.path.join("template", "template_content_page_no_comment.docx")
+        doc = DocxTemplate(path)
     # Recuperation des datas pour les 3 scales
     df_nat = all_charts_as_df["national"]["France"][mesure]
     df_reg = all_charts_as_df["regional"][region][mesure]
@@ -533,7 +541,8 @@ def create_content_page(all_charts_as_df, departement, region, mesure, volet, de
                 'code_comment': "{% for f in " + encode_name(mesure) + " %}{{ f.text }} {{ f.image }} {% endfor %}",
                 }
     doc.render(context)
-    name_file = "reports_word/Generation_p2p/content_page_{}.docx".format(mesure)
+    name_content = "content_page_{}.docx".format(mesure)
+    name_file = os.path.join("reports", "reports_word", "Generation_p2p", name_content)
     doc.save(name_file)
     return name_file
 
@@ -591,7 +600,8 @@ def create_all_dep(taxo_dep_df, taxo_reg_df, volet2mesures, all_charts_as_df, sh
 
 def check_num_docx_created(taxo_dep_df):
     # Vérifier si on a bien toutes les fiches
-    num_test = len([fn for fn in os.listdir('reports_word') if "Suivi" in fn])
+    path = os.path.join("reports", "reports_word")
+    num_test = len([fn for fn in os.listdir(path) if "Suivi" in fn])
     num_true = taxo_dep_df['dep'].shape[0]
     # num_true-1 car on enlève le département Etranger "00"
     assert num_test == num_true - 1, f"{num_test} -- {num_true}"

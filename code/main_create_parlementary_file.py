@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append(os.path.join(os.getcwd(), "code"))
 import transpose_comments
 import build_reports
 import docx2pdf
@@ -17,7 +19,7 @@ def main():
     print("Génération des fiches")
     build_reports.main_build_reports()
     print("Récupération des commentaires")
-    modified_docx_dir = "modified_reports"
+    modified_docx_dir = os.path.join("reports","modified_reports")
     mkdir_ifnotexist(modified_docx_dir)
     if len(os.listdir(modified_docx_dir)) > 0:
         transpose_comments.main_transpose_comments()
@@ -33,8 +35,8 @@ def main():
         path = os.path.join("archive", "{}".format(today_str))
         mkdir_ifnotexist(path)
         name_zip = os.path.join(path, 'reports_before_new_comment_{}.zip'.format(today_str))
-        folder_pdf = "reports_before_new_comment_pdf"
-        folder_docx = "reports_before_new_comment"
+        folder_pdf = os.path.join("reports","reports_before_new_comment_pdf")
+        folder_docx = os.path.join("reports","reports_before_new_comment")
         create_zip_for_archive(name_zip, folder_pdf, folder_docx)
     else:
         print("Le dossier modified_reports est vide. Arrêt du traitement")
