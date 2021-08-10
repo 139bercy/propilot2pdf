@@ -1,18 +1,24 @@
 # Python
 .ipynb_checkpoints
 .vscode
+.Rhistory
+.idea/
+__pycache__/
 
 # Ajout après le travail en local sur la génération word
 *.csv
 *.key
-data
 *.pkl
-
-# Fichier .py 
+*.zip
+*.log
+temp_docx
+reports_word/temp_transposition
+archive
+# Fichier .py
 Conversion.py
 
 # Travail sur les dossiers word
-# Dossier reports_word 
+# Dossier reports_word
 reports_word/Generation_p2p/*
 !reports_word/Generation_p2p
 reports_word/reports_images/*
@@ -23,12 +29,20 @@ reports_word/*.docx
 modified_reports/*
 !modified_reports/.gitkeep
 
+reports_before_new_comment
+reports_before_new_comment_pdf
 # Les fichiers temporaires par Libreoffice
 .~lock.*
 
-# Les fichiers pdf 
+# Les fichiers pdf
 reports_pdf/*
 !reports_pdf/.gitkeep
 
+Fiche_Avant_Osmose_pdf/*.pdf
+
 reports/*
 !reports/.gitkeep
+
+pp_dep.csv
+france-relance-data-tableau-de-bord.txt
+data/*

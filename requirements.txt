@@ -7,4 +7,9 @@ seaborn
 python-docx
 docxtpl
 docxcompose
-unidecode
+unidecode==1.2.0
+pytz
+docx2python
+nbformat
+docx
+tqdm
