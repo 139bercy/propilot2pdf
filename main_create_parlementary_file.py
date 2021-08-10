@@ -9,22 +9,38 @@ import zipfile
 from nbconvert.preprocessors import ExecutePreprocessor
 import nbformat
 
+# Logger
+import logging
+import logging.config
+
+#Définition du logger
+logger = logging.getLogger("main")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+fh = logging.handlers.RotatingFileHandler("Parlementary_files.log", maxBytes=100000000, backupCount=5)
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(name)-20s - %(levelname)-8s - %(message)s")
+ch.setFormatter(formatter)
+fh.setFormatter(formatter)
+logger.addHandler(ch)
+logger.addHandler(fh)
 
 def main():
     # Création de pp_dep
-    print("Création de pp_dep")
+    logger.info("Création de pp_dep")
     notebook_filename = 'chargement_propilot.ipynb'
     auto_notebook_launch(notebook_filename)
-    print("Génération des fiches")
+    logger.info("Génération des fiches")
     build_reports.main_build_reports()
-    print("Récupération des commentaires")
+    logger.info("Récupération des commentaires")
     modified_docx_dir = "modified_reports"
     mkdir_ifnotexist(modified_docx_dir)
     if len(os.listdir(modified_docx_dir)) > 0:
         transpose_comments.main_transpose_comments()
-        print("Conversion en pdf")
+        logger.info("Conversion en pdf")
         docx2pdf.main_docx2pdf_avant_osmose()
-        print("Création des archives zip")
+        logger.info("Création des archives zip")
         # Obtention du mois de génération des fiches
         today = datetime.datetime.today()
         months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 
@@ -38,7 +54,8 @@ def main():
         folder_docx = "reports_before_new_comment"
         create_zip_for_archive(name_zip, folder_pdf, folder_docx)
     else:
-        print("Le dossier modified_reports est vide. Arrêt du traitement")
+        logger.info("Le dossier modified_reports est vide. Arrêt du traitement")
+        raise ValueError("Le dossier modified_reports est vide. Arrêt du traitement")
     
 
 def auto_notebook_launch(notebook_filename: str):
