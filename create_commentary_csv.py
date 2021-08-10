@@ -4,6 +4,7 @@ import re
 import numpy as np
 import transpose_comments
 import datetime
+from docx2python.docx_output import DocxContent
 from docx2python import docx2python
 
 
@@ -49,7 +50,7 @@ pp_dep['Date'] = pp_dep.Date.apply(lambda x: re.sub(' +', ' ', x))
 def main_create_commentary_csv():
     path_to_transposed_report = os.path.join(os.getcwd(), 'reports_word', 'transposed_reports')
     dict_mesure2com, dict_volet2com = create_dict2com(path_to_transposed_report)
-    normalize_dict(dict_volet2com)
+    dict_volet2com = normalize_dict(dict_volet2com)
     df = convert_dico2pd(dict_mesure2com, dict_volet2com)
     df_to_merge = normalize_libelle_indic(pp_dep, liste_indic)
     df = create_csv(df, df_to_merge, pp_dep)
@@ -68,10 +69,10 @@ def get_comment(content: DocxContent, volet2mesures: dict) -> tuple:
     # Les mesures doivent apparaitre dans le même ordre que le document
     ordered_mesures = [mesure for mesures in volet2mesures.values() for mesure in mesures]
     compteur_mesure = 0  # Permet de se retrouver dans les mesures affiliées aux commentaires
-    voletecologie = 0
-    voletcompetitivite = 46
-    voletcohesion = 92
-    liste_indice_volet = [voletecologie, voletcompetitivite, voletcohesion]
+    volet_ecologie = 0
+    volet_competitivite = 46
+    volet_cohesion = 92
+    liste_indice_volet = [volet_ecologie, volet_competitivite, volet_cohesion]
     liste_volet = ["Ecologie", "Competitivite", 'Cohesion']
     # Boucle while pour sortir texte_content
     position = 0
@@ -101,10 +102,10 @@ def get_comment(content: DocxContent, volet2mesures: dict) -> tuple:
         textbox_content.replace(";", ",")
         # On associe la mesure au commentaire
         if position - 2 in liste_indice_volet:  # On traite un commentaire de volet
-            encode_volet = transpose_comments.encode_name(liste_volet[liste_indice_volet.index(position - 2)])
+            encode_volet = transpose_comments.normalize_name(liste_volet[liste_indice_volet.index(position - 2)])
             volet2comment[encode_volet] = textbox_content
         else:
-            encoded_mesure = transpose_comments.encode_name(ordered_mesures[compteur_mesure])
+            encoded_mesure = transpose_comments.normalize_name(ordered_mesures[compteur_mesure])
             compteur_mesure += 1
             mesure2comment[encoded_mesure] = textbox_content  # textbox_content
 
@@ -142,7 +143,8 @@ def normalize_dict(dict_volet2com: dict):
         if len(keys) < 3:
             for volet in volets:
                 if volet not in keys:
-                    dict_volet2com[dep]["volet"] = ""
+                    dict_volet2com[dep][volet] = ""
+    return dict_volet2com
 
 
 def convert_dico2pd(dict_mesure2com: dict, dict_volet2com: dict) -> pd.DataFrame:
@@ -154,12 +156,12 @@ def convert_dico2pd(dict_mesure2com: dict, dict_volet2com: dict) -> pd.DataFrame
         L_dep = [dep]
         for key in list(volet2mesures.keys()):
             for mesure in volet2mesures[key]:
-                com_volet = dict_volet2com[dep][transpose_comments.encode_name(key)]
+                com_volet = dict_volet2com[dep][transpose_comments.normalize_name(key)]
                 try:
-                    com_mesure = dict_mesure2com[dep][transpose_comments.encode_name(mesure)]
-                    L_dep = [dep, transpose_comments.encode_name(key), com_volet, transpose_comments.encode_name(mesure), com_mesure]
+                    com_mesure = dict_mesure2com[dep][transpose_comments.normalize_name(mesure)]
+                    L_dep = [dep, transpose_comments.normalize_name(key), com_volet, transpose_comments.normalize_name(mesure), com_mesure]
                 except:  # Toutes les mesures n'ont pas de commentaires
-                    L_dep = [dep, transpose_comments.encode_name(key), com_volet, transpose_comments.encode_name(mesure), ""]
+                    L_dep = [dep, transpose_comments.normalize_name(key), com_volet, transpose_comments.normalize_name(mesure), ""]
                 L_to_dataframe += [L_dep]
     df = pd.DataFrame(L_to_dataframe)
     df.columns = ["Département", "Volet", "Commentaire_volet", "Mesure", "Commentaire_mesure"]
@@ -174,7 +176,16 @@ def normalize_libelle_indic(pp_dep: pd.DataFrame, liste_indic: list) -> pd.DataF
     for code in liste_indic:
         try:
             mesure_comp = pp_dep[pp_dep.indic_id == code].mesure.iloc[0]
-            mesure_dico = mesure_comp.replace(' ', '').replace('é', 'e').replace("'", "").replace("à", "a").replace("â", "a").replace("(", "").replace(")", "").replace("è", "e").replace(",", "").lower()
+            mesure_dico = mesure_comp.replace(' ', '')\
+                .replace('é', 'e')\
+                .replace("'", "")\
+                .replace("à", "a")\
+                .replace("â", "a")\
+                .replace("(", "")\
+                .replace(")", "")\
+                .replace("è", "e")\
+                .replace(",", "")\
+                .lower()
             if "relocalisation:soutienauxprojetsindustrielsdanslesterritoires" in mesure_dico:
                 mesure_dico = "aapindustriesoutienauxprojetsindustrielsterritoires"
             if "relocalisation:securisationdesapprovisionnementscritiques" in mesure_dico:
