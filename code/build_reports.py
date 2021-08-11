@@ -518,17 +518,12 @@ def insert_mesure_to(pp_dep: pd.DataFrame) -> tuple:
     return short_mesure2url, short_mesure2to_comment
 
 
-<<<<<<< HEAD:code/build_reports.py
-def create_front_page(nom_departement):
-    path = os.path.join("template", "template_front_page.docx")
-    doc = DocxTemplate(path)
-=======
 def create_front_page(nom_departement: str) -> str:
     """
     Given a department, creates the front page of the parlementary file
     """
-    doc = DocxTemplate("template/template_front_page.docx")
->>>>>>> master:build_reports.py
+    path = os.path.join("template", "template_front_page.docx")
+    doc = DocxTemplate(path)
     today = datetime.datetime.today()
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 
             'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
