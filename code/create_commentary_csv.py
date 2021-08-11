@@ -8,7 +8,7 @@ from docx2python.docx_output import DocxContent
 from docx2python import docx2python
 
 
-image_folder = os.path.join("reports_word", "reports_images")
+image_folder = os.path.join("reports", "reports_word", "reports_images")
 volet2mesures = {
     'Ecologie': ['Bonus écologique',
                  "MaPrimeRénov'",
@@ -48,7 +48,7 @@ pp_dep['Date'] = pp_dep.Date.apply(lambda x: re.sub(' +', ' ', x))
 
 
 def main_create_commentary_csv():
-    path_to_transposed_report = os.path.join(os.getcwd(), 'reports_word', 'transposed_reports')
+    path_to_transposed_report = os.path.join(os.getcwd(), "reports", 'reports_word', 'transposed_reports')
     dict_mesure2com, dict_volet2com = create_dict2com(path_to_transposed_report)
     dict_volet2com = normalize_dict(dict_volet2com)
     df = convert_dico2pd(dict_mesure2com, dict_volet2com)

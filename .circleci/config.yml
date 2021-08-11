@@ -87,7 +87,7 @@ jobs:
                 command: |
                     python3 -m venv venv
                     . venv/bin/activate
-                    python3 build_reports.py
+                    python3 code/build_reports.py
           #          #zip -9 archive.zip *.pdf
           #          #git add archive.zip
           #          cd reports_word
