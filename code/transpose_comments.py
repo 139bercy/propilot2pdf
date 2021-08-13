@@ -402,7 +402,7 @@ def map_templates_to_modified_reports(templates: list, modified_docx: list) -> d
     for modified in modified_docx:
         content = docx2python(modified)
         expr_with_dep_name = content.body[0][0][0][7]
-        logger.info(f"Extrait de {modified} : ", expr_with_dep_name)
+        logger.info("Extrait de {} : {}".format(modified, expr_with_dep_name))
         expr_with_dep_name.split(':')
         dep_name = expr_with_dep_name.split(':')[-1].strip()
         clean_dep_name = normalize_name(dep_name)
