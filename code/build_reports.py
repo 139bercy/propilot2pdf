@@ -678,12 +678,16 @@ def create_all_dep(taxo_dep_df: pd.DataFrame, taxo_reg_df: pd.DataFrame, volet2m
                                                   (all(run.font.size is None for run in paragraph.runs))):
                 delete_paragraph(paragraph)
         doc.save(docx_path)
+        print(docx_path)
         # Réduire la taille du paragraphe après le dernier tableau de chaque page
         # Cela permet d'éviter de créer une nouvelle page quand le texte devient trop long
         doc = Document(docx_path)
         styles = doc.styles
-        style = styles.add_style('Custom_style2', WD_STYLE_TYPE.PARAGRAPH)
-        style.font.size = Pt(2)
+        try:
+            style = styles.add_style('Custom_style2', WD_STYLE_TYPE.PARAGRAPH)
+            style.font.size = Pt(2)
+        except:
+            pass
         for paragraph in doc.paragraphs:
             if len(paragraph.text) == 1:
                 paragraph.style = doc.styles['Custom_style2']
