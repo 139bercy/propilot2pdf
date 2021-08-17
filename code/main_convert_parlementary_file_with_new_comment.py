@@ -82,31 +82,24 @@ def modified_or_not(path_to_folder1: str = path_to_folder1, path_to_folder2: str
         1) Parlementary files without modifications since the last month
         2) Parlementary files with modifications
     """
-    L_old_files = os.listdir(path_to_folder1)
-    L_new_files = os.listdir(path_to_folder2)
+    old_files = os.listdir(path_to_folder1)
+    new_files = os.listdir(path_to_folder2)
     path_modif = os.path.join(path_to_folder2, "Fiche_Modifiee")
     path_no_modif = os.path.join(path_to_folder2, "Fiche_Non_Modifiee")
     mkdir_ifnotexist(path_no_modif)
     mkdir_ifnotexist(path_modif)
-    dict_to_match = {}  # {"old_name": "new_name"}
     # Récupération du mois en cours
     today = datetime.datetime.today()
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
               'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
     today_str = f"{months[today.month-1]}_{today.year}"
 
-    for file in L_old_files:
-        dep = file.split(" -")[0]
-        compteur = 0
-        while compteur < len(L_new_files) and dep != L_new_files[compteur].split(" -")[0]:
-            compteur += 1
-        dict_to_match[file] = L_new_files[compteur]
-    # A partir du moment ou on dispose du dictionnaire de match
-    for key in list(dict_to_match.keys()):
-        if filecmp.cmp(os.path.join(path_to_folder1, key), os.path.join(path_to_folder2, dict_to_match[key])):  # doc identique
-            shutil.move(os.path.join(path_to_folder2, dict_to_match[key]), path_no_modif)
-        else:
-            shutil.move(os.path.join(path_to_folder2, dict_to_match[key]), path_modif)
+    for file in new_files:
+        if file.endswith("pdf"):
+            if filecmp.cmp(os.path.join(path_to_folder1, file), os.path.join(path_to_folder2, file)):  # doc identique
+                shutil.move(os.path.join(path_to_folder2, file), path_no_modif)
+            else:
+                shutil.move(os.path.join(path_to_folder2, file), path_modif)
     # Export en zip
     with zipfile.ZipFile("Fiches_Parlementaires_{}.zip".format(today_str), "w", zipfile.ZIP_DEFLATED) as zfile:
         for root, _, files in os.walk(path_to_folder2):
@@ -116,4 +109,3 @@ def modified_or_not(path_to_folder1: str = path_to_folder1, path_to_folder2: str
 
 if __name__ == "__main__":
     main()
-
