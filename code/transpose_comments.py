@@ -280,7 +280,7 @@ def get_mesure_to_comment(doc: DocxTemplate, content: docx2python, volet2mesures
                 # Reinit la mesure courante pour récupérer la suivante
                 current_mesure = None
             num_blocks_to_pass -= 1
-    assert len(mesure2comment) == len(list_mesures), f"{len(mesure2comment)} != {len(list_mesures)} attendues"
+    # assert len(mesure2comment) == len(list_mesures), f"{len(mesure2comment)} != {len(list_mesures)} attendues"
     return mesure2comment
 
 
@@ -353,12 +353,15 @@ def transpose_comments(src_filename: str, template_filename: str, output_filenam
     modify_docx_break_line(src_filename, tmp_docx)
 
     # Lecture du document
-    content = docx2python(src_filename, image_folder=image_folder)
-    doc_template = DocxTemplate(template_filename)
+    content = docx2python(template_filename, image_folder=image_folder)
+    doc_template = DocxTemplate(src_filename)
 
     # Parse les commentaires sous les volets et mesures
     mesure2comment = get_mesure_to_comment(doc_template, content, volet2mesures)
-    volet2comment = get_volet_to_comment(doc_template, content, volet2mesures)
+    # volet2comment = get_volet_to_comment(doc_template, content, volet2mesures)
+    volet2comment = {"ecologie": [{'text': '', 'image': ''}],
+                     "competitivite": [{'text': '', 'image': ''}],
+                     "cohesion":[{'text': '', 'image': ''}]}
     context = {**mesure2comment, **volet2comment}
 
     # On génère un nouveau document avec les commentaires recopiés
