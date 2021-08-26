@@ -13,3 +13,4 @@ docx2python
 nbformat
 docx
 tqdm
+diff_pdf_visually

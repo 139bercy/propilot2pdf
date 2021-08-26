@@ -331,7 +331,7 @@ def make_pp_chart(maille: str, mesure: str, short_indics: list, pp_dep: pd.DataF
        date3|   data from pp_dep   |
             ------------------------
     """
-    na_replacement = "Indisponible"
+    na_replacement = "Non concerné"
 
     if maille == "departemental":
         df = pp_dep.loc[(pp_dep.short_mesure == mesure)].sort_values(by="period_date", ascending=True).copy()
