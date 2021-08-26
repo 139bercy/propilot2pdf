@@ -60,7 +60,6 @@ def main():
         create_zip_for_archive(name_zip, folder_pdf, folder_docx)
     else:
         logger.info("Le dossier modified_reports est vide. Arrêt du traitement")
-        # raise ValueError("Le dossier modified_reports est vide. Arrêt du traitement")
 
 
 def auto_notebook_launch(notebook_filename: str):
