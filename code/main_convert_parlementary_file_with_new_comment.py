@@ -2,7 +2,7 @@ import os
 import sys
 import zipfile
 import datetime
-import filecmp
+# import filecmp
 import shutil
 
 # Logger
@@ -12,6 +12,7 @@ import logging.config
 # Import des scripts dans le dossier code
 sys.path.append(os.path.join(os.getcwd(), "code"))
 import docx2pdf
+from diff_pdf_visually import pdfdiff
 
 
 # Définition du logger
@@ -93,10 +94,10 @@ def modified_or_not(path_to_folder1: str = path_to_folder1, path_to_folder2: str
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
               'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
     today_str = f"{months[today.month-1]}_{today.year}"
-
+    file = "01 - Suivi Territorial plan France relance Ain.pdf"
     for file in new_files:
         if file.endswith("pdf"):
-            if filecmp.cmp(os.path.join(path_to_folder1, file), os.path.join(path_to_folder2, file)):  # doc identique
+            if pdfdiff(os.path.join(path_to_folder1, file), os.path.join(path_to_folder2, file), ):  # doc identique
                 shutil.move(os.path.join(path_to_folder2, file), path_no_modif)
             else:
                 shutil.move(os.path.join(path_to_folder2, file), path_modif)
