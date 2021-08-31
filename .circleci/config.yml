@@ -75,7 +75,6 @@ jobs:
                     if test -f "$FILE"; then
                         echo "$FILE successfuly created."
                     fi
-
           - persist_to_workspace:
               root: ./
               paths:
@@ -139,10 +138,10 @@ jobs:
                     . venv/bin/activate
                     jupyter nbconvert --to python csvToJson.ipynb
                     python csvToJson.py
-          - save_cache:
-             key: relance-tableau-de-bord-data-{{ checksum "date" }}
-             paths:
-               - "france-relance-data-tableau-de-bord.txt"
+          - persist_to_workspace:
+              root: ./
+              paths:
+                - france-relance-data-tableau-de-bord.txt
 
     publish-json-france-relance:
         docker:
@@ -152,9 +151,6 @@ jobs:
           - run: date +%F > date
           - attach_workspace:
               at: ./
-          - restore_cache:
-              keys:
-                - relance-tableau-de-bord-data-{{ checksum "date" }}
           - run:
                 name: Publication des documents JSON sur data-economie pour le TDB France Relance
                 command: |
