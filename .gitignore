@@ -12,6 +12,7 @@ __pycache__/
 *.zip
 *.log
 temp_docx
+exports
 reports/reports_word/temp_transposition
 archive
 # Fichier .py

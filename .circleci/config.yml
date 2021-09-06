@@ -81,6 +81,28 @@ jobs:
                 - pp_dep.csv
                 - pp_nat.csv
           - run:
+                name: Export de propilot.csv
+                no_output_timeout: 1h
+                command: |
+                    FILES=exports/*.csv
+                    for f in $FILES
+                      do
+
+                      echo "Sending $f"
+
+                      if test -f "$f"; then
+                              echo "$f successfuly created."
+                      else
+                              echo "$f not found"
+                              ls .
+                      fi
+
+                      lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ftp:ssl-force true ; cd propilot ; put $f ; quit"
+                      if [ $? -eq 0 ]; then
+                              echo "$f successfuly transfered."
+                      fi
+                      done
+          - run:
                 name: Production des fiches parlementaires
                 no_output_timeout: 1h
                 command: |
