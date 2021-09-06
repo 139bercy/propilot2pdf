@@ -50,7 +50,7 @@ def main():
         today = datetime.datetime.today()
         months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
                   'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
-        today_str = f"{months[today.month-1]}_{today.year}"
+        today_str = f"{months[today.month-2]}_{today.year}"
         mkdir_ifnotexist("archive")
         path = os.path.join("archive", "{}".format(today_str))
         mkdir_ifnotexist(path)

@@ -40,7 +40,7 @@ def main():
     today = datetime.datetime.today()
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
               'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
-    today_str = f"{months[today.month-1]}_{today.year}"
+    today_str = f"{months[today.month-2]}_{today.year}"
 
     mkdir_ifnotexist("archive")
     path = os.path.join("archive", "{}".format(today_str))
@@ -92,7 +92,7 @@ def modified_or_not(path_to_folder1: str = path_to_folder1, path_to_folder2: str
     today = datetime.datetime.today()
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
               'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
-    today_str = f"{months[today.month-1]}_{today.year}"
+    today_str = f"{months[today.month-2]}_{today.year}"
     for file in new_files:
         if file.endswith("pdf"):
             if pdfdiff(os.path.join(path_to_folder1, file), os.path.join(path_to_folder2, file), ):  # doc identique
