@@ -331,7 +331,7 @@ def make_pp_chart(maille: str, mesure: str, short_indics: list, pp_dep: pd.DataF
        date3|   data from pp_dep   |
             ------------------------
     """
-    na_replacement = "Non concerné"
+    na_replacement = "Indisponible"
 
     if maille == "departemental":
         df = pp_dep.loc[(pp_dep.short_mesure == mesure)].sort_values(by="period_date", ascending=True).copy()
@@ -524,7 +524,7 @@ def create_front_page(nom_departement: str) -> str:
     today = datetime.datetime.today()
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
               'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
-    today_str = f"{months[today.month-1]} {today.year}"
+    today_str = f"{months[today.month-2]} {today.year}"
     context = {'dep': str(nom_departement),
                'date': today_str}
     doc.render(context)

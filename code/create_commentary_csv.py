@@ -218,7 +218,7 @@ def create_csv(df: pd.DataFrame, df_to_merge: pd.DataFrame, pp_dep: pd.DataFrame
     today = datetime.datetime.today()
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
               'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
-    today_str = f"{months[today.month-1]} {today.year}"
+    today_str = f"{months[today.month-2]} {today.year}"
     df['Date'] = today_str
     # Renommage d'un département pour la jointure future
     df.Département = np.where(df.Département == "Val-d'Oise", "Val-D'Oise", df.Département)
