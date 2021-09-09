@@ -1,0 +1,192 @@
+;Code-4;Ministères;Appartient au volet
+;MCT;Transition écologique, transports, et logement;Ecologie
+;RPC;Cohésion des territoires et ville;Ecologie
+;ACM;Armées;Compétitivité
+;ADL;Santé;Cohésion
+;AEA;Agriculture;Ecologie
+;AEA;Agriculture;Ecologie
+;AFG;Economie, Finances et Relance;Compétitivité
+;AFG;Economie, Finances et Relance;Compétitivité
+;AFG;Economie, Finances et Relance;Compétitivité
+;AMD;Transition écologique, transports, et logement;Ecologie
+;ANR;Enseignement supérieur, recherche et innovation;Cohésion
+;APL;Travail;Cohésion
+;APP;Travail;Cohésion
+;APR;Economie, Finances et Relance;Compétitivité
+;APS;Economie, Finances et Relance;Compétitivité
+;APS;Economie, Finances et Relance;Compétitivité
+;APS;Economie, Finances et Relance;Compétitivité
+;BEL;Transition écologique, transports, et logement;Ecologie
+;BEL;Transition écologique, transports, et logement;Ecologie
+;BIP;Economie, Finances et Relance;Compétitivité
+;BIP;Economie, Finances et Relance;Compétitivité
+;BOE;Transition écologique, transports, et logement;Ecologie
+;BPI;Economie, Finances et Relance;Ecologie
+;BPI;Economie, Finances et Relance;Ecologie
+;BPI;Economie, Finances et Relance;Ecologie
+;BPI;Economie, Finances et Relance;Ecologie
+;CBC;Transition écologique, transports, et logement;Ecologie
+;CBC;Transition écologique, transports, et logement;Ecologie
+;CBC;Transition écologique, transports, et logement;Ecologie
+;CDP;Travail;Cohésion
+;CEI;Economie, Finances et Relance;Ecologie
+;CEI;Economie, Finances et Relance;Ecologie
+;CIC;Agriculture;Ecologie
+;CIE;Travail;Cohésion
+;CIR;Transition écologique, transports, et logement;Ecologie
+;CIR;Transition écologique, transports, et logement;Ecologie
+;CPE;Transition écologique, transports, et logement;Cohésion
+;CPE;Transition écologique, transports, et logement;Cohésion
+;CPE;Transition écologique, transports, et logement;Ecologie
+;CPE;Transition écologique, transports, et logement;Ecologie
+;CRO;Transition écologique, transports, et logement;Ecologie
+;DFO;Travail;Cohésion
+;DGA;Transition écologique, transports, et logement;Ecologie
+;DRA;Transition écologique, transports, et logement;Ecologie
+;DRA;Transition écologique, transports, et logement;Ecologie
+;DRA;Transition écologique, transports, et logement;Ecologie
+;DRA;Transition écologique, transports, et logement;Ecologie
+;DVD;"Services du Premier Ministre ; Cohésion des territoires et ville";Ecologie
+;DVD;"Services du Premier Ministre ; Cohésion des territoires et ville";Ecologie
+;DVD;"Services du Premier Ministre ; Cohésion des territoires et ville";Ecologie
+;"DVP
+";Transition écologique, transports, et logement;Ecologie
+;EEI;Transition écologique, transports, et logement;Ecologie
+;EEI;Transition écologique, transports, et logement;Ecologie
+;EOM;Transition écologique, transports, et logement;Ecologie
+;ERD;Enseignement supérieur, recherche et innovation;Compétitivité
+;ETH;Transition écologique, transports, et logement;Ecologie
+;ETH;Transition écologique, transports, et logement;Ecologie
+;FAA;Economie, Finances et Relance;Ecologie
+;FAA;Economie, Finances et Relance;Ecologie
+;FAA;Economie, Finances et Relance;Ecologie
+;FAA;Economie, Finances et Relance;Ecologie
+;FFR;Transition écologique, transports, et logement;Ecologie
+;FNE;Travail;Cohésion
+;FRE;Transition écologique, transports, et logement;Ecologie
+;FUM;Economie, finances et relance;Compétitivité
+;FVE;Economie, Finances et Relance;Ecologie
+;FVE;Economie, Finances et Relance;Ecologie
+;FVE;Economie, Finances et Relance;Ecologie
+;FVE;Economie, Finances et Relance;Ecologie
+;GFP;Economie, Finances et Relance;Compétitivité
+;GFP;Economie, Finances et Relance;Compétitivité
+;GFP;Economie, Finances et Relance;Compétitivité
+;GFP;Economie, Finances et Relance;Compétitivité
+;GJE;Travail;Cohésion
+;IAE;Travail;Cohésion
+;ICC;"Services du Premier Ministre; Culture";Compétitivité
+;ICC;"Services du Premier Ministre; Culture";Compétitivité
+;ICC;"Services du Premier Ministre; Culture";Compétitivité
+;ICC;"Services du Premier Ministre; Culture";Compétitivité
+;ICC;"Services du Premier Ministre; Culture";Compétitivité
+;ICC;"Services du Premier Ministre; Culture";Compétitivité
+;IDF;Economie, Finances et Relance;Compétitivité
+;IDF;Economie, Finances et Relance;Compétitivité
+;IDF;Economie, Finances et Relance;Compétitivité
+;IEP;Agriculture;Ecologie
+;IEX;Education nationale, jeunesse et sports;Cohésion
+;IFO;Agriculture;Ecologie
+;IFP;Services du Premier Ministre;Compétitivité
+;IFP;Services du Premier Ministre;Compétitivité
+;IFS;Services du Premier Ministre;Compétitivité
+;IFS;Services du Premier Ministre;Compétitivité
+;IFS;Services du Premier Ministre;Compétitivité
+;INU;Cohésion des territoires et ville;Cohésion
+;IRR;Transition écologique, transports, et logement;Ecologie
+;MCT;Transition écologique, transports, et logement;Ecologie
+;MCT;Transition écologique, transports, et logement;Ecologie
+;MDA;Agriculture;Ecologie
+;MDS;Transition écologique, transports, et logement;Ecologie
+;MIA;Travail;Cohésion
+;MIR;Economie, Finances et Relance;Ecologie
+;MIR;Economie, Finances et Relance;Ecologie
+;MNS;Services du Premier Ministre;Compétitivité
+;MNS;Services du Premier Ministre;Compétitivité
+;MNS;Services du Premier Ministre;Compétitivité
+;MNS;Services du Premier Ministre;Compétitivité
+;MNS;Services du Premier Ministre;Compétitivité
+;MPE;Travail;Cohésion
+;MPR;Transition écologique, transports, et logement;Ecologie
+;MPR;Transition écologique, transports, et logement;Ecologie
+;MPR;Transition écologique, transports, et logement;Ecologie
+;MPR;Transition écologique, transports, et logement;Ecologie
+;MPR;Transition écologique, transports, et logement;Ecologie
+;MRB;Transition écologique, transports, et logement;Ecologie
+;MTV;Services du Premier Ministre;Ecologie
+;MTV;Services du Premier Ministre;Ecologie
+;MTV;Services du Premier Ministre;Ecologie
+;MTV;Services du Premier Ministre;Ecologie
+;MTV;Services du Premier Ministre;Ecologie
+;MTV;Services du Premier Ministre;Ecologie
+;OFO;Travail;Cohésion
+;PAE;Culture;Compétitivité
+;PAM;Agriculture;Ecologie
+;PAT;Culture;Compétitivité
+;PAT;Culture;Compétitivité
+;PEC;Travail;Cohésion
+;PEE;Transition écologique, transports, et logement;Ecologie
+;PEE;Transition écologique, transports, et logement;Ecologie
+;PEE;Transition écologique, transports, et logement;Ecologie
+;PEJ;Travail;Cohésion
+;PIA;Enseignement supérieur, recherche et innovation;Cohésion
+;PIA;Enseignement supérieur, recherche et innovation;Cohésion
+;PIT;Economie, Finances et Relance;Compétitivité
+;PIT;Economie, Finances et Relance;Compétitivité
+;PIT;Economie, Finances et Relance;Compétitivité
+;PPA;Economie, Finances et Relance;Compétitivité
+;PPA;Economie, Finances et Relance;Compétitivité
+;PPR;Agriculture;Ecologie
+;PQU;Travail;Cohésion
+;PRR;Cohésion des territoires et ville;Cohésion
+;PSP;Agriculture;Ecologie
+;PTA;Transformation publique;Compétitivité
+;PTH;Travail;Cohésion
+;PVG;Economie, Finances et Relance;Ecologie
+;PVG;Economie, Finances et Relance;Ecologie
+;PVG;Economie, Finances et Relance;Ecologie
+;PVG;Economie, Finances et Relance;Ecologie
+;PVU;Solidarité;Cohésion
+;RBC;Cohésion des territoires et ville;Ecologie
+;RBE;Economie, finances et relance;Ecologie
+;RDC;Cohésion des territoires et ville;Cohésion
+;RDS;Economie, Finances et Relance;Compétitivité
+;REA;Transition écologique, transports, et logement;Ecologie
+;RER;Transition écologique, transports, et logement;Ecologie
+;ROF;Economie, Finances et Relance;Compétitivité
+;ROF;Economie, Finances et Relance;Compétitivité
+;RPC;Cohésion des territoires et ville;Ecologie
+;RRE;Transition écologique, transports, et logement;Ecologie
+;RRU;Enseignement supérieur, recherche et innovation;Cohésion
+;RSA;Transition écologique, transports, et logement;Ecologie
+;RSA;Transition écologique, transports, et logement;Ecologie
+;SAC;Economie, Finances et Relance;Compétitivité
+;SAC;Economie, Finances et Relance;Compétitivité
+;SAC;Economie, Finances et Relance;Compétitivité
+;SBF;Economie, Finances et Relance;Compétitivité
+;SBF;Economie, Finances et Relance;Compétitivité
+;SCI;Education nationale, jeunesse et sports;Cohésion
+;SES;Santé;Cohésion
+;SFC;"Culture ; Services du Premier Ministre";Compétitivité
+;SHO;Santé;Cohésion
+;SIL;Cohésion des territoires et ville;Cohésion
+;SMS;Santé;Cohésion
+;SNC;Transition écologique, transports, et logement;Ecologie
+;SNE;Education nationale, jeunesse et sports;Compétitivité
+;SNU;Santé;Cohésion
+;SPL;Transition écologique, transports, et logement;Ecologie
+;SSV;"Culture ; Services du Premier Ministre";Compétitivité
+;TCI;Transition écologique, transports, et logement;Ecologie
+;TDN;Transition écologique, transports, et logement;Ecologie
+;TDU;Transition écologique, transports, et logement;Cohésion
+;THD;Cohésion des territoires et ville;Cohésion
+;TSA;Agriculture;Ecologie
+;VAD;Economie, finances et relance;Ecologie
+;VAI;Intérieur;Ecologie
+;VDP;Mer;Ecologie
+;VDP;Mer;Ecologie
+;VEF;Cohésion des territoires et ville;Cohésion
+;"VRP
+";Transition écologique, transports, et logement;Ecologie
+;"VRP
+";Transition écologique, transports, et logement;Ecologie
