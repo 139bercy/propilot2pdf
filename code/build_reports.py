@@ -707,9 +707,3 @@ def check_num_docx_created(taxo_dep_df: pd.DataFrame):
 
 if __name__ == "__main__":
     main_build_reports()
-
-# Générer un csv avec tout les départements
-# Récupérer le bon nom du département pour les partie convert parlementary file
-# Associer le numéro ? 
-
-# Gérer les doublons de fiches. 
