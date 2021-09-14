@@ -100,8 +100,8 @@ def get_dep_name_from_docx(docx_filename: str, taxo_dep_df: pd.DataFrame = taxo_
     except BaseException as e:
         logger.info(f"Pas de nom de département trouvé pour {docx_filename}")
         logger.error(e)
-        dep = detect_dep_in_filename(taxo_dep_df, docx_filename)
-        return dep
+        dep_name = detect_dep_in_filename(taxo_dep_df, docx_filename)
+        return dep_name
 
 
 def detect_dep_in_filename(taxo_dep_df: pd.DataFrame, docx_filename: str) -> str:
@@ -142,7 +142,9 @@ def docxnames_to_pdfnames(base_dir: str, depname2num: dict) -> list:
 
 def check_duclicated_docx(docx2pdf_filename: dict):
     """
-    Check if there are duplicate department in docx2pdf_filename
+    Check if there are duplicate department in docx2pdf_filename and remove them
+        - If docx files, keep the last modified and remove others
+        - If odt files, remove docx file with the same department's name
 
     Input (for our main):
         docx2pdf_filename: {key: docx_name into modified_reports folder, value: target pdf name}
