@@ -36,7 +36,7 @@ def main_docx2pdf_avant_osmose():
     depname2num = create_dico_dep2num(taxo_dep_df)
     # Mapping docx -> nom pdf
     docx2pdf_filename, doc_odt = docxnames_to_pdfnames(DIR_TO_CONVERT, depname2num)
-    check_duclicated_docx(docx2pdf_filename)
+    check_duplicated_docx(docx2pdf_filename)
     # Archivage a faire ici des docx
     export_to_pdf_avant_osmose(depname2num)
     shutil.rmtree(os.path.join("reports", "temp_docx"))
@@ -49,7 +49,7 @@ def main_docx2pdf_apres_osmose():
     depname2num = create_dico_dep2num(taxo_dep_df)
     # Mapping docx -> nom pdf
     docx2pdf_filename, doc_odt = docxnames_to_pdfnames(DIR_TO_CONVERT, depname2num)
-    check_duclicated_docx(docx2pdf_filename)
+    check_duplicated_docx(docx2pdf_filename)
     # Archivage a faire ici des docx
     export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2num)
 
@@ -140,7 +140,7 @@ def docxnames_to_pdfnames(base_dir: str, depname2num: dict) -> list:
     return docx2pdf_filename, doc_odt
 
 
-def check_duclicated_docx(docx2pdf_filename: dict):
+def check_duplicated_docx(docx2pdf_filename: dict):
     """
     Check if there are duplicate department in docx2pdf_filename and remove them
         - If docx files, keep the last modified and remove others
