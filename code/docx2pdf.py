@@ -100,10 +100,20 @@ def get_dep_name_from_docx(docx_filename: str, taxo_dep_df: pd.DataFrame = taxo_
     except BaseException as e:
         logger.info(f"Pas de nom de département trouvé pour {docx_filename}")
         logger.error(e)
-        for dep in taxo_dep_df.libelle.unique():
-            if dep in docx_filename:
-                return dep
+        dep = detect_dep_in_filename(taxo_dep_df, docx_filename)
+        return dep
 
+
+def detect_dep_in_filename(taxo_dep_df: pd.DataFrame, docx_filename: str) -> str:
+    """
+    Keep departement in filename
+
+    Returns:
+        str: departement's name
+    """
+    for dep in taxo_dep_df.libelle.unique():
+        if dep in docx_filename:
+            return dep
 
 def docxnames_to_pdfnames(base_dir: str, depname2num: dict) -> list:
     """
@@ -161,9 +171,11 @@ def check_duclicated_docx(docx2pdf_filename: dict):
             else:
                 os.remove(docx_filenames[0])
     # Ajouter le cas suppression des docx associés aux odt. 
-    # Si odt:
-        # keep departement du odt
-        # Supprimer le docx Suivi Territorial plan relance nom_dep
+    for filename in os.listdir(os.path.join('reports', 'modified_reports')):
+        if filename.endswith('.odt'):
+            dep = detect_dep_in_filename(taxo_dep_df, filename)
+            if 'Suivi Territorial plan relance {}.docx'.format(dep) in os.listdir(os.path.join('reports', 'modified_reports')):
+                os.remove(os.path.join('reports', 'modified_reports','Suivi Territorial plan relance {}.docx'.format(dep)))
 
 
 def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR: str, doc_odt: dict, depname2num: dict):
