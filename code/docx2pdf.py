@@ -100,8 +100,7 @@ def get_dep_name_from_docx(docx_filename: str, taxo_dep_df: pd.DataFrame = taxo_
     except BaseException as e:
         logger.info(f"Pas de nom de département trouvé pour {docx_filename}")
         logger.error(e)
-        dep_name = detect_dep_in_filename(taxo_dep_df, docx_filename)
-        return dep_name
+        return detect_dep_in_filename(taxo_dep_df, docx_filename)
 
 
 def detect_dep_in_filename(taxo_dep_df: pd.DataFrame, docx_filename: str) -> str:
@@ -160,13 +159,12 @@ def check_duplicated_docx(docx2pdf_filename: dict):
     for pdf_filename, docx_filenames in pdf2docx_filenames.items():
         dep_name = pdf_filename.split(os.sep)[-1].split('.')[0].split('relance ')[-1]
         if len(docx_filenames) > 1:
-            print(docx_filenames)
             # Lister les fichiers dupliqués
             logger.info(f"Dupliqués {dep_name} :")
             _ = [logger.info("\t", docx_filename) for docx_filename in docx_filenames]
             # Récupération des dates de dernières modifications
-            lastmodified1 = os.stat(docx_filenames[0])[8] 
-            lastmodified2 = os.stat(docx_filenames[1])[8]
+            lastmodified1 =  os.stat(docx_filenames[0]).st_mtime  # cf https://docs.python.org/3/library/stat.html
+            lastmodified2 = os.stat(docx_filenames[1]).st_mtime
             # On garde la fiche la + récente
             if lastmodified1 > lastmodified2:
                 os.remove(docx_filenames[1])
