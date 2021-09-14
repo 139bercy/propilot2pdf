@@ -416,8 +416,9 @@ def map_templates_to_modified_reports(templates: list, modified_docx: list) -> d
             else:
                 duplicated_dep.append(dep_name)
                 logger.info(f"!!! {target_template} is not None -> probably duplicated \n----See {modified}")
-        except:
-            logger.info('{} ne respecte pas les règles du template'.format(modified))
+        except BaseException as e:
+            logger.error('{} ne respecte pas les règles du template'.format(modified))
+            logger.error(e)
     if duplicated_dep != []:
         logger.info("Fiches dupliquées (à retirer manuellement puis relancer le script) :\n", str(duplicated_dep))
     logger.info(f"{len(mapping)} hits")
