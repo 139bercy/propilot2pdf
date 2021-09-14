@@ -403,18 +403,21 @@ def map_templates_to_modified_reports(templates: list, modified_docx: list) -> d
     # Faire correspondre le nom du département
     duplicated_dep = []
     for modified in modified_docx:
-        content = docx2python(modified)
-        expr_with_dep_name = content.body[0][0][0][7]
-        logger.info("Extrait de {} : {}".format(modified, expr_with_dep_name))
-        expr_with_dep_name.split(':')
-        dep_name = expr_with_dep_name.split(':')[-1].strip()
-        clean_dep_name = normalize_name(dep_name)
-        target_template = encoded_dep_name2template[clean_dep_name]
-        if mapping[target_template] is None:
-            mapping[target_template] = modified
-        else:
-            duplicated_dep.append(dep_name)
-            logger.info(f"!!! {target_template} is not None -> probably duplicated \n----See {modified}")
+        try:
+            content = docx2python(modified)
+            expr_with_dep_name = content.body[0][0][0][7]
+            logger.info("Extrait de {} : {}".format(modified, expr_with_dep_name))
+            expr_with_dep_name.split(':')
+            dep_name = expr_with_dep_name.split(':')[-1].strip()
+            clean_dep_name = normalize_name(dep_name)
+            target_template = encoded_dep_name2template[clean_dep_name]
+            if mapping[target_template] is None:
+                mapping[target_template] = modified
+            else:
+                duplicated_dep.append(dep_name)
+                logger.info(f"!!! {target_template} is not None -> probably duplicated \n----See {modified}")
+        except:
+            logger.info('{} ne respecte pas les règles du template'.format(modified))
     if duplicated_dep != []:
         logger.info("Fiches dupliquées (à retirer manuellement puis relancer le script) :\n", str(duplicated_dep))
     logger.info(f"{len(mapping)} hits")

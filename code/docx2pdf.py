@@ -85,18 +85,25 @@ def normalize_name(name: str) -> str:
     return name
 
 
-def get_dep_name_from_docx(docx_filename: str) -> str:
+def get_dep_name_from_docx(docx_filename: str, taxo_dep_df: pd.DataFrame = taxo_dep_df) -> str:
     """
     Extract department's name from docx's front page
     """
-    content = docx2python(docx_filename)
-    # Chercher la ligne "Données pour le département :..."
-    for line in content.body[0][0][0]:
-        if line.startswith("Données pour le département"):
-            expr_with_dep_name = line
-            dep_name = expr_with_dep_name.split(':')[-1].strip()
-            return dep_name
-    raise Exception(f"Pas de nom de département trouvé pour {docx_filename}")
+    try:
+        content = docx2python(docx_filename)
+        # Chercher la ligne "Données pour le département :..."
+        for line in content.body[0][0][0]:
+            if line.startswith("Données pour le département"):
+                expr_with_dep_name = line
+                dep_name = expr_with_dep_name.split(':')[-1].strip()
+                return dep_name
+    except:
+        for dep in taxo_dep_df.libelle.unique():
+            if dep in docx_filename:
+                return dep
+        else:
+            logger.info("Pas de nom de département trouvé pour {docx_filename}")
+
 
 
 def docxnames_to_pdfnames(base_dir: str, depname2num: dict) -> list:
