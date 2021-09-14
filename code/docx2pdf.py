@@ -98,7 +98,7 @@ def get_dep_name_from_docx(docx_filename: str, taxo_dep_df: pd.DataFrame = taxo_
                 dep_name = expr_with_dep_name.split(':')[-1].strip()
                 return dep_name
     except BaseException as e:
-        logger.info("Pas de nom de département trouvé pour {docx_filename}")
+        logger.info(f"Pas de nom de département trouvé pour {docx_filename}")
         logger.error(e)
         for dep in taxo_dep_df.libelle.unique():
             if dep in docx_filename:
@@ -145,15 +145,21 @@ def check_duclicated_docx(docx2pdf_filename: dict):
             pdf2docx_filenames[pdf_filename] = []
         pdf2docx_filenames[pdf_filename].append(docx_filename)
     # Afficher les doublons
-    flag_duplication = False
     for pdf_filename, docx_filenames in pdf2docx_filenames.items():
         dep_name = pdf_filename.split(os.sep)[-1].split('.')[0].split('relance ')[-1]
         if len(docx_filenames) > 1:
+            print(docx_filenames)
             # Lister les fichiers dupliqués
             logger.info(f"Dupliqués {dep_name} :")
             _ = [logger.info("\t", docx_filename) for docx_filename in docx_filenames]
-            flag_duplication = True
-    assert not flag_duplication, "Fichiers dupliqués : supprimez les fichiers en trop."
+            # Récupération des dates de dernières modifications
+            lastmodified1 = os.stat(docx_filenames[0])[8] 
+            lastmodified2 = os.stat(docx_filenames[1])[8]
+            # On garde la fiche la + récente
+            if lastmodified1 > lastmodified2:
+                os.remove(docx_filenames[1])
+            else:
+                os.remove(docx_filenames[0])
 
 
 def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR: str, doc_odt: dict, depname2num: dict):
