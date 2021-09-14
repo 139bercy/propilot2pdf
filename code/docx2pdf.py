@@ -97,13 +97,12 @@ def get_dep_name_from_docx(docx_filename: str, taxo_dep_df: pd.DataFrame = taxo_
                 expr_with_dep_name = line
                 dep_name = expr_with_dep_name.split(':')[-1].strip()
                 return dep_name
-    except:
+    except BaseException as e:
+        logger.info("Pas de nom de département trouvé pour {docx_filename}")
+        logger.error(e)
         for dep in taxo_dep_df.libelle.unique():
             if dep in docx_filename:
                 return dep
-        else:
-            logger.info("Pas de nom de département trouvé pour {docx_filename}")
-
 
 
 def docxnames_to_pdfnames(base_dir: str, depname2num: dict) -> list:
