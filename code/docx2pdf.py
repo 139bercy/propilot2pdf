@@ -173,8 +173,11 @@ def check_duplicated_docx(docx2pdf_filename: dict):
     # Ajouter le cas suppression des docx associés aux odt. 
     for filename in os.listdir(os.path.join('reports', 'modified_reports')):
         if filename.endswith('.odt'):
+            # On récupère le nom du departement dans le odt
             dep = detect_dep_in_filename(taxo_dep_df, filename)
+            # Si la fiche initial au format docx est encore dans le dossier, alors on doit la supprimer
             if 'Suivi Territorial plan relance {}.docx'.format(dep) in os.listdir(os.path.join('reports', 'modified_reports')):
+                # On part du principe (au vu de l'usage) que la fiche docx n'a pas été modifiée
                 os.remove(os.path.join('reports', 'modified_reports','Suivi Territorial plan relance {}.docx'.format(dep)))
 
 
