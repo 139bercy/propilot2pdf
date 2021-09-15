@@ -99,7 +99,7 @@ def get_dep_name_from_docx(docx_filename: str, taxo_dep_df_: pd.DataFrame = taxo
                 return dep_name
     except BaseException as e:
         logger.info(f"Pas de nom de département trouvé pour {docx_filename}")
-        logger.error(e)
+        logger.error(repr(e))
         return detect_dep_in_filename(taxo_dep_df_, docx_filename)
 
 
