@@ -62,7 +62,7 @@ def mkdir_ifnotexist(path: str):
         os.mkdir(path)
 
 
-def create_dico_dep2num(taxo_dep_df: pd.DataFrame) -> dict:
+def create_dico_dep2num(taxo_dep_df_: pd.DataFrame) -> dict:
     """
     Creates crossing dictionnary between department's name and department's number
     """
@@ -85,7 +85,7 @@ def normalize_name(name: str) -> str:
     return name
 
 
-def get_dep_name_from_docx(docx_filename: str, taxo_dep_df: pd.DataFrame = taxo_dep_df) -> str:
+def get_dep_name_from_docx(docx_filename: str, taxo_dep_df_: pd.DataFrame = taxo_dep_df) -> str:
     """
     Extract department's name from docx's front page
     """
@@ -99,18 +99,18 @@ def get_dep_name_from_docx(docx_filename: str, taxo_dep_df: pd.DataFrame = taxo_
                 return dep_name
     except BaseException as e:
         logger.info(f"Pas de nom de département trouvé pour {docx_filename} dans la page de garde.")
-        logger.error(e)
-        return detect_dep_in_filename(taxo_dep_df, docx_filename)
+        logger.error(repr(e))
+        return detect_dep_in_filename(taxo_dep_df_, docx_filename)
 
 
-def detect_dep_in_filename(taxo_dep_df: pd.DataFrame, docx_filename: str) -> str:
+def detect_dep_in_filename(taxo_dep_df_: pd.DataFrame, docx_filename: str) -> str:
     """
     Keep departement in filename
 
     Returns:
         str: departement's name
     """
-    for dep in taxo_dep_df.libelle.unique():
+    for dep in taxo_dep_df_.libelle.unique():
         if dep in docx_filename:
             return dep
 
@@ -181,7 +181,7 @@ def check_duplicated_docx(docx2pdf_filename: dict):
                 os.remove(os.path.join('reports', 'modified_reports','Suivi Territorial plan relance {}.docx'.format(dep)))
 
 
-def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR: str, doc_odt: dict, depname2num: dict, taxo_dep_df: pd.DataFrame):
+def export_to_pdf_apres_osmose(docx2pdf_filename: dict, out_dir: str, doc_odt: dict, depname2num: dict, taxo_dep_df: pd.DataFrame):
     """
     Convert into pdf all keys in docx2pdf_filename and doc_odt.
     For our main: Convert all files to pdf from modified_report folder into reports_pdf
@@ -196,13 +196,13 @@ def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR: str, doc_odt
         replace_key(docx2pdf_filename, filename, clean_path)
         # Conversion en pdf
         # > test.log 2> warning.log permet de rediriger la sortie vers test.log et les warning vers warning.log
-        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{clean_path}" > test.log 2> warning.log')
+        os.system(f'libreoffice --headless -convert-to pdf --outdir "{out_dir}" "{clean_path}" > test.log 2> warning.log')
     time.sleep(5)
     for filename in docx2pdf_filename:
         clean_pdf_filename = docx2pdf_filename[filename]
         pdf_basename = re.sub('.' + filename.split('.')[-1], '.pdf', os.path.basename(filename))
-        pdf_filename = os.path.join(OUTPUT_DIR, pdf_basename)
-        os.rename(pdf_filename, os.path.join(OUTPUT_DIR, clean_pdf_filename))
+        pdf_filename = os.path.join(out_dir, pdf_basename)
+        os.rename(pdf_filename, os.path.join(out_dir, clean_pdf_filename))
 
     # Traitement des odt
     # create du dictionnaire de renommage
@@ -222,13 +222,13 @@ def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR: str, doc_odt
         renommage_odt[clean_path] = renommage_odt[filename]
         del renommage_odt[filename]
         # Conversion en pdf
-        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{clean_path}" > test.log 2> warning.log')
+        os.system(f'libreoffice --headless -convert-to pdf --outdir "{out_dir}" "{clean_path}" > test.log 2> warning.log')
     time.sleep(5)
     for filename in renommage_odt:
         clean_pdf_filename = renommage_odt[filename]
         pdf_basename = re.sub('.' + filename.split('.')[-1], '.pdf', os.path.basename(filename))
-        pdf_filename = os.path.join(OUTPUT_DIR, pdf_basename)
-        os.rename(pdf_filename, os.path.join(OUTPUT_DIR, clean_pdf_filename))
+        pdf_filename = os.path.join(out_dir, pdf_basename)
+        os.rename(pdf_filename, os.path.join(out_dir, clean_pdf_filename))
 
 
 def export_to_pdf_avant_osmose(depname2num: dict):

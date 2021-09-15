@@ -418,8 +418,8 @@ def map_templates_to_modified_reports(templates: list, modified_docx: list) -> d
                 logger.info(f"!!! {target_template} is not None -> probably duplicated \n----See {modified}")
         except BaseException as e:
             logger.error('{} ne respecte pas les règles du template'.format(modified))
-            logger.error(e)
-    if duplicated_dep != []:
+            logger.error(repr(e))
+    if duplicated_dep:
         logger.info("Fiches dupliquées (à retirer manuellement puis relancer le script) :\n", str(duplicated_dep))
     logger.info(f"{len(mapping)} hits")
     return mapping
@@ -455,7 +455,7 @@ def transpose_modification_to_new_reports(template2modified_docx: dict):
                 fill_template(template_path, output_path, volet2mesures)
                 unhit += 1
                 logger.info("erreur rencontrée")
-                errors.append(e)
+                errors.append(repr(e))
     if errors:
         return errors
     logger.info(f"Hit : {hit} | Unhit : {unhit}")
