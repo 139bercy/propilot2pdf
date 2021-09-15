@@ -181,7 +181,7 @@ def check_duplicated_docx(docx2pdf_filename: dict):
                 os.remove(os.path.join('reports', 'modified_reports','Suivi Territorial plan relance {}.docx'.format(dep)))
 
 
-def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR_: str, doc_odt: dict, depname2num: dict):
+def export_to_pdf_apres_osmose(docx2pdf_filename: dict, out_dir: str, doc_odt: dict, depname2num: dict):
     """
     Convert into pdf all keys in docx2pdf_filename and doc_odt.
     For our main: Convert all files to pdf from modified_report folder into reports_pdf
@@ -196,13 +196,13 @@ def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR_: str, doc_od
         replace_key(docx2pdf_filename, filename, clean_path)
         # Conversion en pdf
         # > test.log 2> warning.log permet de rediriger la sortie vers test.log et les warning vers warning.log
-        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR_}" "{clean_path}" > test.log 2> warning.log')
+        os.system(f'libreoffice --headless -convert-to pdf --outdir "{out_dir}" "{clean_path}" > test.log 2> warning.log')
     time.sleep(5)
     for filename in docx2pdf_filename:
         clean_pdf_filename = docx2pdf_filename[filename]
         pdf_basename = re.sub('.' + filename.split('.')[-1], '.pdf', os.path.basename(filename))
-        pdf_filename = os.path.join(OUTPUT_DIR_, pdf_basename)
-        os.rename(pdf_filename, os.path.join(OUTPUT_DIR_, clean_pdf_filename))
+        pdf_filename = os.path.join(out_dir, pdf_basename)
+        os.rename(pdf_filename, os.path.join(out_dir, clean_pdf_filename))
 
     # Traitement des odt
     # create du dictionnaire de renommage
@@ -223,13 +223,13 @@ def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR_: str, doc_od
         renommage_odt[clean_path] = renommage_odt[filename]
         del renommage_odt[filename]
         # Conversion en pdf
-        os.system(f'libreoffice --headless -convert-to pdf --outdir "{OUTPUT_DIR}" "{clean_path}" > test.log 2> warning.log')
+        os.system(f'libreoffice --headless -convert-to pdf --outdir "{out_dir}" "{clean_path}" > test.log 2> warning.log')
     time.sleep(5)
     for filename in renommage_odt:
         clean_pdf_filename = renommage_odt[filename]
         pdf_basename = re.sub('.' + filename.split('.')[-1], '.pdf', os.path.basename(filename))
-        pdf_filename = os.path.join(OUTPUT_DIR, pdf_basename)
-        os.rename(pdf_filename, os.path.join(OUTPUT_DIR, clean_pdf_filename))
+        pdf_filename = os.path.join(out_dir, pdf_basename)
+        os.rename(pdf_filename, os.path.join(out_dir, clean_pdf_filename))
 
 
 def export_to_pdf_avant_osmose(depname2num: dict):
