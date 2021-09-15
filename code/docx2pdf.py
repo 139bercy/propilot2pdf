@@ -51,7 +51,7 @@ def main_docx2pdf_apres_osmose():
     docx2pdf_filename, doc_odt = docxnames_to_pdfnames(DIR_TO_CONVERT, depname2num)
     check_duplicated_docx(docx2pdf_filename)
     # Archivage a faire ici des docx
-    export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2num)
+    export_to_pdf_apres_osmose(docx2pdf_filename, OUTPUT_DIR, doc_odt, depname2num, taxo_dep_df)
 
 
 def mkdir_ifnotexist(path: str):
@@ -181,7 +181,7 @@ def check_duplicated_docx(docx2pdf_filename: dict):
                 os.remove(os.path.join('reports', 'modified_reports','Suivi Territorial plan relance {}.docx'.format(dep)))
 
 
-def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR: str, doc_odt: dict, depname2num: dict):
+def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR: str, doc_odt: dict, depname2num: dict, taxo_dep_df: pd.DataFrame):
     """
     Convert into pdf all keys in docx2pdf_filename and doc_odt.
     For our main: Convert all files to pdf from modified_report folder into reports_pdf
