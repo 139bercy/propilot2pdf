@@ -98,7 +98,7 @@ def get_dep_name_from_docx(docx_filename: str, taxo_dep_df: pd.DataFrame = taxo_
                 dep_name = expr_with_dep_name.split(':')[-1].strip()
                 return dep_name
     except BaseException as e:
-        logger.info(f"Pas de nom de département trouvé pour {docx_filename}")
+        logger.info(f"Pas de nom de département trouvé pour {docx_filename} dans la page de garde.")
         logger.error(e)
         return detect_dep_in_filename(taxo_dep_df, docx_filename)
 
@@ -209,8 +209,7 @@ def export_to_pdf_apres_osmose(docx2pdf_filename: dict, OUTPUT_DIR: str, doc_odt
     renommage_odt = {}
     for filename in doc_odt:
         if "plan relance" in filename.lower():
-            dep_name = filename.split(".odt")[0]
-            dep_name = dep_name.split(" ")[-1]
+            dep_name = detect_dep_in_filename(taxo_dep_df, filename)
             dep = depname2num[dep_name]
             renommage_odt[filename] = str(dep) + " - Suivi Territorial plan France relance " + str(dep_name) + ".pdf"
 
