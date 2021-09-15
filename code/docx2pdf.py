@@ -67,7 +67,7 @@ def create_dico_dep2num(taxo_dep_df_: pd.DataFrame) -> dict:
     Creates crossing dictionnary between department's name and department's number
     """
     depname2num = {}
-    for i, row in taxo_dep_df.iterrows():
+    for i, row in taxo_dep_df_.iterrows():
         if row['dep'] != '0':
             depname2num[row['libelle']] = row['dep']
     # depnum2name = {v: k for k, v in depname2num.items()}
@@ -139,7 +139,7 @@ def docxnames_to_pdfnames(base_dir: str, depname2num: dict) -> list:
     return docx2pdf_filename, doc_odt
 
 
-def check_duplicated_docx(docx2pdf_filename: dict):
+def check_duplicated_docx(docx2pdf_filename: dict, taxo_dep_df_: pd.DataFrame = taxo_dep_df):
     """
     Check if there are duplicate department in docx2pdf_filename and remove them
         - If docx files, keep the last modified and remove others
@@ -174,14 +174,14 @@ def check_duplicated_docx(docx2pdf_filename: dict):
     for filename in os.listdir(os.path.join('reports', 'modified_reports')):
         if filename.endswith('.odt'):
             # On récupère le nom du departement dans le odt
-            dep = detect_dep_in_filename(taxo_dep_df, filename)
+            dep = detect_dep_in_filename(taxo_dep_df_, filename)
             # Si la fiche initial au format docx est encore dans le dossier, alors on doit la supprimer
             if 'Suivi Territorial plan relance {}.docx'.format(dep) in os.listdir(os.path.join('reports', 'modified_reports')):
                 # On part du principe (au vu de l'usage) que la fiche docx n'a pas été modifiée
                 os.remove(os.path.join('reports', 'modified_reports','Suivi Territorial plan relance {}.docx'.format(dep)))
 
 
-def export_to_pdf_apres_osmose(docx2pdf_filename: dict, out_dir: str, doc_odt: dict, depname2num: dict, taxo_dep_df: pd.DataFrame):
+def export_to_pdf_apres_osmose(docx2pdf_filename: dict, out_dir: str, doc_odt: dict, depname2num: dict, taxo_dep_df_: pd.DataFrame):
     """
     Convert into pdf all keys in docx2pdf_filename and doc_odt.
     For our main: Convert all files to pdf from modified_report folder into reports_pdf
@@ -209,7 +209,7 @@ def export_to_pdf_apres_osmose(docx2pdf_filename: dict, out_dir: str, doc_odt: d
     renommage_odt = {}
     for filename in doc_odt:
         if "plan relance" in filename.lower():
-            dep_name = detect_dep_in_filename(taxo_dep_df, filename)
+            dep_name = detect_dep_in_filename(taxo_dep_df_, filename)
             dep = depname2num[dep_name]
             renommage_odt[filename] = str(dep) + " - Suivi Territorial plan France relance " + str(dep_name) + ".pdf"
 
