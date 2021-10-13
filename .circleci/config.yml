@@ -227,7 +227,7 @@ workflows:
               - convert-pp_dep-to-json-france-relance
     triggers:
       - schedule:
-          cron: 0 6 * * 2,3,4,5,6
+          cron: 0 6 * * 6
           filters:
             branches:
               only:
@@ -238,7 +238,7 @@ workflows:
       - get-daily-data
     triggers:
       - schedule:
-          cron: 0 5 * * *
+          cron: 0 5 * * 6
           filters:
             branches:
               only:
