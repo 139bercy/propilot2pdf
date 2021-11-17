@@ -524,7 +524,8 @@ def create_front_page(nom_departement: str) -> str:
     today = datetime.datetime.today()
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
               'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
-    today_str = f"{months[today.month-2]} {today.year}"
+    # Ici on met -1 car Janvier est le mois 1 et est indexé par 0 dans months. Si on veut un mois de décalage on met -2 etc...
+    today_str = f"{months[today.month-2]} {today.year}" 
     context = {'dep': str(nom_departement),
                'date': today_str}
     doc.render(context)

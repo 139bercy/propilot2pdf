@@ -50,6 +50,7 @@ def main():
         today = datetime.datetime.today()
         months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
                   'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
+        # Ici on met -1 car Janvier est le mois 1 et est indexé par 0 dans months. Si on veut un mois de décalage on met -2 etc...
         today_str = f"{months[today.month-2]}_{today.year}"
         mkdir_ifnotexist("archive")
         path = os.path.join("archive", "{}".format(today_str))

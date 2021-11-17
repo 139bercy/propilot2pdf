@@ -358,10 +358,10 @@ def transpose_comments(src_filename: str, template_filename: str, output_filenam
 
     # Parse les commentaires sous les volets et mesures
     mesure2comment = get_mesure_to_comment(doc_template, content, volet2mesures)
-    # volet2comment = get_volet_to_comment(doc_template, content, volet2mesures)
-    volet2comment = {"ecologie": [{'text': '', 'image': ''}],
-                     "competitivite": [{'text': '', 'image': ''}],
-                     "cohesion":[{'text': '', 'image': ''}]}
+    volet2comment = get_volet_to_comment(doc_template, content, volet2mesures)
+    # volet2comment = {"ecologie": [{'text': '', 'image': ''}],
+    #                  "competitivite": [{'text': '', 'image': ''}],
+    #                  "cohesion":[{'text': '', 'image': ''}]}
     context = {**mesure2comment, **volet2comment}
 
     # On génère un nouveau document avec les commentaires recopiés
@@ -439,7 +439,7 @@ def transpose_modification_to_new_reports(template2modified_docx: dict):
     for template_path, modified_docx_path in template2modified_docx.items():
         output_basename = template_path.split(os.sep)[-1]
         output_path = os.path.join(transposed_docx_dir, output_basename)
-        fill_template(template_path, os.path.join(avant_osmose, output_basename), volet2mesures)
+        # fill_template(template_path, os.path.join(avant_osmose, output_basename), volet2mesures)
 
         if modified_docx_path is None:
             unhit += 1

@@ -107,5 +107,8 @@ Dans le cas où vous disposez juste de fiches avec des commentaires, et que vous
 Pour cette partie, il suffit d'utiliser le script ```main_convert_parlementary_file_with_new_comment.py```
 
 1. Déposer les nouvelles fiches dans le dossier ```modified_reports``` (le créer si nécessaire)
+2. Si plusieurs fiches pour le meme document, alors le script va supprimer les fiches les plus anciennes (date de modification)
 2. Renommage des fiches, conversion en pdf et stockage dans le dossier reports_pdf
 3. Création d'un zip archive stocké dans ```archive/Mois_Annee```
+
+#### Dans le cas d'une création de fiche, dans le script build_reports, ligne 527 il y a une valeur à changer en fonction du mois souhaité
