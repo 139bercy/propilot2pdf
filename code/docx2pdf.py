@@ -127,15 +127,18 @@ def docxnames_to_pdfnames(base_dir: str, depname2num: dict) -> list:
     # Faire correspondre chaque nom de docx vers un nom de pdf - ex : "75 - Suivi Territorial plan France relance Paris.pdf"
     for docx_filename in docx_filenames:
         # Extraire le nom du département
-        if docx_filename.endswith("docx"):  # Condition pour ne traiter que les docx (ignore les #docx)
-            dep_name = get_dep_name_from_docx(docx_filename)
-            pdf_filename = f"{depname2num[dep_name]} - Suivi Territorial plan France relance {dep_name}.pdf"
-            # Ajout du nom de fichier original dans le dictionnaire pour vérifier les doublons
-            docx2pdf_filename[docx_filename] = pdf_filename
-        elif docx_filename.endswith("odt"):
-            doc_odt += [docx_filename]
-        else:
-            raise ValueError("L'extension du document {} n'est pas pris en charge".format(docx_filename))
+        try: # A tester
+            if docx_filename.endswith("docx"):  # Condition pour ne traiter que les docx (ignore les #docx)
+                dep_name = get_dep_name_from_docx(docx_filename)
+                pdf_filename = f"{depname2num[dep_name]} - Suivi Territorial plan France relance {dep_name}.pdf"
+                # Ajout du nom de fichier original dans le dictionnaire pour vérifier les doublons
+                docx2pdf_filename[docx_filename] = pdf_filename
+            elif docx_filename.endswith("odt"):
+                doc_odt += [docx_filename]
+            else:
+                raise ValueError("L'extension du document {} n'est pas pris en charge".format(docx_filename))
+        except: 
+            pass
     return docx2pdf_filename, doc_odt
 
 
