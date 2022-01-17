@@ -47,7 +47,7 @@ def main():
         docx2pdf.main_docx2pdf_avant_osmose()
         logger.info("Création des archives zip")
         # Obtention du mois de génération des fiches
-        today = datetime.datetime.today()
+        today = datetime.datetime.today() - datetime.timedelta(days=6)
         months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
                   'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
         today_str = f"{months[today.month-2]}_{today.year}"
