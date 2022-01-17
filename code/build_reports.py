@@ -191,7 +191,7 @@ def insert_months_to(modulo: int = 0, months: tuple = months, nb_mois: int = 3) 
     # modulo: Mois en cours - Modulo = dernier mois présent sur la fiche
     # months: couple de mois, variable globale définie en début de script
     # nb_mois: Combien de mois apparaitront sur la fiche 3 par défaut
-    today = datetime.date.today()
+    today = datetime.date.today() - datetime.timedelta(days=6)
     last_dates_to_keep = []
     for i in range(1, nb_mois + 1):
         month_name = months[(today.month - modulo - i) % 12]
@@ -521,7 +521,7 @@ def create_front_page(nom_departement: str) -> str:
     """
     path = os.path.join("template", "template_front_page.docx")
     doc = DocxTemplate(path)
-    today = datetime.datetime.today()
+    today = datetime.datetime.today() - datetime.timedelta(days=6)
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
               'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
     today_str = f"{months[today.month-2]} {today.year}"
