@@ -72,15 +72,14 @@ jobs:
                     . venv/bin/activate
                     jupyter nbconvert --to python chargement_propilot.ipynb
                     python chargement_propilot.py
-                    FILE=pp_dep.csv
+                    FILE=propilot.csv
                     if test -f "$FILE"; then
                         echo "$FILE successfuly created."
                     fi
           - persist_to_workspace:
               root: ./
               paths:
-                - pp_dep.csv
-                - pp_nat.csv
+                - propilot.csv
           - run:
                 name: Export de propilot.csv
                 no_output_timeout: 1h
@@ -183,11 +182,8 @@ jobs:
                   echo -e $SSL_CERTIFICATE_LETS_ENCRYPT_HACK > ca-certs.crt
                   lftp -u ${DEPLOY_USER}:${DEPLOY_PASSWORD} ${DEPLOY_HOST} -e "set ssl:ca-file ca-certs.crt ; set ftp:ssl-force true ; put france-relance-data-tableau-de-bord.txt ; rm relance.txt ; mv france-relance-data-tableau-de-bord.txt relance.txt ; quit"
           - store_artifacts:
-              path: ./pp_dep.csv
-              destination: pp_dep.csv
-          - store_artifacts:
-              path: ./pp_nat.csv
-              destination: pp_nat.csv
+              path: ./propilot.csv
+              destination: propilot.csv
           - store_artifacts:
               path: ./france-relance-data-tableau-de-bord.txt
               destination: france-relance-data-tableau-de-bord.txt
