@@ -524,7 +524,8 @@ def create_front_page(nom_departement: str) -> str:
     today = datetime.datetime.today() - datetime.timedelta(days=6)
     months = ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
               'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
-    today_str = f"{months[today.month-2]} {today.year}"
+    year = today.year - 1 if (today.month - 1 ) <= 0 else today.year
+    today_str = f"{months[today.month-2]} {year}"
     context = {'dep': str(nom_departement),
                'date': today_str}
     doc.render(context)
