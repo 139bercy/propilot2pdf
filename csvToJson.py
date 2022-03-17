@@ -72,7 +72,7 @@ def evolPercent(ev: float, val: float) -> float:
     retourne le pourcentage d'évolution entre les deux valeurs d'entrées
     """
     if val != 0:
-        return round((ev / val)*100, 2)  # round((ev - val) / ev * 100) probablement faux mais pas utilisé plus tard
+        return round((ev / val)*100, 2)  # probablement faux, mais pas utilisé plus tard
     return 0
 
 
@@ -109,7 +109,7 @@ def get_data_history(dff: pd.DataFrame) -> list:
 
 def get_level(df: pd.DataFrame, level: str, code_level: str) -> dict:
     """
-    dont know what it does for now
+    structure data pour chaque maille (dep, reg, france)
     """
     last_data = get_last_data(df)
     evolution = get_evolution(df, last_data[0], last_data[1])
