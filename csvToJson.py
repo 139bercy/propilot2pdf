@@ -50,8 +50,7 @@ def convert_csv_to_json():
 
         # Départements
         departements_data = []
-        departements = df_indicateur.Code_Departement.unique()
-        for departement in departements:
+        for departement in df_indicateur.Code_Departement.unique():
             df_indicateur_departement = df_indicateur.loc[df_propilot.Code_Departement == departement]
             departement_data = get_level(df_indicateur_departement, "dep", departement)
             departements_data.append(departement_data)
