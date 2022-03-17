@@ -41,8 +41,7 @@ def convert_csv_to_json():
 
         # Régions
         regions_data = []
-        regions = df_indicateur.Code_Region.unique()
-        for region in regions:
+        for region in df_indicateur.Code_Region.unique():
             df_indicateur_region = df_indicateur.loc[df_propilot.Code_Region == region]
             region_data = get_level(df_indicateur_region, "reg", region)
             regions_data.append(region_data)
