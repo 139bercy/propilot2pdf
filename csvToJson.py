@@ -25,9 +25,7 @@ def convert_csv_to_json():
     clean_file(file_name)
 
     # Récupération des indicateurs uniques
-    indicateurs = df_propilot.indicateur.unique()
-
-    for indicateur in indicateurs:
+    for indicateur in df_propilot.indicateur.unique():
         df_indicateur = df_propilot.loc[df_propilot.indicateur == indicateur]
 
         data = {"code": df_indicateur["indic_id"].iloc[0],
