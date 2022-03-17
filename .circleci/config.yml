@@ -159,7 +159,6 @@ jobs:
                 command: |
                     python3 -m venv venv
                     . venv/bin/activate
-                    jupyter nbconvert --to python csvToJson.ipynb
                     python csvToJson.py
           - persist_to_workspace:
               root: ./
