@@ -18,7 +18,7 @@ def convert_csv_to_json():
            "Code_Region"]
     df_propilot = pd.read_csv("exports/propilot.csv", usecols=col, sep=";")
     # avoid null values
-    df_propilot = df_propilot.loc[~df_propilot.indicateur.isna()]
+    df_propilot = df_propilot[~df_propilot.indicateur.isna()]
     df_propilot['period_date'] = pd.to_datetime(df_propilot['period_date'])
 
     file_name = 'france-relance-data-tableau-de-bord.txt'
