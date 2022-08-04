@@ -192,9 +192,11 @@ workflows:
   version: 2.1
   main:
     jobs:
+      - get-daily-data
       - install-requirements
       - build-pp_dep-and-fiches:
             requires:
+              - get-daily-data
               - install-requirements
       - convert-pp_dep-to-json-france-relance:
             requires:
