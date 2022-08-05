@@ -1,5 +1,4 @@
 import datetime
-
 import pandas as pd
 import json
 import os
@@ -24,20 +23,23 @@ def convert_csv_to_json():
     file_name = 'france-relance-data-tableau-de-bord.txt'
     clean_file(file_name)
 
-    # Récupération des indicateurs uniques
+    # Recuperation des indicateurs uniques
     for indicateur in df_propilot.indicateur.unique():
         df_indicateur = df_propilot.loc[df_propilot.indicateur == indicateur]
 
-        data = {"code": df_indicateur["indic_id"][0],
-                "nom": df_indicateur["short_indic"][0],
-                "unite": df_indicateur["short_indic"][0]}
+        code = df_indicateur["indic_id"][0]
+        nom = df_indicateur["short_indic"][0]
+        unite = df_indicateur["short_indic"][0]
 
+        data = {"code": code,
+                "nom": nom,
+                "unite": unite}
         # France
         france = get_level(df_indicateur, "nat", "fra")
 
         data["france"] = [france]
 
-        # Régions
+        # Regions
         regions_data = []
         for region in df_indicateur.Code_Region.unique():
             df_indicateur_region = df_indicateur.loc[df_propilot.Code_Region == region]
@@ -46,7 +48,7 @@ def convert_csv_to_json():
 
         data["regions"] = regions_data
 
-        # Départements
+        # Departements
         departements_data = []
         for departement in df_indicateur.Code_Departement.unique():
             df_indicateur_departement = df_indicateur.loc[df_propilot.Code_Departement == departement]
@@ -60,7 +62,7 @@ def convert_csv_to_json():
 
 def evolVal(valI: float, valE: float) -> float:
     """
-    retourne la valeur de l'évolution entre les deux valeurs d'entrées
+    retourne la valeur de l'evolution entre les deux valeurs d'entrees
     """
     if (valE != 0 and valI != valE):
         return valI - valE
@@ -69,16 +71,16 @@ def evolVal(valI: float, valE: float) -> float:
 
 def evolPercent(ev: float, val: float) -> float:
     """
-    retourne le pourcentage d'évolution entre les deux valeurs d'entrées
+    retourne le pourcentage d'evolution entre les deux valeurs d'entrees
     """
     if val != 0:
-        return round((ev / val)*100, 2)  # probablement faux, mais pas utilisé plus tard
+        return round((ev / val)*100, 2)  # probablement faux, mais pas utilise plus tard
     return 0
 
 
 def get_last_data(dff: pd.DataFrame) -> list[datetime.datetime, float]:
     """
-    sommes des valeurs de la date la plus récente
+    sommes des valeurs de la date la plus recente
     """
     most_recent_date = dff['period_date'].max()
     dfDate = dff.loc[dff.period_date == most_recent_date]
@@ -96,7 +98,7 @@ def get_evolution(dff: pd.DataFrame, last_date: datetime.datetime, last_value: f
 
 def get_data_history(dff: pd.DataFrame) -> list:
     """
-    retourne la somme de toutes les valeurs pour une date et un indicateur pour une maille (région, département, france)
+    retourne la somme de toutes les valeurs pour une date et un indicateur pour une maille (region, departement, france)
     """
     dates = dff.sort_values(by="period_date").period_date.unique()
     values = []
@@ -127,7 +129,7 @@ def get_level(df: pd.DataFrame, level: str, code_level: str) -> dict:
 
 def clean_file(file_name: str):
     """
-    Suppression du fichier généré précédemment
+    Suppression du fichier genere precedemment
     """
     try:
         os.remove(file_name)
