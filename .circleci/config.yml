@@ -71,7 +71,7 @@ jobs:
                     python3 -m venv venv
                     . venv/bin/activate
                     jupyter nbconvert --to python chargement_propilot.ipynb
-                    python chargement_propilot.py
+                    python3 chargement_propilot.py
                     FILE=propilot.csv
                     if test -f "$FILE"; then
                         echo "$FILE successfuly created."
@@ -159,7 +159,7 @@ jobs:
                 command: |
                     python3 -m venv venv
                     . venv/bin/activate
-                    python csvToJson.py
+                    python3 csvToJson.py
           - persist_to_workspace:
               root: ./
               paths:
