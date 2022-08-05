@@ -4,61 +4,6 @@ import json
 import os
 
 
-def convert_csv_to_json():
-
-    col = ["indicateur",
-           "period_date",
-           "valeur",
-           "mesure",
-           "short_indic",
-           "maille",
-           "indic_id",
-           "Code_Departement",
-           "Code_Region"]
-    df_propilot = pd.read_csv("exports/propilot.csv", usecols=col, sep=";")
-    # avoid null values
-    df_propilot = df_propilot[~df_propilot.indicateur.isna()]
-    df_propilot['period_date'] = pd.to_datetime(df_propilot['period_date'])
-
-    file_name = 'france-relance-data-tableau-de-bord.txt'
-    clean_file(file_name)
-
-    # Recuperation des indicateurs uniques
-    for indicateur in df_propilot.indicateur.unique():
-        df_indicateur = df_propilot.loc[df_propilot.indicateur == indicateur]
-
-        code = df_indicateur["indic_id"][0]
-        nom = df_indicateur["short_indic"][0]
-        unite = df_indicateur["short_indic"][0]
-
-        data = {"code": code,
-                "nom": nom,
-                "unite": unite}
-        # France
-        france = get_level(df_indicateur, "nat", "fra")
-
-        data["france"] = [france]
-
-        # Regions
-        regions_data = []
-        for region in df_indicateur.Code_Region.unique():
-            df_indicateur_region = df_indicateur.loc[df_propilot.Code_Region == region]
-            region_data = get_level(df_indicateur_region, "reg", region)
-            regions_data.append(region_data)
-
-        data["regions"] = regions_data
-
-        # Departements
-        departements_data = []
-        for departement in df_indicateur.Code_Departement.unique():
-            df_indicateur_departement = df_indicateur.loc[df_propilot.Code_Departement == departement]
-            departement_data = get_level(df_indicateur_departement, "dep", departement)
-            departements_data.append(departement_data)
-
-        data["departements"] = departements_data
-
-        append_to_file(data, file_name)
-
 
 def evolVal(valI: float, valE: float) -> float:
     """
@@ -144,6 +89,60 @@ def append_to_file(data: dict, file_name: str):
     with open(file_name, "a", encoding="utf8") as output_file:
         json.dump(data, output_file, ensure_ascii=False)
         output_file.write('\n')
+
+
+def convert_csv_to_json():
+
+    col = ["indicateur",
+           "period_date",
+           "valeur",
+           "mesure",
+           "short_indic",
+           "maille",
+           "indic_id",
+           "Code_Departement",
+           "Code_Region"]
+    df_propilot = pd.read_csv("exports/propilot.csv", usecols=col, sep=";")
+    # avoid null values
+    df_propilot = df_propilot[~df_propilot.indicateur.isna()]
+    df_propilot['period_date'] = pd.to_datetime(df_propilot['period_date'])
+
+    file_name = 'france-relance-data-tableau-de-bord.txt'
+    clean_file(file_name)
+
+    # Recuperation des indicateurs uniques
+    for indicateur in df_propilot.indicateur.unique():
+        df_indicateur = df_propilot.loc[df_propilot.indicateur == indicateur]
+
+        data = {}
+        data = {"code": df_indicateur["indic_id"].iloc[0],
+                "nom": df_indicateur["short_indic"].iloc[0],
+                "unite": df_indicateur["short_indic"].iloc[0]}
+
+        # France
+        france = get_level(df_indicateur, "nat", "fra")
+
+        data["france"] = [france]
+
+        # Regions
+        regions_data = []
+        for region in df_indicateur.Code_Region.unique():
+            df_indicateur_region = df_indicateur.loc[df_propilot.Code_Region == region]
+            region_data = get_level(df_indicateur_region, "reg", region)
+            regions_data.append(region_data)
+
+        data["regions"] = regions_data
+
+        # Departements
+        departements_data = []
+        for departement in df_indicateur.Code_Departement.unique():
+            df_indicateur_departement = df_indicateur.loc[df_propilot.Code_Departement == departement]
+            departement_data = get_level(df_indicateur_departement, "dep", departement)
+            departements_data.append(departement_data)
+
+        data["departements"] = departements_data
+
+        append_to_file(data, file_name)
 
 
 if __name__ == "__main__":
