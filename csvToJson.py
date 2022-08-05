@@ -4,7 +4,6 @@ import json
 import os
 
 
-
 def evolVal(valI: float, valE: float) -> float:
     """
     retourne la valeur de l'evolution entre les deux valeurs d'entrees
@@ -23,7 +22,7 @@ def evolPercent(ev: float, val: float) -> float:
     return 0
 
 
-def get_last_data(dff: pd.DataFrame) -> list[datetime.datetime, float]:
+def get_last_data(dff: pd.DataFrame) -> list:
     """
     sommes des valeurs de la date la plus recente
     """
