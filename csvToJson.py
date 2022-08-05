@@ -31,7 +31,7 @@ def get_last_data(dff: pd.DataFrame) -> list:
     return [most_recent_date, dfDate["valeur"].sum()]
 
 
-def get_evolution(dff: pd.DataFrame, last_date: datetime.datetime, last_value: float) -> dict[int, float]:
+def get_evolution(dff: pd.DataFrame, last_date: datetime.datetime, last_value: float) -> dict:
     dfEvol = dff.copy()
     dfEvol.drop(dfEvol.loc[dfEvol['period_date'] == last_date].index, inplace=True)
     previous_last_data = get_last_data(dfEvol)
