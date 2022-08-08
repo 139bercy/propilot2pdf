@@ -112,13 +112,6 @@ def format_date(raw_date: int) -> str:
         return str_date
 
 
-def check_data_merge(facts: pd.DataFrame, df: pd.DataFrame):
-    #TODO: à garder ?
-    num_pp_recs = facts[facts['financials_source'] == 'proPilot'].shape[0]
-    num_df_recs = df.shape[0]
-    assert num_pp_recs == num_df_recs, f"Le nombre d'enregistrements proPilot diffèrent : avant {num_pp_recs} - après {num_df_recs}"
-
-
 def extract_dep_code(expr: str) -> str:
     """
     Récupération du code de département en retirant les caractères non int de la variable expr, ex 'THD-D72' -> '72'
@@ -133,11 +126,6 @@ def extract_dep_code(expr: str) -> str:
     return nums[0][1:].zfill(2) if len(nums) > 0 else None
 
 
-def check_cols(cols: list, df: pd.DataFrame):
-    # TODO: à garder?
-    assert set(cols).issubset(df.columns), f"Colonnes manquantes : {set(cols) - set(df.columns)}"
-
-
 def clean_mesure_name(tree_node_name: str) -> str:
     """
     garde seulement la mesure et retire le département de three_node_name
@@ -147,85 +135,6 @@ def clean_mesure_name(tree_node_name: str) -> str:
     mesure = re.sub('\.', "", raw_mesure)
     mesure = clean_str(mesure)
     return mesure
-
-
-def check_single_sum_dep_equals_nat(df_copy: pd.DataFrame, mesure: str, indic: str):
-    # TODO: garder la fonction ?
-    nat_values = df_copy[(df_copy['structure_name'] == 'Mesure') &
-                         (df_copy['mesure'] == mesure) &
-                         (df_copy['effect_id'] == indic)][['period_date', 'valeur']].set_index('period_date').to_dict()[
-        'valeur']
-
-    dep_indic_values = df_copy[(df_copy['structure_name'] == 'Département') &
-                               (df_copy['mesure'] == mesure) &
-                               (df_copy['effect_id'] == indic)].groupby('period_date').sum().to_dict()['valeur']
-
-    for date in dep_indic_values.keys():
-        if date not in nat_values:
-            # print(f"-- National pas de {date}")
-            continue
-        dep_val = round(dep_indic_values[date], 2)
-        nat_val = round(nat_values[date], 2)
-        # assert dep_val == nat_val, f"Somme départementale : {dep_val} - Valeur récupérée nationale : {nat_val}\n{date} - {mesure} - {indic}"
-        # T0DO : subtituer le if-else par un assert quand on aura la confirmation que les données sont cohérentes
-        if dep_val == nat_val:
-            pass
-            # print(f'ok - {mesure} - {indic} - {date}')
-        else:
-            print(f'KO - {mesure} - {indic} - {date} | {dep_val} - {nat_val}')
-
-
-def check_sum_dep_equals_nat(df: pd.DataFrame):
-    # TODO: à garder ?
-    """
-    Ce test a été rajouté après avoir constaté des différences entre somme des départements et valeurs nationales.
-    """
-    df_copy = df.copy()
-    df_copy = df_copy.loc[
-        (~df_copy.period_month_tri.isin(forbidden_period_value)) &
-        (df_copy.state_id == 'Valeur Actuelle') &
-        (~df_copy.valeur.isna())].copy()
-
-    df_copy["mesure"] = df_copy["tree_node_name"].apply(lambda x: clean_mesure_name(x))
-
-    mesures = df_copy['mesure'].unique()
-    for mesure in mesures:
-        indics = df_copy[df_copy['mesure'] == mesure]['effect_id'].unique()
-        for indic in indics:
-            check_single_sum_dep_equals_nat(df_copy, mesure, indic)
-
-
-def check_single_sum_dep_equals_nat_2(df_copy: pd.DataFrame, df_nat: pd.DataFrame, mesure: str, indic: str):
-    # TODO: àgarder ?
-    nat_values = df_nat[(df_nat['mesure'] == mesure) &
-                        (df_nat["indicateur"] == indic)][['period_date', 'valeur']].set_index('period_date').to_dict()[
-        'valeur']
-
-    dep_indic_values = df_copy[(df_copy['mesure'] == mesure) &
-                               (df_copy['indicateur'] == indic)].groupby('period_date').sum().to_dict()['valeur']
-
-    for date in dep_indic_values.keys():
-        if date not in nat_values:
-            # print(f"-- National pas de {date}")
-            continue
-        dep_val = round(dep_indic_values[date], 2)
-        nat_val = round(nat_values[date], 2)
-        # assert dep_val == nat_val, f"Somme départementale : {dep_val} - Valeur récupérée nationale : {nat_val}\n{date} - {mesure} - {indic}"
-        # TODO : subtituer le if-else par un assert quand on aura la confirmation que les données sont cohérentes
-        if dep_val == nat_val:
-            pass
-            # print(f'OK - {mesure} - {indic} - {date}')
-        else:
-            print(f'KO - {mesure} - {indic} - {date} | {dep_val} - {nat_val}')
-
-
-def check_sum_dep_equals_nat_2(df_dep: pd.DataFrame, df_nat: pd.DataFrame):
-    # TODO: à garder ?
-    mesures = df_dep['mesure'].unique()
-    for mesure in mesures:
-        indics = df_dep[df_dep['mesure'] == mesure]['indicateur'].unique()
-        for indic in indics:
-            check_single_sum_dep_equals_nat_2(df_dep, df_nat, mesure, indic)
 
 
 def get_df_sum_indicator(df_dep: pd.DataFrame,
@@ -248,26 +157,6 @@ def get_df_sum_indicator(df_dep: pd.DataFrame,
     df_temp["indic_id"] = new_indic
     # df_temp.fillna("NaN", inplace=True)
     return df_temp
-
-
-def check_dep_coherence(df: pd.DataFrame, taxo_dep_df: pd.DataFrame):
-    # TODO: à garder ?
-    assert df['dep'].isnull().sum() == 0, "Certaines lignes ne possèdent pas de code département."
-
-    deps_test = sorted(df['dep'].unique())
-    deps_true = sorted(taxo_dep_df['dep'].unique())
-    assert deps_test == deps_true, "Départements ne concordent pas."
-
-    assert sorted(df['libelle'].unique()) == sorted(taxo_dep_df['libelle'])
-
-
-def check_reg_coherence(df, taxo_reg_df):
-    # TODO: à garder ?
-    assert df['reg'].isnull().sum() == 0, "Certaines lignes ne possèdent pas de code région."
-
-    regs_test = sorted(df['reg'].unique())
-    regs_true = sorted(taxo_reg_df['reg'].unique())
-    assert regs_test == regs_true, "Régions ne concordent pas."
 
 
 def recup_date(string: str) -> str:
@@ -325,18 +214,13 @@ def load_propilot():
           .merge(df_dict["dim_period"], left_on="period_id", right_on="period_id", how='left')
           .merge(df_dict["dim_structures"], left_on="structure_id", right_on="structure_id"))
 
-    check_data_merge(df_dict["fact_financials"], df)
-
     df['dep_code'] = df['tree_node_code'].apply(lambda x: extract_dep_code(x))
 
     cols = ["tree_node_name", "structure_name", "effect_id", "state_id", "period_date", "period_month_tri",
             "period_month_year", "financials_cumulated_amount", "dep_code"]
-    check_cols(cols, df)
 
     df = df[cols]
     df.rename(columns={"period_month_year": "Date", "financials_cumulated_amount": "valeur"}, inplace=True)
-
-    check_sum_dep_equals_nat(df)
 
     df.rename(columns={"effect_id": "indicateur"}, inplace=True)
     df.indicateur = df.indicateur.str.strip()
@@ -399,8 +283,6 @@ def load_propilot():
     df_nat2["short_indic"] = df_nat2.indicateur.apply(lambda x: x.split("-")[0].strip())
     df_nat2.short_indic = df_nat2.short_indic.apply(lambda x: clean_str(x))
 
-    check_sum_dep_equals_nat_2(df_dep, df)
-
     df_dep.short_indic = df_dep.short_indic.apply(lambda x: dict_indicateur[x] if x in dict_indicateur else x)
     df_dep.short_indic = df_dep.short_indic.apply(lambda x: dict_indicateur[x] if x in dict_indicateur else x)
     df_dep.short_indic = df_dep.short_indic.apply(lambda x: dict_indicateur[x] if x in dict_indicateur else x)
@@ -434,9 +316,6 @@ def load_propilot():
         "Décarbonation de l'industrie (Appel à projets EE + Guichet EE + Chaleur bas carbone)")
 
     df_dep = pd.concat([df_dep, df_temp, df_temp2])
-
-    check_dep_coherence(df_dep, taxo_dep_df)
-    check_reg_coherence(df_dep, taxo_reg_df)
 
     df_dep.to_csv("pp_dep.csv", sep=";")
 
@@ -478,8 +357,6 @@ def load_propilot():
     df3["volet"] = "Cohésion"
 
     df = pd.concat([df1, df2, df3])
-
-    assert df.loc[df.duplicated()].empty
 
     df_all = df_all.merge(df, how="left", left_on="indic_id", right_on="code")
 
