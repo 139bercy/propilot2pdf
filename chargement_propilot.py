@@ -84,7 +84,10 @@ def import_json_to_dict(url):
     return my_dict
 
 
-def clean_str(s):
+def clean_str(s: str) -> str:
+    """
+    remplacement de caractères spéciaux par d'autre pour faciliter le traitement
+    """
     d = {
         "’": "'",
         "\xa0": " ",
@@ -95,27 +98,31 @@ def clean_str(s):
     return s
 
 
-def format_date(raw_date):
-    # Convertie un format (20210131, 2020) -> (2021-01-31, 2020)
+def format_date(raw_date: int) -> str:
+    """
+    Convertie un format (20210131, 2020) -> (2021-01-31, 2020)
+    """
     str_date = str(raw_date)
     if str_date == 'nan':
         return raw_date
 
-    if type(str_date) == int:
-        print(str_date)
     if len(str_date) == 8:
         return str_date[:4] + '-' + str_date[4:6] + '-' + str_date[6:]
     else:
         return str_date
 
 
-def check_data_merge(facts, df):
+def check_data_merge(facts: pd.DataFrame, df: pd.DataFrame):
+    #TODO: à garder ?
     num_pp_recs = facts[facts['financials_source'] == 'proPilot'].shape[0]
     num_df_recs = df.shape[0]
     assert num_pp_recs == num_df_recs, f"Le nombre d'enregistrements proPilot diffèrent : avant {num_pp_recs} - après {num_df_recs}"
 
 
-def extract_dep_code(expr):
+def extract_dep_code(expr: str) -> str:
+    """
+    Récupération du code de département en retirant les caractères non int de la variable expr, ex 'THD-D72' -> '72'
+    """
     nums = re.findall(r'D\d+', expr)
     if expr.endswith('D2A'):
         return '2A'
@@ -126,11 +133,15 @@ def extract_dep_code(expr):
     return nums[0][1:].zfill(2) if len(nums) > 0 else None
 
 
-def check_cols(cols, df):
+def check_cols(cols: list, df: pd.DataFrame):
+    # TODO: à garder?
     assert set(cols).issubset(df.columns), f"Colonnes manquantes : {set(cols) - set(df.columns)}"
 
 
-def clean_mesure_name(tree_node_name):
+def clean_mesure_name(tree_node_name: str) -> str:
+    """
+    garde seulement la mesure et retire le département de three_node_name
+    """
     raw_mesure = tree_node_name.split('/')[1].strip() if '/' in tree_node_name else tree_node_name
     # nettoyage de la colonne mesure, on enlève un point surnuméraire.
     mesure = re.sub('\.', "", raw_mesure)
@@ -138,7 +149,8 @@ def clean_mesure_name(tree_node_name):
     return mesure
 
 
-def check_single_sum_dep_equals_nat(df_copy, mesure, indic):
+def check_single_sum_dep_equals_nat(df_copy: pd.DataFrame, mesure: str, indic: str):
+    # TODO: garder la fonction ?
     nat_values = df_copy[(df_copy['structure_name'] == 'Mesure') &
                          (df_copy['mesure'] == mesure) &
                          (df_copy['effect_id'] == indic)][['period_date', 'valeur']].set_index('period_date').to_dict()[
@@ -155,7 +167,7 @@ def check_single_sum_dep_equals_nat(df_copy, mesure, indic):
         dep_val = round(dep_indic_values[date], 2)
         nat_val = round(nat_values[date], 2)
         # assert dep_val == nat_val, f"Somme départementale : {dep_val} - Valeur récupérée nationale : {nat_val}\n{date} - {mesure} - {indic}"
-        # TODO : subtituer le if-else par un assert quand on aura la confirmation que les données sont cohérentes
+        # T0DO : subtituer le if-else par un assert quand on aura la confirmation que les données sont cohérentes
         if dep_val == nat_val:
             pass
             # print(f'ok - {mesure} - {indic} - {date}')
@@ -163,7 +175,8 @@ def check_single_sum_dep_equals_nat(df_copy, mesure, indic):
             print(f'KO - {mesure} - {indic} - {date} | {dep_val} - {nat_val}')
 
 
-def check_sum_dep_equals_nat(df):
+def check_sum_dep_equals_nat(df: pd.DataFrame):
+    # TODO: à garder ?
     """
     Ce test a été rajouté après avoir constaté des différences entre somme des départements et valeurs nationales.
     """
@@ -182,7 +195,8 @@ def check_sum_dep_equals_nat(df):
             check_single_sum_dep_equals_nat(df_copy, mesure, indic)
 
 
-def check_single_sum_dep_equals_nat_2(df_copy, df_nat, mesure, indic):
+def check_single_sum_dep_equals_nat_2(df_copy: pd.DataFrame, df_nat: pd.DataFrame, mesure: str, indic: str):
+    # TODO: àgarder ?
     nat_values = df_nat[(df_nat['mesure'] == mesure) &
                         (df_nat["indicateur"] == indic)][['period_date', 'valeur']].set_index('period_date').to_dict()[
         'valeur']
@@ -205,7 +219,8 @@ def check_single_sum_dep_equals_nat_2(df_copy, df_nat, mesure, indic):
             print(f'KO - {mesure} - {indic} - {date} | {dep_val} - {nat_val}')
 
 
-def check_sum_dep_equals_nat_2(df_dep, df_nat):
+def check_sum_dep_equals_nat_2(df_dep: pd.DataFrame, df_nat: pd.DataFrame):
+    # TODO: à garder ?
     mesures = df_dep['mesure'].unique()
     for mesure in mesures:
         indics = df_dep[df_dep['mesure'] == mesure]['indicateur'].unique()
@@ -213,7 +228,12 @@ def check_sum_dep_equals_nat_2(df_dep, df_nat):
             check_single_sum_dep_equals_nat_2(df_dep, df_nat, mesure, indic)
 
 
-def get_df_sum_indicator(df_dep, indicators_to_sum, new_indicator, new_indic, new_mesure):
+def get_df_sum_indicator(df_dep: pd.DataFrame,
+                         indicators_to_sum: str,
+                         new_indicator: str,
+                         new_indic: str,
+                         new_mesure: str):
+    # TODO: doc func
     df_dep = df_dep.copy()
     df_temp = df_dep.loc[df_dep.indicateur.str.contains(indicators_to_sum, regex=True)].groupby(
         ["Date", "dep"]).sum().copy()
@@ -230,7 +250,8 @@ def get_df_sum_indicator(df_dep, indicators_to_sum, new_indicator, new_indic, ne
     return df_temp
 
 
-def check_dep_coherence(df, taxo_dep_df):
+def check_dep_coherence(df: pd.DataFrame, taxo_dep_df: pd.DataFrame):
+    # TODO: à garder ?
     assert df['dep'].isnull().sum() == 0, "Certaines lignes ne possèdent pas de code département."
 
     deps_test = sorted(df['dep'].unique())
@@ -241,6 +262,7 @@ def check_dep_coherence(df, taxo_dep_df):
 
 
 def check_reg_coherence(df, taxo_reg_df):
+    # TODO: à garder ?
     assert df['reg'].isnull().sum() == 0, "Certaines lignes ne possèdent pas de code région."
 
     regs_test = sorted(df['reg'].unique())
@@ -249,10 +271,16 @@ def check_reg_coherence(df, taxo_reg_df):
 
 
 def recup_date(string: str) -> str:
+    """
+    retire les informations inutile présente dans la date '2020-12-31T00:00:00.0000000' -> '2020-12-31'
+    """
     return string[:10]
 
 
-def mkdir_ifnotexist(path):
+def mkdir_ifnotexist(path: str):
+    """
+    créer le dossier 'export' si il n'existe pas
+    """
     if not os.path.isdir(path):
         os.mkdir(path)
 
