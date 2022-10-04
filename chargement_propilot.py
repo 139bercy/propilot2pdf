@@ -375,13 +375,14 @@ def load_propilot():
     df = df_all
     df.period_date = pd.to_datetime(df.period_date)
     df.set_index(["localisation", "period_date"], inplace=True)
-    df = df[~df.index.duplicated()]  # this fix the ci by removing duplicate index in the multiIndex
 
     result = []
     indic_ids = df.indic_id.unique()
 
     for indic_id in indic_ids:
         temp = df.loc[(df.indic_id == indic_id)]
+
+        temp = temp[~temp.index.duplicated()]
 
         new_index = pd.MultiIndex.from_product(temp.index.remove_unused_levels().levels)
         # print(list(temp.index))
