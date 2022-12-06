@@ -194,7 +194,11 @@ def load_propilot():
         for file_csv in os.listdir(propilot_path):
             if fnmatch.fnmatch(file_csv, file + "*.csv"):
                 print("File loaded : ", file_csv)
-                df_dict[file] = pd.read_csv(os.path.join(propilot_path, file_csv), sep=";", engine="python")
+                df_dict[file] = pd.read_csv(os.path.join(propilot_path, file_csv),
+                                            sep=";",
+                                            engine="python",
+                                            encoding='utf-8',
+                                            on_bad_lines='warn')
 
     df_dict['fact_financials']['period_id'] = df_dict['fact_financials']['period_id'].apply(lambda x: format_date(x))
     df_dict['dim_period']['period_id'] = df_dict['dim_period']['period_id'].apply(lambda x: format_date(x))
