@@ -212,10 +212,10 @@ def load_propilot():
         ~df_dict["fact_financials"].financials_cumulated_amount.isna()]
 
     df = (df_dict["fact_financials"]
-          .merge(df_dict["dim_tree_nodes"], left_on="tree_node_id", right_on="tree_node_id")
+          .merge(df_dict["dim_tree_nodes"], left_on="tree_node_id", right_on="tree_node_id", suffixes=('', '_right'))
           .merge(df_dict["dim_effects"], left_on="effect_id", right_on="effect_id", suffixes=('', '_right'))
           .merge(df_dict["dim_states"], left_on="state_id", right_on="state_id", suffixes=('', '_right'))
-          .merge(df_dict["dim_period"], left_on="period_id", right_on="period_id", how='left')
+          .merge(df_dict["dim_period"], left_on="period_id", right_on="period_id", how='left', suffixes=('', '_right'))
           .merge(df_dict["dim_structures"], left_on="structure_id", right_on="structure_id", suffixes=('', '_right')))
 
     df['dep_code'] = df['tree_node_code'].apply(lambda x: extract_dep_code(x))
