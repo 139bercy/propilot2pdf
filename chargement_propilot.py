@@ -161,9 +161,12 @@ def get_df_sum_indicator(df_dep: pd.DataFrame,
 
 def recup_date(string: str) -> str:
     """
-    retire les informations inutile présente dans la date '2020-12-31T00:00:00.0000000' -> '2020-12-31'
+    retire les informations inutile présente dans la date '2020-12-31T00:00:00.0000000' -> '2020-12-31' seulement pour les str
     """
-    return string[:10]
+    if isinstance(string, str):
+        return string[:10]
+    else:
+        return string
 
 
 def mkdir_ifnotexist(path: str):
